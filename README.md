@@ -23,7 +23,7 @@ Doing the **modern** donation box, actually.
 
 * August 29 [ Finish ] 
 
-See the detailed timeline here.
+See the detailed timeline [here](https://github.com/eellak/gsoc17-donationbox/blob/master/timeline.md).
 
 
 

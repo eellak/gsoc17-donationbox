@@ -1,5 +1,5 @@
 # Timeline.
-The analytical timeline is below.<br>
+The detailed timeline is below.<br>
 _Last update: 19 - 05 - 2017_
 
 
