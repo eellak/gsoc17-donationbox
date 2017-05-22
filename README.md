@@ -9,11 +9,11 @@ Doing the **modern** donation box, actually.
 
 ## Timeline.
 
-* ##### May 5 - 19 [ Identifying, understanding and integration in the existing system. ]
+* May 5 - 19 [ Identifying, understanding and integration in the existing system. ]
 
 * May 20 - 21 [ Installation of infrastructure & start design Wordrees Plugin. ]
 
-* May 22-30 [ Implementation of Wordpress Plugin ]
+* ##### May 22-30 [ Implementation of Wordpress Plugin ]
 
 * July 1 - 12 [ Implementation of API for sending data ]
 
