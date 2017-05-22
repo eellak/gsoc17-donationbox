@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `donationbox_network`.`Box` (
+CREATE TABLE IF NOT EXISTS 'donationbox_network'.'Box' (
   `idBox` INT(11) NOT NULL,
   `idLocation` INT(11) NOT NULL,
   `idBoxStatus` INT(11) GENERATED ALWAYS AS (),
