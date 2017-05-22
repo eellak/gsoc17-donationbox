@@ -3,9 +3,9 @@ The detailed timeline is below.<br>
 _Last update: 19 - 05 - 2017_
 
 
-* ##### May 5 - 19 [ Identifying, understanding and integration in the existing system. ]
+* May 5 - 19 [ Identifying, understanding and integration in the existing system. ]
 * May 20 - 21 [ Installation of infrastructure & start design Wordrees Plugin. ]
-* May 22 - 26 [ Analysis & design Wordpress Plugin ]
+* ##### May 22 - 26 [ Analysis & design Wordpress Plugin ]
 
 * May 27 [ Implementation of Wordpress Plugin ]
 * May 27 - 31 [ Implementation form ]
