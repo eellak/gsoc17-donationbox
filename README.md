@@ -25,6 +25,12 @@ Doing the **modern** donation box, actually.
 
 See the detailed timeline [here](https://github.com/eellak/gsoc17-donationbox/blob/master/timeline.md).
 
+## Do you want to contribute?
+If you like this project and do you want to contribute to it, a good starting point is to read [this guide](https://github.com/eellak/gsoc17-donationbox/blob/master/Documentation/Set%20up%20a%20developer%20workspace%20environment%20for%20the%20development%20of%20the%20WordPress.pdf).
+It's a small guide to how to create your own workspace.
+We hope to help you and we will try to upgrade it if you find it helpful.
+
+In any case, we are open to your suggestions!
 
 
 #### **Mentors :**
@@ -37,6 +43,7 @@ See the detailed timeline [here](https://github.com/eellak/gsoc17-donationbox/bl
 * Anastasios Lisgaras
 
 #### **Organization :** [Open Technologies Alliance - GFOSS](https://summerofcode.withgoogle.com/organizations/4825634544025600/)
+
 
 
 
