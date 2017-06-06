@@ -9,7 +9,7 @@ Description: Πρόκειται για ένα αρχικό testing plugin..
 Version: 0.1
 Author: Tas-sos
 Author URI: https://github.com/eellak/gsoc17-donationbox/
-License: GNU GENERAL PUBLIC LICENSE
+License: GPLv2 or later
 Text Domain: donationBox
 */
 
@@ -31,13 +31,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Copyleft 2017 ~ Google Summer of Code! :)
 */
 
-
-
 /* --------------------- DonationBox Plugin Menu ----------------------------- */
-/* WordPress Menus API. */
 
+
+
+/*WordPress Menus API.*/
 function add_new_menu_and_submenu_items()
 {
+    //add a new menu item. This is a top level menu item i.e., this menu item can have sub menus
     add_menu_page(
         "Donation Boxes Manage Page",   //Required. - Page title - Text in browser title bar when the page associated with this menu item is displayed.
         "Donation Boxes",               //Required. Text to be displayed in the menu.
@@ -48,7 +49,7 @@ function add_new_menu_and_submenu_items()
         25                              //Optional. Position of the menu item in the menu.
     );
 
- 
+	//  add sub menu item.
     add_submenu_page(
             'db-settings-menu', // Parrent menu Slug.
             'Donation Boxes',   // Page title.
@@ -59,12 +60,12 @@ function add_new_menu_and_submenu_items()
             );    
     
     add_submenu_page(
-            'db-settings-menu',           	// Parrent Slug
-            'Create new donation project', 	// Page title
+            'db-settings-menu',             // Parrent Slug
+            'Create new donation project',  // Page title
             'Create project',               // Menu_title when be show at the menu side bar
-            'edit_posts',                 	// capability
-            'db-create-project-submenu',   	// menu_slug
-            'db_create_project'            	// function
+            'edit_posts',                   // capability
+            'db-create-project-submenu',    // menu_slug
+            'db_create_project'             // function
             );
 
 }
@@ -81,54 +82,46 @@ function db_create_project()
 }
 
 
-//this action callback is triggered when wordpress is ready to add new items to menu.
+
 add_action("admin_menu", "add_new_menu_and_submenu_items");
 
 
 
 
 
-/* ---------------------------- End menus ------------------------------------ */
+/* --------------------- DonationBox Plugin Menu ----------------------------- */
 /* WordPress Settings API. */
 
 function display_options()
 {
     
     // For "General" submenu :
-
     add_settings_section(
-            "general_section",                   /* The unique name of section */
-            "General Settings",                  /* The display name of section */
-            "display_header_options_content",	 /* Function */
-            "db-settings-menu");                 /* page to which section is attached. */
+            "general_section",                   /* The unique name of section. */
+            "General Settings",                  /* The display name of section. */
+            "display_header_options_content",    /* Function for this section. */
+            "db-settings-menu");                 /* Page to which section is attached. */
 
     
     add_settings_field(
-            "database_url_field",			/* The unique setting ID name. */
-            "Database Url",                 /* The display name of field. */
-            "display_logo_form_element",    /* Function. */
-            "db-settings-menu",             /* Page in which field is displayed. */
-            "general_section");             /* Unique name of section. */
+            "database_url_field",        /* The unique setting ID name. */
+            "Database Url",              /* The display name of field! */
+            "display_logo_form_element", /* Callback function. */
+            "db-settings-menu",          /* Page in which field is displayed. */
+            "general_section");          /* Section to displayed. */
     
-    
-    add_settings_field(
-            "advertising_code",
-            "Ads Code",
-            "display_ads_form_element",
-            "db-settings-menu",
-            "general_section");
 
-    //section name, form element name, callback for sanitization
+
+
     register_setting("general_section", "database_url_field");
-    register_setting("general_section", "advertising_code");
     
     
     //------------------------------- For "Create Project" submenu . -----------------------------------------
     add_settings_section(
-            'create_project_section',           // Section unique id.
-            'Project Options',                 	// Section title.
-            'display_create_header_section',    // Callback function.
-            'db-create-project-submenu'         // Page to show.
+            'create_project_section',         // Section unique id.
+            'Project Options',                // Section title.
+            'display_create_header_section',  // Callback function.
+            'db-create-project-submenu'       // Σε ποια σελίδα θα εμφανιστεί.
             );
     
     add_settings_field(
@@ -211,19 +204,12 @@ function display_header_options_content()
 
 function display_logo_form_element()
 {
-
     ?>
         <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." value="<?php echo get_option('database_url_field'); ?>" required="required" aria-describedby="tagline-description" />
         <p id="tagline-description" class="description">The database should be there.</p>
     <?php
 }
-function display_ads_form_element()
-{
 
-    ?>
-        <input type="text" name="advertising_code" id="advertising_code" value="<?php echo get_option('advertising_code'); ?>" />
-    <?php
-}
 
 
 /* --------- For New project section ----------- */
@@ -274,26 +260,25 @@ function display_project_amount_field()
 
 function display_project_organization_field()
 {
-    //..
+    ?>
+        <select>
+            <option value="foundation">Foundation</option>
+            <option value="organization">Organization</option>
+            <option value="company">Company</option>
+        </select>
+        
+    <?php
 }
 
 function display_project_styling_field()
 {
-    //..
+    ?>
+        <input type="file" id="fileinput" accept="css/*.css" />
+    <?php
 }
 
 
-
 add_action("admin_init", "display_options");
-
-
-
-
-
-
-
-
-
 
 
 
