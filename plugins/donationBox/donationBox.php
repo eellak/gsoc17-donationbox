@@ -9,7 +9,7 @@ Description: Πρόκειται για ένα αρχικό testing plugin..
 Version: 0.1
 Author: Tas-sos
 Author URI: https://github.com/eellak/gsoc17-donationbox/
-License: GPLv2 or later
+License: GPLv2
 Text Domain: donationBox
 */
 
@@ -31,170 +31,159 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Copyleft 2017 ~ Google Summer of Code! :)
 */
 
-/* --------------------- DonationBox Plugin Menu ----------------------------- */
-
-
-
-/*WordPress Menus API.*/
-function add_new_menu_and_submenu_items()
+/* For Security Reasons. */
+if ( !defined( 'ABSPATH' ) )
 {
-    //add a new menu item. This is a top level menu item i.e., this menu item can have sub menus
-    add_menu_page(
-        "Donation Boxes Manage Page",   //Required. - Page title - Text in browser title bar when the page associated with this menu item is displayed.
-        "Donation Boxes",               //Required. Text to be displayed in the menu.
-        "edit_posts",                   //Required. The required capability of users to access this menu item.
-        "db-settings-menu",             //Required. A unique identifier to identify this menu item.
-        "db_settings_page",             //Optional. This callback outputs the content of the page associated with this menu item.
-        "dashicons-feedback",           //Optional. The URL to the menu item icon.
-        25                              //Optional. Position of the menu item in the menu.
-    );
-
-	//  add sub menu item.
-    add_submenu_page(
-            'db-settings-menu', // Parrent menu Slug.
-            'Donation Boxes',   // Page title.
-            'General',          // The side bar Menu title.
-            'edit_posts',       // Capability
-            'db-settings-menu', // menu_slug
-            'db_settings_page'  // function
-            );    
-    
-    add_submenu_page(
-            'db-settings-menu',             // Parrent Slug
-            'Create new donation project',  // Page title
-            'Create project',               // Menu_title when be show at the menu side bar
-            'edit_posts',                   // capability
-            'db-create-project-submenu',    // menu_slug
-            'db_create_project'             // function
-            );
-
+    exit;
 }
 
+
+
+
+/* Add Organization Taxonomy. */
+function db_register_organization_taxonomy()
+{
+
+    $plural = 'Organizations';
+    $singular = 'Organization';
+
+    $labels = array(
+		'name'                          => $plural,
+		'singular_name'                 => $singular,
+		'search_items'                  => 'Search ' . $plural,
+		'all_items'                     => 'All ' . $plural,
+		'parent_item'                   => null,
+		'parent_item_colon'             => null,
+		'edit_item'                     => 'Edit ' . $singular,
+		'update_item'                   => 'Update ' . $singular,
+		'add_new_item'                  => 'Add New ' . $singular,
+		'new_item_name'                 => 'New ' . $singular . ' Name',
+		'separate_items_with_commas'    => 'Separate ' . $plural . ' with commas',
+		'add_or_remove_items'           => 'Add or remove ' . $plural,
+		'choose_from_most_used'         => 'Choose from the most used ' . $plural,
+		'not_found'                     => 'No ' . $plural . ' found.',
+		'menu_name'                     =>  $singular,
+                );
+
+    $args = array(
+                'hierarchical'              => true,
+                'labels'                    => $labels,
+                'show_ui'                   => true,
+                'show_admin_column'         => true,
+                'update_count_callback'   	=> '_update_post_term_count',
+                'query_var'                 => true,
+                'rewrite'                   => array( 'slug' => 'organizations' ),
+                );
+
+
+    register_taxonomy('organization', array('donationboxes'), $args);
+}
+
+
+add_action( 'init' , 'db_register_organization_taxonomy' );
+
+
+
+
+
+
+
+/* Create new submenu to add new Donation project - with register post type */
+function db_register_new_post_type()
+{
+
+    $labels = array(
+		'name'               => _x( 'DonationBoxes', 'post type general name', 'your-plugin-textdomain' ),
+		'singular_name'      => _x( 'DonationBoxes', 'post type singular name', 'your-plugin-textdomain' ),
+		'menu_name'          => _x( 'DonationBoxes', 'admin menu', 'your-plugin-textdomain' ),
+		'name_admin_bar'     => _x( 'Donation Project', 'add new on admin bar', 'your-plugin-textdomain' ),
+		'add_new'            => _x( 'Add New Project', 'book', 'your-plugin-textdomain' ),
+		'add_new_item'       => __( 'Add New Donation Project', 'your-plugin-textdomain' ),
+		'new_item'           => __( 'New Project', 'your-plugin-textdomain' ),
+		'edit_item'          => __( 'Edit Project', 'your-plugin-textdomain' ),
+		'view_item'          => __( 'View Project', 'your-plugin-textdomain' ),
+		'all_items'          => __( 'All Donation Projects', 'your-plugin-textdomain' ),
+		'search_items'       => __( 'Search Projects', 'your-plugin-textdomain' ),
+		'parent_item_colon'  => __( 'Parent Projects:', 'your-plugin-textdomain' ),
+		'not_found'          => __( 'No projects found.', 'your-plugin-textdomain' ),
+		'not_found_in_trash' => __( 'No projects found in Trash.', 'your-plugin-textdomain' )
+                );
+
+
+    $args = array(
+		'labels'             => $labels,
+		'description'        => __( 'Description.', 'your-plugin-textdomain' ),
+		'public'             => true,
+		'publicly_queryable' => true,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'donationBoxes' ),
+		'capability_type'    => 'post',
+		'has_archive'        => true,
+		'hierarchical'       => false,
+		'menu_icon'          => 'dashicons-feedback',
+		'menu_position'      => 26,
+		'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions' ),
+		'taxonomies'         => array( 'organization' ),
+                );
+
+    register_post_type('donationboxes', $args);
+}
+
+add_action('init', 'db_register_new_post_type' );
+
+
+
+
+
+
+/* For custom submenu. */
+function add_new_menu_and_submenu_items()
+{
+
+    add_submenu_page(
+        'edit.php?post_type=donationboxes', // Parrent menu Slug.
+        'Donation Boxes Settings',          // Page title.
+        'General Settings',                 // The side bar Menu title.
+        'edit_posts',                       // Capability
+        'db-settings-menu',                 // menu_slug
+        'db_settings_page'                  // function - Επίσης βάζω την ίδια συνάρτηση. Για να εμφανίσει ένα πράγματα.
+        );
+
+}
 
 function db_settings_page()
 {
     require_once( plugin_dir_path(__FILE__) . 'admin/db_settings_page.php' );
 }
 
-function db_create_project()
-{
-    require_once( plugin_dir_path(__FILE__) . 'admin/db_create_project.php' );
-}
-
-
-
-add_action("admin_menu", "add_new_menu_and_submenu_items");
-
-
-
-
-
-/* --------------------- DonationBox Plugin Menu ----------------------------- */
 /* WordPress Settings API. */
 
 function display_options()
 {
-    
+
     // For "General" submenu :
+
     add_settings_section(
             "general_section",                   /* The unique name of section. */
             "General Settings",                  /* The display name of section. */
-            "display_header_options_content",    /* Function for this section. */
+            "display_header_options_content",    /* Callback function. */
             "db-settings-menu");                 /* Page to which section is attached. */
 
-    
+
+
     add_settings_field(
             "database_url_field",        /* The unique setting ID name. */
-            "Database Url",              /* The display name of field! */
+            "Database Url",              /* The display name of field. */
             "display_logo_form_element", /* Callback function. */
             "db-settings-menu",          /* Page in which field is displayed. */
-            "general_section");          /* Section to displayed. */
-    
-
+            "general_section");          /* Section. */
 
 
     register_setting("general_section", "database_url_field");
-    
-    
-    //------------------------------- For "Create Project" submenu . -----------------------------------------
-    add_settings_section(
-            'create_project_section',         // Section unique id.
-            'Project Options',                // Section title.
-            'display_create_header_section',  // Callback function.
-            'db-create-project-submenu'       // Σε ποια σελίδα θα εμφανιστεί.
-            );
-    
-    add_settings_field(
-            'db_project_name_field',        // Field id
-            'Project name',                 // Field title
-            'display_project_name_field',   // Field function
-            'db-create-project-submenu',    // Page to show
-            'create_project_section'        // Section to show
-            );
 
-    add_settings_field(
-        'db_project_description_field',         // Field id
-        'Description',                          // Field title
-        'display_project_description_field',    // Field function
-        'db-create-project-submenu',            // Page to show
-        'create_project_section'                // Section to show
-        );
-
-    add_settings_field(
-        'db_project_content_field',         // Field id
-        'Content',                          // Field title
-        'display_project_content_field',    // Field function
-        'db-create-project-submenu',        // Page to show
-        'create_project_section'            // Section to show
-        );
-    
-    add_settings_field(
-        'db_project_state_field',       // Field id
-        'State',                        // Field title
-        'display_project_state_field',  // Field function
-        'db-create-project-submenu',    // Page to show
-        'create_project_section'        // Section to show
-        );
-    
-    add_settings_field(
-        'db_project_amount_field',      // Field id
-        'Financing target',             // Field title
-        'display_project_amount_field', // Field function
-        'db-create-project-submenu',    // Page to show
-        'create_project_section'        // Section to show
-        );
-    
-    add_settings_field(
-        'db_project_organization_field',        // Field id
-        'Οrganization',                         // Field title
-        'display_project_organization_field',   // Field function
-        'db-create-project-submenu',            // Page to show
-        'create_project_section'                // Section to show
-        );
-        
-    add_settings_field(
-        'db_project_styling_field',         // Field id
-        'File for styling',                 // Field title
-        'display_project_styling_field',    // Field function
-        'db-create-project-submenu',        // Page to show
-        'create_project_section'            // Section to show
-        );
-
-
-    register_setting("create_project_section", "db_project_name_field");
-    register_setting("create_project_section", "db_project_description_field");
-    register_setting("create_project_section", "db_project_content_field");
-    register_setting("create_project_section", "db_project_state_field");
-    register_setting("create_project_section", "db_project_amount_field");
-    register_setting("create_project_section", "db_project_organization_field");
-    register_setting("create_project_section", "db_project_styling_field");
-
-
-
-    
 }
-
-/* --------- For General section ----------- */
 
 function display_header_options_content()
 {
@@ -204,82 +193,63 @@ function display_header_options_content()
 
 function display_logo_form_element()
 {
+
     ?>
-        <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." value="<?php echo get_option('database_url_field'); ?>" required="required" aria-describedby="tagline-description" />
+        <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." required="required" aria-describedby="tagline-description" />
         <p id="tagline-description" class="description">The database should be there.</p>
     <?php
 }
 
 
-
-/* --------- For New project section ----------- */
-
-function display_create_header_section()
-{
-//    echo 'Create a new donation project.';
-}
-
-function display_project_name_field()
-{
-    ?>
-        <input type="text" name="db_project_name_field" id="db_project_name_field" value="<?php echo get_option('db_project_name_field'); ?>" required="required" />
-    <?php
-}
-
-
-function display_project_description_field()
-{
-    ?>
-        <input type="text" name="db_project_description_field" id="db_project_description_field" value="<?php echo get_option('db_project_description_field'); ?>" placeholder="A sort description.." />
-    <?php
-}
-
-
-function display_project_content_field()
-{
-    ?>
-        <textarea name="db_project_content_field" id="db_project_content_field" value="<?php echo get_option('db_project_content_field'); ?>" required="required" ></textarea>
-        <!--<textarea id="content" class="wp-editor-area" name="content" cols="40" autocomplete="off" style="height: 322px; margin-top: 37px; " ></textarea>-->
-    <?php
-}
-
-function display_project_state_field()
-{
-    ?>
-        Active :     <input type="radio" name="db_project_state_field" id="db_project_state_field" value="<?php echo get_option('db_project_state_field'); ?>" />
-        Deactivate : <input type="radio" name="db_project_state_field" id="db_project_state_field" value="<?php echo get_option('db_project_state_field'); ?>" />
-    <?php
-}
-
-function display_project_amount_field()
-{
-    ?>
-        <input type="number" name="db_project_amount_field" id="db_project_amount_field" value="<?php echo get_option('db_project_amount_field'); ?>"  />
-    <?php
-}
-
-function display_project_organization_field()
-{
-    ?>
-        <select>
-            <option value="foundation">Foundation</option>
-            <option value="organization">Organization</option>
-            <option value="company">Company</option>
-        </select>
-        
-    <?php
-}
-
-function display_project_styling_field()
-{
-    ?>
-        <input type="file" id="fileinput" accept="css/*.css" />
-    <?php
-}
-
-
+add_action("admin_menu", "add_new_menu_and_submenu_items");
 add_action("admin_init", "display_options");
 
 
+/* Metaboxes. */
 
+function db_ps_callback()
+{
+        ?>
+        Active     <input type="radio" name="db_project_state_field" id="db_project_state_field" />
+        <br />
+        Deactivate <input type="radio" name="db_project_state_field" id="db_project_state_field"  />
+    <?php
+}
+
+
+function db_project_status_metabox()
+{
+    add_meta_box(
+            'db_ps_status_metabox', // id
+            'Project Status',       // title
+            'db_ps_callback',       // callback function
+            'donationboxes',        // page
+            'side'                  // position
+            );
+}
+
+
+add_action('add_meta_boxes' , 'db_project_status_metabox');
+
+
+function db_target_amount_callback()
+{
+    ?>
+        <input type="number" name="db_project_amount_field" id="db_project_amount_field"  />
+    <?php
+}
+
+
+function db_project_target_amount_metabox()
+{
+    add_meta_box(
+            'db_amount_metabox',            // id
+            'Target amount',                // title
+            'db_target_amount_callback',    // callback function
+            'donationboxes',                // page
+            'side'                          // position
+            );
+}
+
+add_action('add_meta_boxes' , 'db_project_target_amount_metabox');
 
