@@ -37,11 +37,16 @@ if ( !defined( 'ABSPATH' ) )
     exit;
 }
 
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', true);
+
+
 // Plugin Activation :
 register_activation_hook( __FILE__, 'db_create_role_for_users');
 function db_create_role_for_users()
 {
-    
+
     $capabilities = array(
         'read'                      => true,
         'edit_posts'                => true,
@@ -53,7 +58,7 @@ function db_create_role_for_users()
         'delete_published_posts'    => true,
         'publish_posts'             => true,
         'upload_files'              => true,
-        'manage_categories'         => true,
+        'manage_categories'         => true, 
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
@@ -74,7 +79,7 @@ function db_delete_role_for_users()
 
 
 
-
+// Show plugin menu.
 function db_show_plugin_menu()
 {
     $current_user = wp_get_current_user();
@@ -87,6 +92,31 @@ function db_show_plugin_menu()
 }
 
 add_action('plugins_loaded', 'db_show_plugin_menu');
+
+
+
+
+
+// If in preview mode.
+function mytheme_customizer_live_preview( $content )
+{
+ 
+    $preview = get_query_var('preview');
+    if (  ( ! is_home() ) && $preview )
+    {
+        wp_enqueue_style( 'db_previe_style', plugins_url( 'admin/CSS/db-preview.css' , __FILE__ ) , 11 );
+
+        $content .= '<br><br>';
+        return $content . 'Preview : ' . $preview ;
+    }
+
+    return $content;
+    
+    
+}
+
+add_filter( 'the_content', 'mytheme_customizer_live_preview' );
+
 
 
 

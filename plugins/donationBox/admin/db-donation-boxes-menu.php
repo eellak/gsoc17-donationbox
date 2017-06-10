@@ -1,53 +1,5 @@
 <?php
 
-/* Add Organization Taxonomy. */
-function db_register_organization_taxonomy()
-{
-    
-    $plural = 'Organizations';
-    $singular = 'Organization';
-    
-    $labels = array(
-		'name'                          => $plural,
-		'singular_name'                 => $singular,
-		'search_items'                  => 'Search ' . $plural,
-		'all_items'                     => 'All ' . $plural,
-		'parent_item'                   => null,
-		'parent_item_colon'             => null,
-		'edit_item'                     => 'Edit ' . $singular,
-		'update_item'                   => 'Update ' . $singular,
-		'add_new_item'                  => 'Add New ' . $singular,
-		'new_item_name'                 => 'New ' . $singular . ' Name',
-        'separate_items_with_commas'    => 'Separate ' . $plural . ' with commas',
-		'add_or_remove_items'           => 'Add or remove ' . $plural,
-		'choose_from_most_used'         => 'Choose from the most used ' . $plural,
-		'not_found'                     => 'No ' . $plural . ' found.',
-		'menu_name'                     =>  $singular,
-                );
-    
-    $args = array(
-                'hierarchical'              => true,
-                'labels'                    => $labels,
-                'show_ui'                   => true,
-                'show_admin_column'         => true,
-                'update_count_callback'		=> '_update_post_term_count',
-                'query_var'                 => true,
-                'rewrite'                   => array( 'slug' => 'organizations' ),  
-                );
-    
-    
-    register_taxonomy('organization', 'donationboxes', $args);
-}
-
-
-add_action( 'init' , 'db_register_organization_taxonomy' );
-
-
-
-
-
-
-
 /* Create new submenu to add new Donation project - with register post type */
 function db_register_new_post_type()
 {
@@ -84,15 +36,16 @@ function db_register_new_post_type()
     
     $args = array(
 		'labels'             => $labels,
-        'description'        => __( 'Description.', 'your-plugin-textdomain' ),
+		'description'        => __( 'Description.', 'your-plugin-textdomain' ),
 		'public'             => true,
 		'publicly_queryable' => true,
 		'show_ui'            => true,
 		'show_in_menu'       => true,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'donationBoxes' ),
+//		'capability_type'    => 'project_creator',
 		'capabilities'       => array('post' , 'manage_categories'),
-        'map_meta_cap'       => true,
+		'map_meta_cap'       => true,
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_icon'          => 'dashicons-feedback',
@@ -108,6 +61,50 @@ add_action('init', 'db_register_new_post_type' );
 
 
 
+/* Add Organization Taxonomy. */
+function db_register_organization_taxonomy()
+{
+    
+    $plural = 'Organizations';
+    $singular = 'Organization';
+    
+    $labels = array(
+                'name'                          => $plural,
+		'singular_name'                 => $singular,
+		'search_items'                  => 'Search ' . $plural,
+		'all_items'                     => 'All ' . $plural,
+		'parent_item'                   => null,
+		'parent_item_colon'             => null,
+		'edit_item'                     => 'Edit ' . $singular,
+		'update_item'                   => 'Update ' . $singular,
+		'add_new_item'                  => 'Add New ' . $singular,
+		'new_item_name'                 => 'New ' . $singular . ' Name',
+		'separate_items_with_commas'    => 'Separate ' . $plural . ' with commas',
+		'add_or_remove_items'           => 'Add or remove ' . $plural,
+		'choose_from_most_used'         => 'Choose from the most used ' . $plural,
+		'not_found'                     => 'No ' . $plural . ' found.',
+		'menu_name'                     =>  $singular,
+                );
+    
+    $args = array(
+                'hierarchical'              => true,
+                'labels'                    => $labels,
+                'show_ui'                   => true,
+                'show_admin_column'         => true,
+                'update_count_callback'     => '_update_post_term_count',
+                'query_var'                 => true,
+                'rewrite'                   => array( 'slug' => 'organizations' ),  
+                );
+    
+    
+    register_taxonomy('organization', 'donationboxes', $args);
+}
+
+
+add_action( 'init' , 'db_register_organization_taxonomy' );
+
+
+
 
 
 
@@ -120,8 +117,8 @@ function db_add_custom_submenu()
         'Donation Boxes Settings',          // Page title.
         'General Settings',                 // The side bar Menu title.
         'administrator',                    // Capability.
-        'db-settings-menu',                 // Menu_slug.
-        'db_settings_page'                  // Function.
+        'db-settings-menu',                 // menu_slug.
+        'db_settings_page'                  // Callback Function.
         );  
 
 }
@@ -131,25 +128,24 @@ function db_settings_page()
     require_once( plugin_dir_path(__FILE__) . 'db-submenu-settings-page.php' );
 }
 
-/* WordPress Settings API. */
 
+
+/* Add settings using WordPress Settings API. */
 function display_options()
 {
     
     // For "General" submenu :
-
     add_settings_section(
             "general_section",                   /* The unique name of section. */
             "General Settings",                  /* The display name of section. */
-            "display_header_options_content",    /* Callback function. */
+            "display_header_options_content",    /* Function. */
             "db-settings-menu");                 /* Page to which section is attached. */
 
     
-
     add_settings_field(
             "database_url_field",        /* The unique setting ID name. */
             "Database Url",              /* The display name of field. */
-            "display_logo_form_element", /* Callback function. */
+            "display_logo_form_element", /* Callback Function. */
             "db-settings-menu",          /* Page in which field is displayed. */
             "general_section");          /* Section. */
 
@@ -166,8 +162,11 @@ function display_header_options_content()
 
 function display_logo_form_element()
 {
+
+    $database_URL = esc_url( get_option( 'database_url_field' ) ) ;
     ?>
-        <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." value="<?php echo get_option('database_url_field'); ?>" required="required" aria-describedby="tagline-description" />
+        
+        <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." value="<?php echo $database_URL ?>" required="required" aria-describedby="tagline-description" />
         <p id="tagline-description" class="description">The database should be there.</p>
     <?php
 }
@@ -177,75 +176,60 @@ add_action("admin_menu", "db_add_custom_submenu");
 add_action("admin_init", "display_options");
 
 
-/* Metaboxes. */
+/* Load metaboxes : */
+require_once( plugin_dir_path(__FILE__) . 'db-metaboxes.php' );
 
-function db_ps_callback()
+
+
+
+// Add more data to "All donation projects"  list.
+
+
+
+add_filter( 'manage_donationboxes_posts_columns' , 'db_set_donation_projects_list_collumns' );
+add_action( 'manage_donationboxes_posts_custom_column', 'db_donation_projects_custom_collum', 10, 2 );
+
+
+
+function db_set_donation_projects_list_collumns( $columns )
 {
-        ?>
-        Active     <input type="radio" name="db_project_state_field" id="db_project_state_field" />
-        <br />
-        Deactivate <input type="radio" name="db_project_state_field" id="db_project_state_field"  />
-    <?php
+    $newColumns = array();
+    
+    $newColumns["cb"] = '<input type="checkbox" />';
+    $newColumns["title"] = 'Title';
+    $newColumns["author"] = 'Author';
+    $newColumns["taxonomy-organization"] = 'Organization';
+    $newColumns['amount'] = 'Current<b>/</b>Target Amount';
+    $newColumns['status'] = 'Status';
+    $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
+    $newColumns["date"] = 'Date';
+
+    
+    return $newColumns;
 }
 
 
-function db_project_status_metabox()
+
+function db_donation_projects_custom_collum( $column , $post_id )
 {
-    add_meta_box(
-            'db_ps_status_metabox', // id
-            'Project Status',       // title 
-            'db_ps_callback',       // callback function
-            'donationboxes',        // page
-            'side'                  // position
-            );
+    
+    switch( $column )
+    {
+        case 'amount' :
+            $c_amount_value = get_post_meta($post_id, '_db_project_current_amount', true);
+            $t_amount_value = get_post_meta($post_id, '_db_project_target_amount' , true);
+            echo $c_amount_value . '<b>/</b>' . $t_amount_value;
+            break;
+        case 'status':
+            $status_value = get_post_meta($post_id, '_db_project_status',true);
+            echo $status_value == 1 ? 'Activate' : 'Deactivate';
+            break;
+    }
+    
 }
 
 
-add_action('add_meta_boxes' , 'db_project_status_metabox');
-
-/* -------------------------------------------------------- */
-
-function db_target_amount_callback()
-{
-    ?>
-        <input type="number" name="db_project_amount_field" id="db_project_amount_field" required="required" />
-    <?php
-}
 
 
-function db_project_target_amount_metabox()
-{
-    add_meta_box(
-            'db_amount_metabox',            // id
-            'Target amount',                // title 
-            'db_target_amount_callback',    // callback function
-            'donationboxes',                // page
-            'side'                          // position
-            );
-}
-
-add_action('add_meta_boxes' , 'db_project_target_amount_metabox');
-
-/* -------------------------------------------------------- */
-
-function db_style_callback()
-{
-    ?>
-        <input type="file" id="fileinput" accept="css/*.css" />
-    <?php
-}
 
 
-function db_project_style_metabox()
-{
-    add_meta_box(
-            'db_style_metabox',     // id
-            'Project Style',        // title 
-            'db_style_callback',    // callback function
-            'donationboxes',        // page
-            'normal',               // position
-            'high'
-            );
-}
-
-add_action('add_meta_boxes' , 'db_project_style_metabox');
