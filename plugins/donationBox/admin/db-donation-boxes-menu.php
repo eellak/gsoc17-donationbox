@@ -69,7 +69,7 @@ function db_register_organization_taxonomy()
     $singular = 'Organization';
     
     $labels = array(
-                'name'                          => $plural,
+		'name'                          => $plural,
 		'singular_name'                 => $singular,
 		'search_items'                  => 'Search ' . $plural,
 		'all_items'                     => 'All ' . $plural,
@@ -138,14 +138,14 @@ function display_options()
     add_settings_section(
             "general_section",                   /* The unique name of section. */
             "General Settings",                  /* The display name of section. */
-            "display_header_options_content",    /* Function. */
-            "db-settings-menu");                 /* Page to which section is attached. */
+            "display_header_options_content",    /* Section. */
+            "db-settings-menu");                 /* Page to which section is attached.*/
 
-    
+
     add_settings_field(
             "database_url_field",        /* The unique setting ID name. */
             "Database Url",              /* The display name of field. */
-            "display_logo_form_element", /* Callback Function. */
+            "display_logo_form_element", /* Callback Function.  */
             "db-settings-menu",          /* Page in which field is displayed. */
             "general_section");          /* Section. */
 
@@ -162,7 +162,7 @@ function display_header_options_content()
 
 function display_logo_form_element()
 {
-
+    // id and name of form element should be same as the setting name.
     $database_URL = esc_url( get_option( 'database_url_field' ) ) ;
     ?>
         
@@ -204,9 +204,10 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
 
-    
     return $newColumns;
 }
+
+
 
 
 
@@ -227,7 +228,6 @@ function db_donation_projects_custom_collum( $column , $post_id )
     }
     
 }
-
 
 
 

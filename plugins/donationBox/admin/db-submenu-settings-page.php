@@ -15,6 +15,6 @@
 
             submit_button();
 
-        ?>         
+        ?>
     </form>
 </div>

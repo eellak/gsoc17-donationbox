@@ -3,8 +3,10 @@
 /* Metaboxes. */
 
 // Bootstrap CSS :
-wp_enqueue_style('bootstrap-css', plugins_url( '/css/bootstrap.min.css' , __FILE__ ) , 11  );
+wp_enqueue_style('bootstrap-css', plugins_url( '/css/bootstrap.min.css' , __FILE__ ) , 11 );
+wp_enqueue_script('bootstrap-js', plugins_url( '/js/bootstrap.min.js', __FILE__ ) , 11 );
 
+wp_enqueue_script('myScripts-js', plugins_url( '/js/db-scripts.js', __FILE__ ) , 11 );
 
 
 
@@ -32,7 +34,7 @@ function db_project_status_metabox()
             'Project Status',               // Displayed metabox title.
             'db_project_status_callback',   // Callback function.
             'donationboxes',                // Page.
-            'side'                          // Position.
+            'side'                          // Pasition.
             );
 }
 
@@ -49,7 +51,7 @@ function db_project_target_amount_metabox()
 {
     add_meta_box(
             'db_amount_metabox',            // Unique id of metabox.
-            'Donation money',               // Displayed metabox title.
+            'Donation money',				// Displayed metabox title.
             'db_target_amount_callback',    // Callback function.
             'donationboxes',                // Page.
             'side',                         // Position.
@@ -105,7 +107,7 @@ add_action('post_edit_form_tag', 'update_edit_form');
 function update_edit_form()
 {
   echo 'enctype="multipart/form-data"';
-}
+} // end update_edit_form
 
 
 
@@ -113,38 +115,27 @@ function update_edit_form()
 function db_style_callback( $post )
 {
     wp_nonce_field( 'db_save_stylesheet_file', 'db_upload_stylesheet_file_meta_box_nonce');
-    $theFILE = get_post_meta( $post->ID , '_db_project_stylesheet_file', true );
+    $theFILE = get_post_meta( $post->ID , '_db_project_stylesheet_file', true ); // false διότι δεν είναι μια απλή τιμή
 
     
-    echo esc_url( admin_url('options.php') );
-    
-    $html = '<p class="description">';
+    $html = '<p id="current_css_file" class="description">';
     
     
     if ( count($theFILE) > 0  &&  is_array($theFILE) )
     {
         $html .= "Current stylesheet file URL : " . $theFILE[0]['url'];
-  
-        $html .=
-        '<form>'
-        . '<input type="hidden" name="action" value="wpse_79898">'
-        . '<button class="btn btn-danger btn-sm" name="remove_btn" id="remove_btn">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-              Remove
-            </button>
-        </form>';
-
+        $html .= '  <a href="#" title="Remove" id="rm_css" onClick="return false;"><span class="glyphicon glyphicon-remove text-danger" aria-hidden="true">   </span> </a>';
     }
     else
     {
         $html .= 'If you want, upload a stylesheet (css) file. <br>';
+        $html .= '<input id="db_project_file_field" title="select file" multiple="multiple" name="db_project_file_field[]" size="25" type="file" value="" />';  
+
     }
     
     $html .= '</p>';
     
     
-    $html .= '<input id="db_project_file_field" title="select file" multiple="multiple" name="db_project_file_field[]" size="25" type="file" value="" />';  
-// text/css
     echo $html; 
     
 }
@@ -157,12 +148,16 @@ function db_project_style_metabox()
             'Project Style',        // Displayed metabox title. 
             'db_style_callback',    // Callback function.
             'donationboxes',        // Page.
-            'normal',               // Position.
+            'normal',               // Pasition.
             'high'                  // Priority.
             );
 }
 
 add_action('add_meta_boxes' , 'db_project_style_metabox' , 1 );
+
+
+
+
 
 
 
@@ -179,8 +174,8 @@ add_action('save_post' , 'db_save_metaboxes_data');
 
 function db_save_metaboxes_data( $post_id )
 {
-    
-    /* For file security! */  
+    // For stylesheet file.
+  
     if( isset($_POST['db_upload_stylesheet_file_meta_box_nonce']) )
     {
         if( ! wp_verify_nonce( $_POST['db_upload_stylesheet_file_meta_box_nonce'], 'db_save_stylesheet_file' ) )
@@ -194,17 +189,14 @@ function db_save_metaboxes_data( $post_id )
         return $post_id;  
     }
     
-    
-    
-    
-    if  ( isset($_POST['post_type']) ) // Αυτός ελέγχει αν και το post, είναι τύπου post_type!! Ωραίος! ;)
+    if  ( isset($_POST['post_type']) )
     {
         
-        if( 'page' == $_POST['post_type'] ) // Και εδώ αν και το η σελίδα είναι η αναμενόμενη που θα έπρεπε να είναι!! 
+        if( 'page' == $_POST['post_type'] )
         {  
             if( !current_user_can('edit_page', $post_id) )
             {  
-               return $post_id;  
+                return $post_id;  
             }
         }
         else
@@ -216,7 +208,7 @@ function db_save_metaboxes_data( $post_id )
         }
         
     }
-
+ 
 
     
     
@@ -252,6 +244,17 @@ function db_save_metaboxes_data( $post_id )
     
     
     
+    
+    // For delete css file.
+    if (  isset( $_POST['remove_css'] ) )
+    {
+        $theFILE = get_post_meta( $post_id, '_db_project_stylesheet_file', true );
+        unlink( $theFILE[0]['file'] );
+        delete_post_meta($post_id, '_db_project_stylesheet_file');
+    }
+
+    
+    
     /* ---------------------------------------------------------------------- */
 
     
@@ -278,13 +281,13 @@ function db_save_metaboxes_data( $post_id )
         return;
     }
    
-
+    // Τέλος ελέγχο το ID από το field που θα πάρω τα δεδομένα.
     if ( ! isset( $_POST['db_project_state_field'] ) )
     {
         return;
     }
     
-
+    // Πλέον.. ΟΚ, ΑΝ έχει βάλει δεδομένα σε αυτό το field..
     if ( isset( $_POST['db_project_state_field'] ) )
     {
         $status_data = esc_attr( sanitize_text_field( $_POST['db_project_state_field'] ) ) ;
@@ -369,13 +372,11 @@ function db_save_metaboxes_data( $post_id )
         return;
     }
     
-
     if ( ! isset( $_POST['db_project_target_amount_field'] ) )
     {
         return;
     }
     
-
     if ( isset( $_POST['db_project_target_amount_field'] ) )
     {
         
@@ -390,6 +391,5 @@ function db_save_metaboxes_data( $post_id )
         
     }
 }
-
 
 
