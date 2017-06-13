@@ -1,21 +1,20 @@
 <?php
 
-/* Metaboxes. */
+/* Meta boxes. */
 
-// Bootstrap CSS :
+
 wp_enqueue_style('bootstrap-css', plugins_url( '/css/bootstrap.min.css' , __FILE__ ) , 11 );
 wp_enqueue_script('bootstrap-js', plugins_url( '/js/bootstrap.min.js', __FILE__ ) , 11 );
-
 wp_enqueue_script('myScripts-js', plugins_url( '/js/db-scripts.js', __FILE__ ) , 11 );
 
 
 
 
-/* Project status metaboxe. */
+/* Project status meta box. */
 function db_project_status_callback( $post )
 {
     wp_nonce_field( 'db_save_project_status', 'db_status_meta_box_nonce');    
-    $status_value = get_post_meta( $post->ID  , '_db_project_status',true);
+    $status_value = get_post_meta( $post->ID, '_db_project_status', true);
     
     ?>
         <label for=db_project_state_field_a"">Activate  </label>
@@ -26,7 +25,6 @@ function db_project_status_callback( $post )
     <?php
 }
 
-
 function db_project_status_metabox()
 {
     add_meta_box(
@@ -34,10 +32,9 @@ function db_project_status_metabox()
             'Project Status',               // Displayed metabox title.
             'db_project_status_callback',   // Callback function.
             'donationboxes',                // Page.
-            'side'                          // Pasition.
+            'side'                          // Position.
             );
 }
-
 
 add_action('add_meta_boxes' , 'db_project_status_metabox' , 1 );
 
@@ -45,24 +42,7 @@ add_action('add_meta_boxes' , 'db_project_status_metabox' , 1 );
 
 
 
-/* Target amount metaboxe. */
-
-function db_project_target_amount_metabox()
-{
-    add_meta_box(
-            'db_amount_metabox',            // Unique id of metabox.
-            'Donation money',				// Displayed metabox title.
-            'db_target_amount_callback',    // Callback function.
-            'donationboxes',                // Page.
-            'side',                         // Position.
-            'high'                          // Priority.
-
-            );
-}
-
-
-add_action('add_meta_boxes' , 'db_project_target_amount_metabox', 1 );
-
+/* Target amount meta box. */
 
 function db_target_amount_callback( $post )
 {
@@ -80,7 +60,6 @@ function db_target_amount_callback( $post )
                                 '_db_project_target_amount',    // unique id for database -- NEED to start with "_" -- 
                                 true);                          // single
     
-
     ?>
     <div class="form-field form-required" >
         <label for="db_project_current_amount_field">Current amount </label>
@@ -92,54 +71,63 @@ function db_target_amount_callback( $post )
     </div>
     <?php
     
-
 }
 
+function db_project_target_amount_metabox()
+{
+    add_meta_box(
+            'db_amount_metabox',            // Unique id of metabox.
+            'Donation money',               // Displayed metabox title.
+            'db_target_amount_callback',    // Callback function.
+            'donationboxes',                // Page.
+            'side',                         // Position.
+            'high'                          
+
+            );
+}
+
+add_action('add_meta_boxes' , 'db_project_target_amount_metabox', 1 );
 
 
 
 
 
-
-
+// update_edit_form  : Very important function for uploading a file.
 add_action('post_edit_form_tag', 'update_edit_form');
 
 function update_edit_form()
 {
   echo 'enctype="multipart/form-data"';
-} // end update_edit_form
-
-
+}
 
 /* Upload style sheet file metaboxe. */
 function db_style_callback( $post )
 {
     wp_nonce_field( 'db_save_stylesheet_file', 'db_upload_stylesheet_file_meta_box_nonce');
-    $theFILE = get_post_meta( $post->ID , '_db_project_stylesheet_file', true ); // false διότι δεν είναι μια απλή τιμή
-
+    $theFILE = get_post_meta( $post->ID , '_db_project_stylesheet_file', true );
     
-    $html = '<p id="current_css_file" class="description">';
-    
+    echo '<p id="current_css_file" class="description">';
     
     if ( count($theFILE) > 0  &&  is_array($theFILE) )
     {
-        $html .= "Current stylesheet file URL : " . $theFILE[0]['url'];
-        $html .= '  <a href="#" title="Remove" id="rm_css" onClick="return false;"><span class="glyphicon glyphicon-remove text-danger" aria-hidden="true">   </span> </a>';
+        ?>
+        Current stylesheet file URL : <?php echo $theFILE[0]['url'] ?>
+        <a href="#" title="Remove" id="rm_css" onClick="return false;"><span class="glyphicon glyphicon-remove text-danger" aria-hidden="true">   </span> </a>
+        <?php
     }
     else
     {
-        $html .= 'If you want, upload a stylesheet (css) file. <br>';
-        $html .= '<input id="db_project_file_field" title="select file" multiple="multiple" name="db_project_file_field[]" size="25" type="file" value="" />';  
-
+        ?>
+        If you want, upload a stylesheet (css) file.
+        <br>
+        <input id="db_project_file_field" title="select file" multiple="multiple" name="db_project_file_field[]" size="25" type="file" accept=".css" value="" />
+        <?php
     }
     
-    $html .= '</p>';
-    
-    
-    echo $html; 
-    
-}
+    echo '</p>';
+                            // Only for text/css!
 
+}
 
 function db_project_style_metabox()
 {
@@ -148,8 +136,8 @@ function db_project_style_metabox()
             'Project Style',        // Displayed metabox title. 
             'db_style_callback',    // Callback function.
             'donationboxes',        // Page.
-            'normal',               // Pasition.
-            'high'                  // Priority.
+            'normal',               // Position.
+            'high'
             );
 }
 
@@ -159,6 +147,33 @@ add_action('add_meta_boxes' , 'db_project_style_metabox' , 1 );
 
 
 
+function db_preview_callback()
+{
+    $preview_page = '/wp-content/plugins/donationBox/templates/template-portrait_mode.php';
+    $preview_page .= '?db_preview_id=' . get_the_ID();
+
+    ?>
+    <p>
+        <button type="submit" class="btn btn-primary" id="db_preview_button" onclick="window.open( '<?php echo $preview_page ?>' ,'popUpWindow','height=900,width=1600,left=10,top=10,,scrollbars=yes,menubar=no'); return false;">
+            <span class="glyphicon glyphicon-eye-open"></span> Donation Box Preview
+        </button>
+    </p>
+    <?php
+}
+
+function db_project_preview_metabox()
+{
+    add_meta_box(
+            'db_preview_metabox',   // Unique id of metabox.
+            'Project Preview',      // Displayed metabox title. 
+            'db_preview_callback',  // Callback function.
+            'donationboxes',        // Page.
+            'side',                 // Position.
+            'high'
+            );
+}
+
+add_action('add_meta_boxes' , 'db_project_preview_metabox' , 1 );
 
 
 
@@ -167,14 +182,49 @@ add_action('add_meta_boxes' , 'db_project_style_metabox' , 1 );
 
 
 
-// Save metaboxes data.
-
-add_action('save_post' , 'db_save_metaboxes_data');
-
+// Save meta boxes data.
 
 function db_save_metaboxes_data( $post_id )
 {
-    // For stylesheet file.
+    // Global basic validations.
+
+    // If it's autosave, DON'T save anything!
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
+    {
+        return;
+    }
+    
+    // User can edit post ?
+    if ( ! current_user_can('edit_post' , $post_id ) )
+    {
+        return;
+    }
+
+    if  ( isset($_POST['post_type']) )
+    {
+        
+        if( $_POST['post_type'] == 'donationboxes' )
+        {  
+            if( ! current_user_can('edit_page', $post_id) )
+            {  
+                return;
+            }
+        }
+        else
+        {
+            $message  = 'You must so becurefull with your next steps, because you haven\'t access to this page. Our eyes are upon you!';
+            $message .= '<br>My friend <b>';
+            $message .= get_user_ip();
+            $message .= '</b> :) <br>';
+            $message .= $_SERVER['HTTP_USER_AGENT'];
+            wp_die( $message , "You haven't access.");
+            return;
+        }
+        
+    }
+    
+    
+    // Validations for stylesheet file.
   
     if( isset($_POST['db_upload_stylesheet_file_meta_box_nonce']) )
     {
@@ -182,36 +232,9 @@ function db_save_metaboxes_data( $post_id )
         {
             return $post_id;  
         }
+     
     }
-    
-    if( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) 
-    {  
-        return $post_id;  
-    }
-    
-    if  ( isset($_POST['post_type']) )
-    {
-        
-        if( 'page' == $_POST['post_type'] )
-        {  
-            if( !current_user_can('edit_page', $post_id) )
-            {  
-                return $post_id;  
-            }
-        }
-        else
-        {  
-            if ( !current_user_can('edit_page', $post_id) )
-            {  
-                return $post_id;  
-            } 
-        }
-        
-    }
- 
 
-    
-    
     // For upload file code :
     
     // Make sure the file array isn't empty  
@@ -242,21 +265,14 @@ function db_save_metaboxes_data( $post_id )
     }     
     
     
-    
-    
-    
-    // For delete css file.
+    // For delete css file. Maybe we want more validations here..
     if (  isset( $_POST['remove_css'] ) )
     {
         $theFILE = get_post_meta( $post_id, '_db_project_stylesheet_file', true );
         unlink( $theFILE[0]['file'] );
         delete_post_meta($post_id, '_db_project_stylesheet_file');
     }
-
     
-    
-    /* ---------------------------------------------------------------------- */
-
     
     // For status:
     if ( ! isset( $_POST['db_status_meta_box_nonce'] ) )
@@ -264,40 +280,27 @@ function db_save_metaboxes_data( $post_id )
         return;
     }
     
-    if ( !wp_verify_nonce( $_POST['db_status_meta_box_nonce'] , 'db_save_project_status' ) )
+    if ( !wp_verify_nonce( $_POST['db_status_meta_box_nonce'], 'db_save_project_status' ) )
     {
         return;
     }
     
-    // If it's autosave, DON'T save anything!
-    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
-    {
-        return;
-    }
-    
-    // User can edit post ?
-    if ( ! current_user_can('edit_post' , $post_id ) )
-    {
-        return;
-    }
-   
-    // Τέλος ελέγχο το ID από το field που θα πάρω τα δεδομένα.
     if ( ! isset( $_POST['db_project_state_field'] ) )
     {
         return;
     }
     
-    // Πλέον.. ΟΚ, ΑΝ έχει βάλει δεδομένα σε αυτό το field..
     if ( isset( $_POST['db_project_state_field'] ) )
     {
         $status_data = esc_attr( sanitize_text_field( $_POST['db_project_state_field'] ) ) ;
-        echo 'eeeee--> ' . $status_data;
         $status_data_int = 0;
+        
         if ( strcmp($status_data, 'activate') == 0 )
         {
             $status_data_int =  1;
         }
-        if ( strcmp($status_data, 'deactivate') == 0 )
+        
+        else if ( strcmp($status_data, 'deactivate') == 0 )
         {
             $status_data_int = 0;
         }
@@ -305,7 +308,6 @@ function db_save_metaboxes_data( $post_id )
         update_post_meta( $post_id, '_db_project_status', $status_data_int );
     }
     
-    /* ---------------------------------------------------------------------- */
     
     // For current amount :
     if ( ! isset( $_POST['db_current_amount_meta_box_nonce'] ) )
@@ -317,39 +319,21 @@ function db_save_metaboxes_data( $post_id )
     {
         return;
     }
-    
-    // If it's autosave, DON'T save anything!
-    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
-    {
-        return;
-    }
-    
-    // User can edit post ?
-    if ( ! current_user_can('edit_post' , $post_id ) )
-    {
-        return;
-    }
-    
 
     if ( ! isset( $_POST['db_project_current_amount_field'] ) )
     {
         return;
     }
     
-
     if ( isset( $_POST['db_project_current_amount_field'] ) )
     {
         $current_amount_data = esc_attr( sanitize_text_field( $_POST['db_project_current_amount_field'] ) ) ;
         settype($current_amount_data, 'integer');
         update_post_meta( $post_id, '_db_project_current_amount', $current_amount_data );
     }
-    
-    
-    /* ----------------------------------------------------------------------*/
-    
+
     
     // For target amount : 
-
     if ( ! isset( $_POST['db_target_amount_meta_box_nonce'] ) )
     {
         return;
@@ -359,19 +343,7 @@ function db_save_metaboxes_data( $post_id )
     {
         return;
     }
-    
-    // If it's autosave, DON'T save anything!
-    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
-    {
-        return;
-    }
-    
-    // User can edit post ?
-    if ( ! current_user_can('edit_post' , $post_id ) )
-    {
-        return;
-    }
-    
+
     if ( ! isset( $_POST['db_project_target_amount_field'] ) )
     {
         return;
@@ -385,11 +357,53 @@ function db_save_metaboxes_data( $post_id )
         update_post_meta(
                 $post_id,                       // post_id
                 '_db_project_target_amount',    // meta_key
-                $target_amount_data             // meta_value που θέλω να αποθηκεύσω
+                $target_amount_data             // meta_value
                 );
-        
-        
     }
+       
+}
+
+add_action('save_post' , 'db_save_metaboxes_data');
+
+
+
+
+
+
+
+
+// Create me own admin notice for fail save post!
+function sample_admin_notice__error()
+{
+    $class = 'notice notice-error is-dismissible';
+    $message = __( 'Failed saving/updating.', 'sample-text-domain' );
+
+    printf( '<div class="%1$s"><p><b>Failed!</b> %2$s <br> Be careful, your next steps are recorded for security reasons!</p></div>', esc_attr( $class ), esc_html( $message ) ); 
+
+}
+//add_action( 'admin_notices', 'sample_admin_notice__error' );
+
+
+
+
+
+function get_user_ip()
+{
+    if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) )
+    {
+        //check ip from share internet
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    }
+    elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) 
+    {
+        //to check ip is pass from proxy
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    else
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    return $ip;
 }
 
 

@@ -58,11 +58,11 @@ function db_create_role_for_users()
         'delete_published_posts'    => true,
         'publish_posts'             => true,
         'upload_files'              => true,
-        'manage_categories'         => true, 
+        'manage_categories'         => true,
     );
-    
+
     add_role('project_creator', 'Project Creator', $capabilities);
-    
+
 }
 
 
@@ -74,7 +74,7 @@ function db_delete_role_for_users()
 }
 
 
-//register_unistall_hook() : 
+//register_unistall_hook() :
 
 
 
@@ -83,7 +83,7 @@ function db_delete_role_for_users()
 function db_show_plugin_menu()
 {
     $current_user = wp_get_current_user();
-    
+
     if( ( $current_user->has_cap('administrator') ) || ( $current_user->has_cap('project_creator') ) )
     {
         require_once( plugin_dir_path(__FILE__) . 'admin/db-donation-boxes-menu.php' );
@@ -100,7 +100,7 @@ add_action('plugins_loaded', 'db_show_plugin_menu');
 // If in preview mode.
 function mytheme_customizer_live_preview( $content )
 {
- 
+
     $preview = get_query_var('preview');
     if (  ( ! is_home() ) && $preview )
     {
@@ -111,16 +111,8 @@ function mytheme_customizer_live_preview( $content )
     }
 
     return $content;
-    
-    
+
+
 }
 
 add_filter( 'the_content', 'mytheme_customizer_live_preview' );
-
-
-
-
-
-
-
-

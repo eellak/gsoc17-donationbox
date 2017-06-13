@@ -139,13 +139,12 @@ function display_options()
             "general_section",                   /* The unique name of section. */
             "General Settings",                  /* The display name of section. */
             "display_header_options_content",    /* Section. */
-            "db-settings-menu");                 /* Page to which section is attached.*/
-
+            "db-settings-menu");                 /* Page to which section is attached. */
 
     add_settings_field(
             "database_url_field",        /* The unique setting ID name. */
             "Database Url",              /* The display name of field. */
-            "display_logo_form_element", /* Callback Function.  */
+            "display_logo_form_element", /* Callback Function. */
             "db-settings-menu",          /* Page in which field is displayed. */
             "general_section");          /* Section. */
 
@@ -186,6 +185,7 @@ require_once( plugin_dir_path(__FILE__) . 'db-metaboxes.php' );
 
 
 
+//add_filter( 'manage_yourcustomposttype_posts_columns' );
 add_filter( 'manage_donationboxes_posts_columns' , 'db_set_donation_projects_list_collumns' );
 add_action( 'manage_donationboxes_posts_custom_column', 'db_donation_projects_custom_collum', 10, 2 );
 
@@ -208,9 +208,7 @@ function db_set_donation_projects_list_collumns( $columns )
 }
 
 
-
-
-
+// Αυτή η μέθοδος είναι μια loop για κάθε γραμμή.
 function db_donation_projects_custom_collum( $column , $post_id )
 {
     
@@ -228,7 +226,6 @@ function db_donation_projects_custom_collum( $column , $post_id )
     }
     
 }
-
 
 
 
