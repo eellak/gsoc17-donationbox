@@ -97,22 +97,4 @@ add_action('plugins_loaded', 'db_show_plugin_menu');
 
 
 
-// If in preview mode.
-function mytheme_customizer_live_preview( $content )
-{
 
-    $preview = get_query_var('preview');
-    if (  ( ! is_home() ) && $preview )
-    {
-        wp_enqueue_style( 'db_previe_style', plugins_url( 'admin/CSS/db-preview.css' , __FILE__ ) , 11 );
-
-        $content .= '<br><br>';
-        return $content . 'Preview : ' . $preview ;
-    }
-
-    return $content;
-
-
-}
-
-add_filter( 'the_content', 'mytheme_customizer_live_preview' );

@@ -31,8 +31,8 @@ function db_project_status_metabox()
             'db_project_status_metabox',    // Unique id of metabox.
             'Project Status',               // Displayed metabox title.
             'db_project_status_callback',   // Callback function.
-            'donationboxes',                // Page.
-            'side'                          // Position.
+            'donationboxes',                // On which page it will appear.
+            'side'                          // In which position.
             );
 }
 
@@ -58,7 +58,7 @@ function db_target_amount_callback( $post )
     $target_amount_value = get_post_meta(
                                 $post->ID,                      // post id
                                 '_db_project_target_amount',    // unique id for database -- NEED to start with "_" -- 
-                                true);                          // single
+                                true);                          // single value
     
     ?>
     <div class="form-field form-required" >
@@ -79,9 +79,9 @@ function db_project_target_amount_metabox()
             'db_amount_metabox',            // Unique id of metabox.
             'Donation money',               // Displayed metabox title.
             'db_target_amount_callback',    // Callback function.
-            'donationboxes',                // Page.
-            'side',                         // Position.
-            'high'                          
+            'donationboxes',                // On which page it will appear.
+            'side',                         // In which position.
+            'high'                          // Priority.
 
             );
 }
@@ -135,9 +135,9 @@ function db_project_style_metabox()
             'db_style_metabox',     // Unique id of metabox.
             'Project Style',        // Displayed metabox title. 
             'db_style_callback',    // Callback function.
-            'donationboxes',        // Page.
-            'normal',               // Position.
-            'high'
+            'donationboxes',        // On which page it will appear.
+            'normal',               // In which position.
+            'high'                  // Priority.
             );
 }
 
@@ -152,9 +152,12 @@ function db_preview_callback()
     $preview_page = '/wp-content/plugins/donationBox/templates/template-portrait_mode.php';
     $preview_page .= '?db_preview_id=' . get_the_ID();
 
+    $category_detail = get_the_category( get_the_ID() ); 
+
+    
     ?>
     <p>
-        <button type="submit" class="btn btn-primary" id="db_preview_button" onclick="window.open( '<?php echo $preview_page ?>' ,'popUpWindow','height=900,width=1600,left=10,top=10,,scrollbars=yes,menubar=no'); return false;">
+        <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
             <span class="glyphicon glyphicon-eye-open"></span> Donation Box Preview
         </button>
     </p>
@@ -167,9 +170,9 @@ function db_project_preview_metabox()
             'db_preview_metabox',   // Unique id of metabox.
             'Project Preview',      // Displayed metabox title. 
             'db_preview_callback',  // Callback function.
-            'donationboxes',        // Page.
-            'side',                 // Position.
-            'high'
+            'donationboxes',        // On which page it will appear.
+            'side',                 // In which position.
+            'high'                  // Priority.
             );
 }
 
@@ -180,12 +183,14 @@ add_action('add_meta_boxes' , 'db_project_preview_metabox' , 1 );
 
 
 
-
+$error = false;
 
 // Save meta boxes data.
 
 function db_save_metaboxes_data( $post_id )
 {
+    global $error;
+    
     // Global basic validations.
 
     // If it's autosave, DON'T save anything!
@@ -195,33 +200,33 @@ function db_save_metaboxes_data( $post_id )
     }
     
     // User can edit post ?
-    if ( ! current_user_can('edit_post' , $post_id ) )
-    {
-        return;
-    }
-
-    if  ( isset($_POST['post_type']) )
-    {
-        
-        if( $_POST['post_type'] == 'donationboxes' )
-        {  
-            if( ! current_user_can('edit_page', $post_id) )
-            {  
-                return;
-            }
-        }
-        else
-        {
-            $message  = 'You must so becurefull with your next steps, because you haven\'t access to this page. Our eyes are upon you!';
-            $message .= '<br>My friend <b>';
-            $message .= get_user_ip();
-            $message .= '</b> :) <br>';
-            $message .= $_SERVER['HTTP_USER_AGENT'];
-            wp_die( $message , "You haven't access.");
-            return;
-        }
-        
-    }
+//    if ( ! current_user_can('edit_post' , $post_id ) )
+//    {
+//        return;
+//    }
+//
+//    if  ( isset($_POST['post_type']) )
+//    {
+//        
+//        if( $_POST['post_type'] == 'donationboxes' ) // Αν προέρχεται από την σελίδα 'donationboxes'
+//        {  
+//            if( ! current_user_can('edit_page', $post_id) )
+//            {  
+//                return;
+//            }
+//        }
+//        else // Αν δε προέρχεται από την σελίδα 'donationboxes'
+//        {
+//            $error = true;
+////            $message  = 'You must so becurefull with your next steps, because you haven\'t access to this page. Our eyes are upon you!';
+////            $message .= '<br>My friend <b>';
+////            $message .= get_user_ip();
+////            $message .= '</b> :) <br>';
+////            $message .= $_SERVER['HTTP_USER_AGENT'];
+////            wp_die( $message , "You haven't access.");
+//            return;
+//        }  
+//    }
     
     
     // Validations for stylesheet file.
@@ -357,7 +362,7 @@ function db_save_metaboxes_data( $post_id )
         update_post_meta(
                 $post_id,                       // post_id
                 '_db_project_target_amount',    // meta_key
-                $target_amount_data             // meta_value
+                $target_amount_data             // meta_value που θέλω να αποθηκεύσω
                 );
     }
        
@@ -369,19 +374,36 @@ add_action('save_post' , 'db_save_metaboxes_data');
 
 
 
+add_filter( 'redirect_post_location', function( $location, $post_id ) 
+{
+    global $error;
+
+    if ( $error ) //add 11 as code message
+    {
+        $location = add_query_arg( 'message', 11, get_edit_post_link( $post_id, 'url' ) );
+    }
+
+
+    return $location;
+}, 10, 2 );
+
+
 
 
 
 // Create me own admin notice for fail save post!
 function sample_admin_notice__error()
 {
+    if ( $_GET['message'] == 11 )
+    {
     $class = 'notice notice-error is-dismissible';
     $message = __( 'Failed saving/updating.', 'sample-text-domain' );
 
-    printf( '<div class="%1$s"><p><b>Failed!</b> %2$s <br> Be careful, your next steps are recorded for security reasons!</p></div>', esc_attr( $class ), esc_html( $message ) ); 
+    printf( '<div class="%1$s"><p><b>Failed!</b> %2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
+    }
 
 }
-//add_action( 'admin_notices', 'sample_admin_notice__error' );
+add_action( 'admin_notices', 'sample_admin_notice__error' );
 
 
 
@@ -391,12 +413,10 @@ function get_user_ip()
 {
     if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) )
     {
-        //check ip from share internet
         $ip = $_SERVER['HTTP_CLIENT_IP'];
     }
     elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) 
     {
-        //to check ip is pass from proxy
         $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
     }
     else
@@ -405,5 +425,6 @@ function get_user_ip()
     }
     return $ip;
 }
+
 
 

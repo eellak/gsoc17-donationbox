@@ -8,12 +8,13 @@
     
     <form method="post" action="options.php">
         <?php
-            settings_fields("general_section"); // τα δεδομένα ποιανού section να εμφανίσει.
+            settings_fields("general_section");
 
-            do_settings_sections("db-settings-menu"); 
+            do_settings_sections("db-settings-menu");
 
             submit_button();
-
-        ?>         
+        ?>
     </form>
 </div>
+
+
