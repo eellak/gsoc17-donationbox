@@ -21,13 +21,43 @@ function()
 //                                            );
 
 
-//    jQuery('#db_preview_button').click(function (e)
-//    {
-//        window.open('/wp-content/plugins/donationBox/templates/template-portrait_mode.php',
-//                                            'popUpWindow','height=900,width=1600,left=10,top=10,,scrollbars=yes,menubar=no');
+    jQuery('#db_preview_button').click( function (e)
+    {
+        var post_id = jQuery('#db_preview_button').attr('name');
+        var status = jQuery('#db_project_state_field_a').attr('checked');
+        var current_amount = jQuery('#db_project_current_amount_field').val();
+        var target_amount = jQuery('#db_project_target_amount_field').val();
+
+
+        if ( status === 'checked')
+            status = 'Activate';
+        else 
+            status = 'Deactivate';
+
+        
+
+        var url = '/wp-content/plugins/donationBox/templates/template-portrait_mode.php?db_preview_id=';
+        url += post_id;
+        url += '&status=' + status;
+        url += '&c_amount=' + current_amount;
+        url += '&t_amount=' + target_amount;
+        
+        window.open( url ,
+                    'popUpWindow',
+                    'height=900,width=1600,left=10,top=10,,scrollbars=yes,menubar=no');
+
+
+        e.preventDefault();
+        return false;
+    });
+
+//jQuery('#db_preview_button').onclick( val, function(e){
+//        
+//                alert("hello ", val);
 //        e.preventDefault();
 //        return false;
-//    });
+//}
+//        );
 
 //    jQuery('#db_preview_button').onclick(
 //            function (e)
@@ -42,3 +72,9 @@ function()
 
 }
 );
+
+
+//function clicked(value)
+//{
+//    alert(value);
+//}

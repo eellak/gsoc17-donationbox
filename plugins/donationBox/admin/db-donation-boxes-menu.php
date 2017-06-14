@@ -116,9 +116,9 @@ function db_add_custom_submenu()
         'edit.php?post_type=donationboxes', // Parrent menu Slug.
         'Donation Boxes Settings',          // Page title.
         'General Settings',                 // The side bar Menu title.
-        'administrator',                    // Capability.
-        'db-settings-menu',                 // menu_slug.
-        'db_settings_page'                  // Callback Function.
+        'administrator',                    // Capability.  project_creator   <---------- Εδώ θα μπορούσα αυτό να μη το βάλω για τους απλύς χρήστες!!!!!
+        'db-settings-menu',                 // menu_slug - Επειδή βάζω το ίδιο με το κυρίως μενού μου, για αυτό θα εμφανίσει αμέσω σαν επιλεγμένο αυτό το submenu. Είναι λες και είναι το ίδιο.
+        'db_settings_page'                  // Callback Function. - Επίσης βάζω την ίδια συνάρτηση. Για να εμφανίσει ένα πράγματα.
         );  
 
 }
@@ -135,18 +135,21 @@ function display_options()
 {
     
     // For "General" submenu :
+    /* Δημιουργία πρώτα ενώς section - μια περιοχής - κατηγορίας - ενότητας - τμήματος, όπως γουστάρεις πες το. :) */
     add_settings_section(
-            "general_section",                   /* The unique name of section. */
-            "General Settings",                  /* The display name of section. */
-            "display_header_options_content",    /* Section. */
-            "db-settings-menu");                 /* Page to which section is attached. */
+            "general_section",                   /* The unique name of section. <-- Με αυτό το όνομα θα αναφέρομαι πλέον στο section αυτό! */
+            "General Settings",                  /* The display name of section. όπου θα φαίνεται στη σελίδα! */
+            "display_header_options_content",    /* Μια συνάρτηση που ίσος εμφανίζει ή κάνει κάτι για αυτό το section. */
+            "db-settings-menu");                 /* Σε ποια σελίδα να εμφανιστεί - θα επισυναπτεί ( Page to which section is attached. ) την ορίζουμε από το unique identifier του μενού - σελίδας που έχουμε κάνει προολίγου */
 
+    
+    /* Εφόσον δημιουργήσαμε την περιοχή όπου θα βάλουμε μέσα πράγματα. Τώρα πάμε να δημιουργήσουμε τα πράγματα αυτά. */
     add_settings_field(
-            "database_url_field",        /* The unique setting ID name. */
-            "Database Url",              /* The display name of field. */
-            "display_logo_form_element", /* Callback Function. */
-            "db-settings-menu",          /* Page in which field is displayed. */
-            "general_section");          /* Section. */
+            "database_url_field",        /* The unique setting ID name. <--- με αυτό το όνομα θα αναφέρομαι πλέον στο πεδίο αυτό. */
+            "Database Url",              /* The display name of field. όπου θα φαίνεται στη σελίδα! */
+            "display_logo_form_element", /* Callback Function. Μία συνάρτηση που : Σε αυτή θα γράψω τον κώδικα όπου θα εμφανίζεται  */
+            "db-settings-menu",          /* Σε ποια σελίδα θα εμφανιστεί - Page in which field is displayed. -, την ορίζω με το όνομα unique identifier της */
+            "general_section");          /* Και σε ποιο section της σελίδας θα μπει! Βάζω το unique name του. */
 
 
     register_setting("general_section", "database_url_field");
@@ -204,6 +207,11 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
 
+// Βρήκα τις τρέχουσες τιμές που είχεο πίνακας $columns με τον παρακάτω τρόπο κοιτώντας στον κώδικα της σελίδας : 
+//    echo '<br> <br> -------------------- <br> <br>';
+//    var_dump( $columns );
+//    echo '<br> <br> -------------------- <br> <br>';
+    
     return $newColumns;
 }
 
