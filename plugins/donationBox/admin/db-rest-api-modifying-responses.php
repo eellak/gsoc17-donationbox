@@ -21,18 +21,14 @@
 // Project status :
 function db_add_rest_status()
 {
-    //  σε ποια σελίδα ας το πω (post_type) , τι όνομα θα έχει αυτό το παιδίο - unique!! ,  τι θα κάνει
     register_rest_field( 'donationboxes', 'project_status', array(
-        
-        'get_callback' => 'get_status',
-                
-        'update_callback' => null,
 
+        'get_callback' => 'get_status',       
+        'update_callback' => null,
         'schema' => null,
                 
     ) );
 
-    // Προσοχή να παίρνει το "$post", ως παράμετρο!! :)
     function get_status( $post )
     {
         return get_post_meta( $post['id'], '_db_project_status',true) == 1 ? 'Activate' : 'Deactivate';
@@ -89,6 +85,7 @@ function db_add_rest_target_amount()
 }
 
 add_action( 'rest_api_init', 'db_add_rest_target_amount' );
+
 
 
 
