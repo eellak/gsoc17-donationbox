@@ -228,3 +228,48 @@ function db_donation_projects_custom_collum( $column , $post_id )
 
 
 
+
+/*
+ * > For REST API.
+ * 
+ * Add REST API support to an already registered post type.
+ */
+
+
+add_action( 'init', 'my_custom_post_type_rest_support', 25 );
+
+function my_custom_post_type_rest_support()
+{
+    global $wp_post_types;
+
+    $post_type_name = 'donationboxes';
+    
+    if( isset( $wp_post_types[ $post_type_name ] ) )
+    {
+        $wp_post_types[$post_type_name]->show_in_rest = true;
+        $wp_post_types[$post_type_name]->rest_base = $post_type_name;
+    }
+}
+
+
+/*
+ * Add REST API support to an already registered taxonomy.
+ */
+add_action( 'init', 'my_custom_taxonomy_rest_support', 25 );
+
+function my_custom_taxonomy_rest_support()
+{
+    global $wp_taxonomies;
+
+    $taxonomy_name = 'organization';
+
+    if ( isset( $wp_taxonomies[ $taxonomy_name ] ) ) 
+    {
+        $wp_taxonomies[ $taxonomy_name ]->show_in_rest = true;
+        $wp_taxonomies[ $taxonomy_name ]->rest_base = $taxonomy_name;
+    }
+}
+
+// Modifying built-in REST API responses.
+require_once( plugin_dir_path(__FILE__) . 'db-rest-api-modifying-responses.php' );
+
