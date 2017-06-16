@@ -5,12 +5,12 @@ _Last update: 19 - 05 - 2017_
 
 * May 5 - 19 [ Identifying, understanding and integration in the existing system. ]
 * May 20 - 21 [ Installation of infrastructure & start design Wordrees Plugin. ]
-* ##### May 22 - 26 [ Analysis & design Wordpress Plugin ]
+* May 22 - 26 [ Analysis & design Wordpress Plugin ]
 
 * May 27 [ Implementation of Wordpress Plugin ]
 * May 27 - 31 [ Implementation form ]
 * June 1 - 10 [  Implementation preview of publish ]
-* June 10  - 25 [ Implementation administrator settings ]
+* ##### June 10  - 25 [ Implementation administrator settings ]
 * June 26 - 27 [ Plugin Testing ]
 * June 28 - 30 [ Documentation for Wordpress Plugin ]
 
