@@ -3,18 +3,6 @@
 /* Create new submenu to add new Donation project - with register post type */
 function db_register_new_post_type()
 {
-    $capabilities = array(
-        'read'                      => true,
-        'edit_posts'                => true,
-        'edit_others_posts'         => true,
-        'edit_private_posts'        => true,
-        'edit_published_posts'      => true,
-        'delete_posts'              => true,
-        'delete_others_posts'       => true,
-        'delete_published_posts'    => true,
-        'publish_posts'             => true,
-        'upload_files'              => true,
-                    );
 
     $labels = array(
 		'name'               => _x( 'DonationBoxes', 'post type general name', 'your-plugin-textdomain' ),
@@ -43,8 +31,9 @@ function db_register_new_post_type()
 		'show_in_menu'       => true,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'donationBoxes' ),
-//		'capability_type'    => 'project_creator',
-		'capabilities'       => array('post' , 'manage_categories'),
+//		'capability_type'    => 'db',
+//		'capabilities'       => $capabilities,
+		'capability'         => 'project_creator',
 		'map_meta_cap'       => true,
 		'has_archive'        => true,
 		'hierarchical'       => false,
@@ -52,6 +41,9 @@ function db_register_new_post_type()
 		'menu_position'      => 26,
 		'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions' ),
 		'taxonomies'         => array( 'organization' ),
+		'show_in_rest'       => true,
+		'rest_base'          => 'donationboxes',
+		'rest_controller_class' => 'WP_REST_Posts_Controller',
                 );
     
     register_post_type('donationboxes', $args);
@@ -93,7 +85,10 @@ function db_register_organization_taxonomy()
                 'show_admin_column'         => true,
                 'update_count_callback'     => '_update_post_term_count',
                 'query_var'                 => true,
-                'rewrite'                   => array( 'slug' => 'organizations' ),  
+                'rewrite'                   => array( 'slug' => 'organizations' ),
+                'show_in_rest'              => true,
+                'rest_base'                 => 'organization',
+                'rest_controller_class'     => 'WP_REST_Terms_Controller',
                 );
     
     
@@ -138,14 +133,14 @@ function display_options()
     add_settings_section(
             "general_section",                   /* The unique name of section. */
             "General Settings",                  /* The display name of section. */
-            "display_header_options_content",    /* Callback function. */
+            "display_header_options_content",    /* Callback Function. */
             "db-settings-menu");                 /* Page to which section is attached. */
 
-    
+
     add_settings_field(
             "database_url_field",        /* The unique setting ID name. */
             "Database Url",              /* The display name of field. */
-            "display_logo_form_element", /* Callback Function.  */
+            "display_logo_form_element", /* Callback Function. */
             "db-settings-menu",          /* Page in which field is displayed. */
             "general_section");          /* Section. */
 
@@ -181,8 +176,10 @@ require_once( plugin_dir_path(__FILE__) . 'db-metaboxes.php' );
 
 
 
+// Add more data to "All donation projects" table-list.
 
-// Add more data to "All donation projects"  list.
+
+
 
 add_filter( 'manage_donationboxes_posts_columns' , 'db_set_donation_projects_list_collumns' );
 add_action( 'manage_donationboxes_posts_custom_column', 'db_donation_projects_custom_collum', 10, 2 );
@@ -201,10 +198,10 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns['status'] = 'Status';
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
+
     
     return $newColumns;
 }
-
 
 
 function db_donation_projects_custom_collum( $column , $post_id )
@@ -248,11 +245,12 @@ function my_custom_post_type_rest_support()
     {
         $wp_post_types[$post_type_name]->show_in_rest = true;
         $wp_post_types[$post_type_name]->rest_base = $post_type_name;
+        $wp_post_types[$post_type_name]->rest_controller_class = 'WP_REST_Posts_Controller';
     }
 }
 
 
-/*
+/**
  * Add REST API support to an already registered taxonomy.
  */
 add_action( 'init', 'my_custom_taxonomy_rest_support', 25 );
@@ -267,9 +265,11 @@ function my_custom_taxonomy_rest_support()
     {
         $wp_taxonomies[ $taxonomy_name ]->show_in_rest = true;
         $wp_taxonomies[ $taxonomy_name ]->rest_base = $taxonomy_name;
+        $wp_taxonomies[ $taxonomy_name ]->rest_controller_class = 'WP_REST_Terms_Controller';
     }
 }
 
 // Modifying built-in REST API responses.
 require_once( plugin_dir_path(__FILE__) . 'db-rest-api-modifying-responses.php' );
+
 

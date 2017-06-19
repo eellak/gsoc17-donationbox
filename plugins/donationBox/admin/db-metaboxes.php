@@ -58,7 +58,7 @@ function db_target_amount_callback( $post )
     $target_amount_value = get_post_meta(
                                 $post->ID,                      // post id
                                 '_db_project_target_amount',    // unique id for database -- NEED to start with "_" -- 
-                                true);                          // single value
+                                true);                          // single variable
     
     ?>
     <div class="form-field form-required" >
@@ -79,7 +79,7 @@ function db_project_target_amount_metabox()
             'db_amount_metabox',            // Unique id of metabox.
             'Donation money',               // Displayed metabox title.
             'db_target_amount_callback',    // Callback function.
-            'donationboxes',                // On which page it will appear.
+            'donationboxes',                // On which page it will appear. 
             'side',                         // In which position.
             'high'                          // Priority.
 
@@ -105,9 +105,9 @@ function db_style_callback( $post )
 {
     wp_nonce_field( 'db_save_stylesheet_file', 'db_upload_stylesheet_file_meta_box_nonce');
     $theFILE = get_post_meta( $post->ID , '_db_project_stylesheet_file', true );
-    
+
     echo '<p id="current_css_file" class="description">';
-    
+
     if ( count($theFILE) > 0  &&  is_array($theFILE) )
     {
         ?>
@@ -123,7 +123,7 @@ function db_style_callback( $post )
         <input id="db_project_file_field" title="select file" multiple="multiple" name="db_project_file_field[]" size="25" type="file" accept=".css" value="" />
         <?php
     }
-    
+
     echo '</p>';
                             // Only for text/css!
 
@@ -131,14 +131,17 @@ function db_style_callback( $post )
 
 function db_project_style_metabox()
 {
-    add_meta_box(
-            'db_style_metabox',     // Unique id of metabox.
-            'Project Style',        // Displayed metabox title. 
-            'db_style_callback',    // Callback function.
-            'donationboxes',        // On which page it will appear.
-            'normal',               // In which position.
-            'high'                  // Priority.
-            );
+    if ( current_user_can('upload_files') ) // Only for users who can upload files - Essentially only the administrator -
+    {
+        add_meta_box(
+                'db_style_metabox',     // Unique id of metabox.
+                'Project Style',        // Displayed metabox title. 
+                'db_style_callback',    // Callback function.
+                'donationboxes',        // On which page it will appear.
+                'normal',               // In which position.
+                'high'                  // Priority.
+                );
+    }
 }
 
 add_action('add_meta_boxes' , 'db_project_style_metabox' , 1 );
@@ -198,39 +201,9 @@ function db_save_metaboxes_data( $post_id )
     {
         return;
     }
-    
-    // User can edit post ?
-//    if ( ! current_user_can('edit_post' , $post_id ) )
-//    {
-//        return;
-//    }
-//
-//    if  ( isset($_POST['post_type']) )
-//    {
-//        
-//        if( $_POST['post_type'] == 'donationboxes' ) // Αν προέρχεται από την σελίδα 'donationboxes'
-//        {  
-//            if( ! current_user_can('edit_page', $post_id) )
-//            {  
-//                return;
-//            }
-//        }
-//        else // Αν δε προέρχεται από την σελίδα 'donationboxes'
-//        {
-//            $error = true;
-////            $message  = 'You must so becurefull with your next steps, because you haven\'t access to this page. Our eyes are upon you!';
-////            $message .= '<br>My friend <b>';
-////            $message .= get_user_ip();
-////            $message .= '</b> :) <br>';
-////            $message .= $_SERVER['HTTP_USER_AGENT'];
-////            wp_die( $message , "You haven't access.");
-//            return;
-//        }  
-//    }
-    
-    
+
+
     // Validations for stylesheet file.
-  
     if( isset($_POST['db_upload_stylesheet_file_meta_box_nonce']) )
     {
         if( ! wp_verify_nonce( $_POST['db_upload_stylesheet_file_meta_box_nonce'], 'db_save_stylesheet_file' ) )
@@ -274,7 +247,7 @@ function db_save_metaboxes_data( $post_id )
     if (  isset( $_POST['remove_css'] ) )
     {
         $theFILE = get_post_meta( $post_id, '_db_project_stylesheet_file', true );
-        unlink( $theFILE[0]['file'] );
+        wp_delete_file( $theFILE[0]['file'] );
         delete_post_meta($post_id, '_db_project_stylesheet_file');
     }
     
@@ -302,7 +275,7 @@ function db_save_metaboxes_data( $post_id )
         
         if ( strcmp($status_data, 'activate') == 0 )
         {
-            $status_data_int =  1;
+            $status_data_int =  1;  // Save on database number, because is more optimal..
         }
         
         else if ( strcmp($status_data, 'deactivate') == 0 )
@@ -378,11 +351,10 @@ add_filter( 'redirect_post_location', function( $location, $post_id )
 {
     global $error;
 
-    if ( $error ) //add 11 as code message
+    if ( $error )
     {
         $location = add_query_arg( 'message', 11, get_edit_post_link( $post_id, 'url' ) );
     }
-
 
     return $location;
 }, 10, 2 );
@@ -391,7 +363,10 @@ add_filter( 'redirect_post_location', function( $location, $post_id )
 
 
 
-// Create me own admin notice for fail save post!
+
+
+
+// Create my custom admin notice for fail save post!
 function sample_admin_notice__error()
 {
     if ( $_GET['message'] == 11 )
@@ -425,6 +400,5 @@ function get_user_ip()
     }
     return $ip;
 }
-
 
 

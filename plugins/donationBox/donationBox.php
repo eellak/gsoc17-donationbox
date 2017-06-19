@@ -56,9 +56,7 @@ function db_create_role_for_users()
         'delete_posts'              => true,
         'delete_others_posts'       => true,
         'delete_published_posts'    => true,
-        'publish_posts'             => true,
-        'upload_files'              => true,
-        'manage_categories'         => true,
+        'publish_posts'             => true
     );
 
     add_role('project_creator', 'Project Creator', $capabilities);
@@ -79,19 +77,13 @@ function db_delete_role_for_users()
 
 
 
-// Show plugin menu.
-function db_show_plugin_menu()
+// Create plugin menu.
+function db_create_plugin_menu()
 {
-    $current_user = wp_get_current_user();
-
-    if( ( $current_user->has_cap('administrator') ) || ( $current_user->has_cap('project_creator') ) )
-    {
-        require_once( plugin_dir_path(__FILE__) . 'admin/db-donation-boxes-menu.php' );
-    }
-
+    require_once( plugin_dir_path(__FILE__) . 'admin/db-donation-boxes-menu.php' );
 }
 
-add_action('plugins_loaded', 'db_show_plugin_menu');
+add_action('plugins_loaded', 'db_create_plugin_menu');
 
 
 
