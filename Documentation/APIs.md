@@ -7,12 +7,11 @@
 
 Η επικοινωνία των donation boxes θα γίνεται με τον εξής τρόπο :
 
-<p align="center">
 ![connection diagram](https://i.imgur.com/jQWxutU.png)
-</p>
 
-<br>
-Η επικοινωνία των donation boxes θα επιτυγχάνεται με τον κεντρικό κόμβο μέσω [APIs](https://en.wikipedia.org/wiki/Application_programming_interface) , τα οποία θα είναι υπεύθυνα για την αποστολή και την λήψη δεδομένων.
+Η επικοινωνία των donation boxes θα επιτυγχάνεται με τον κεντρικό κόμβο μέσω
+[APIs](https://en.wikipedia.org/wiki/Application_programming_interface)
+τα οποία θα είναι υπεύθυνα για την αποστολή και την λήψη δεδομένων.
 
 
 ## API **αποστολής** δεδομένων για κάθε έργο δωρεάς.
