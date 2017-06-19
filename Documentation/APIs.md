@@ -40,9 +40,7 @@
 
 Η γενική πρόσβαση στο REST API των δημοσιεύσεων των έργων δωρεάς θα γίνεται από τον σύνδεσμο :
 
-<p align="center">
-http://donation_web_site.org/wp-json/wp/v2/donationboxes
-</p>
+`http://donation_web_site.org/wp-json/wp/v2/donationboxes`
 
 ## API για την **λήψη** δεδομένων για κάθε έργο δωρεάς.
 
@@ -56,8 +54,7 @@ http://donation_web_site.org/wp-json/wp/v2/donationboxes
 * Έργα δωρεάς με ημερομηνίας δημιουργίας ή τελευταία τροποποίησης έπειτα από την τελευταία ενημέρωση που έχει κάνει*.
 
 *Αν π.χ. η τελευταία ενημέρωση που έχει κάνει το donation box, είναι στης 2017-06-09 , 18:49:14 ( ή ώρα ίσος είναι υπερβολή και δε μας ενδιαφέρει ), τότε να ζητάει :
-<p align="center">
-http://donation_web_site.org/wp-json/wp/v2/donationboxes/2017-06-09
-</p>
+
+`http://donation_web_site.org/wp-json/wp/v2/donationboxes/2017-06-09`
 
 και να παίρνει όλα τα έργα δωρεάς τα οποία έχουν προστεθεί ή ενημερωθεί από αυτή ( και αυτή ) την ημερομηνία και έπειτα.
