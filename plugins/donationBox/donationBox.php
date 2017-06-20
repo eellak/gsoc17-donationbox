@@ -138,6 +138,13 @@ function my_awesome_func( $request )
 
     }
     
+    // Αν δε βρει τίποτα :
+    if ( empty($data) )
+    {
+        $data = null;
+    }
+    
+    
     $response = new WP_REST_Response( $data );
 
     // Add a custom status code
@@ -176,6 +183,14 @@ function db_custm_rest_route()
             array(
                 'methods' => 'GET',
                 'callback' => 'my_awesome_func', /* Call back function for this endpoint. */
+                'args' => array(
+                            'date' => array(
+                                        'validate_callback' => function($param, $request, $key) 
+                                        {
+                                            return preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $param );
+                                        }
+                                        )
+                                ),
                 )
     );
 }
