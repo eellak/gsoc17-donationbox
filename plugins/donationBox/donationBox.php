@@ -90,3 +90,95 @@ add_action('plugins_loaded', 'db_create_plugin_menu');
 
 
 
+
+
+
+
+
+
+
+//Add my custom endpoints to the REST WordPress API.
+/**
+ * Grab latest post title by an author!
+ *
+ * @param array $data Options for the function.
+ * @return string|null Post title for the latest,  * or null if none.
+ *
+ */
+function my_awesome_func( $request ) 
+{
+    
+    $date_param = $request->get_param( 'date' );
+    
+    the_date('Y-m-d');
+    // Search args :
+    $args = array(
+                'post_type' => 'donationboxes'
+                );
+    
+    // Run query :
+    $posts = get_posts( $args );
+
+    if ( empty( $posts ) ) 
+    {
+        return new WP_Error( 'awesome_no_author', 'Invalid author', array( 'status' => 404 ) );
+    }
+    
+    $data = array();
+    
+    for ( $i = 0; $i < count($posts); $i++ )
+    {
+        // Because post_modified is like "2017-06-20 13:50:08", i split it and catch only the date.
+        $currnet_post_time = explode( " ", $posts[$i]->post_modified )[0];
+        if ( $currnet_post_time >= $date_param )
+        {
+            $data[$i]['ID'] = $posts[$i]->ID;
+            $data[$i]['post_modified'] = $currnet_post_time;
+        }
+
+    }
+    
+    $response = new WP_REST_Response( $data );
+
+    // Add a custom status code
+    $response->set_status( 201 );
+
+    // Add a custom header
+    $response->header( 'Location', 'http://example.com/' );
+    
+    return $response ;
+}
+
+
+
+/*
+ * To make this available via the API, we need to register a route. 
+ * This tells the API to respond to a given request with our function.
+ * 
+ * “Route” is the URL, whereas “endpoint” is the function behind it that 
+ * corresponds to a method and a URL.
+ * 
+ * If your site domain is example.com and you’ve kept the API path of wp-json,
+ * then the full URL would be :
+ * http://example.com/wp-json/myplugin/v1/author/(?P(\d{4}-\d{2}-\d{2})).
+ * 
+ * for my example : 
+ * http://localhost:8000/wp-json/donationboxes/v1/updated/2017-06-01
+ * 
+ * 
+ */
+
+function db_custm_rest_route()
+{
+    register_rest_route( 
+            'donationboxes/v1',							/* Namespace - Route. */
+            '/updated/(?P<date>(\d{4}-\d{2}-\d{2}))',	/* Endpoint with parameters. */
+            array(
+                'methods' => 'GET',
+                'callback' => 'my_awesome_func', /* Call back function for this endpoint. */
+                )
+    );
+}
+
+add_action( 'rest_api_init', 'db_custm_rest_route');
+
