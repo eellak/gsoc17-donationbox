@@ -109,8 +109,9 @@ function my_awesome_func( $request )
 {
     
     $date_param = $request->get_param( 'date' );
+    $time_param = $request->get_param( 'time' );
     
-    the_date('Y-m-d');
+
     // Search args :
     $args = array(
                 'post_type' => 'donationboxes'
@@ -128,9 +129,11 @@ function my_awesome_func( $request )
     
     for ( $i = 0; $i < count($posts); $i++ )
     {
-        // Because post_modified is like "2017-06-20 13:50:08", i split it and catch only the date.
-        $currnet_post_time = explode( " ", $posts[$i]->post_modified )[0];
-        if ( $currnet_post_time >= $date_param )
+        // Because post_modified is like "2017-06-20 13:50:08", that's very good! :)
+        $request_date = new DateTime( $date_param .' '.$time_param );
+        $currnet_post_time = new DateTime($posts[$i]->post_modified);
+        
+        if ( $currnet_post_time > $request_date )
         {
             $data[$i]['ID'] = $posts[$i]->ID;
             $data[$i]['post_modified'] = $currnet_post_time;
@@ -151,7 +154,7 @@ function my_awesome_func( $request )
     $response->set_status( 201 );
 
     // Add a custom header
-    $response->header( 'Location', 'http://example.com/' );
+//    $response->header( 'Location', 'http://example.com/' );
     
     return $response ;
 }
@@ -178,8 +181,8 @@ function my_awesome_func( $request )
 function db_custm_rest_route()
 {
     register_rest_route( 
-            'donationboxes/v1',							/* Namespace - Route. */
-            '/updated/(?P<date>(\d{4}-\d{2}-\d{2}))',	/* Endpoint with parameters. */
+            'donationboxes/v1',          /* Namespace - Route. */
+            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',
             array(
                 'methods' => 'GET',
                 'callback' => 'my_awesome_func', /* Call back function for this endpoint. */
@@ -189,11 +192,19 @@ function db_custm_rest_route()
                                         {
                                             return preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $param );
                                         }
+                                        ),
+                            'time' => array(
+                                        'validate_callback' => function($param, $request, $key) 
+                                        {
+                                            return preg_match("/^([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])?$/", $param );
+                                        }
                                         )
                                 ),
                 )
     );
 }
+
+
 
 add_action( 'rest_api_init', 'db_custm_rest_route');
 
