@@ -37,16 +37,17 @@ if ( !defined( 'ABSPATH' ) )
     exit;
 }
 
+
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
 
-/* Global variable for notice if have any error.
- * I use this variable in my validations, to notice the user when have problem!
- */
-//$error = array('have' => false , 'message' => 'pame gera');
-$GLOBALS['error'] = array('have' => false , 'message' => 'pame gera');
 
+global $db_error;
+$db_error = array(
+            'have'  => false,
+            'message'  => 'Unexpected error.',
+                );
 
 
 // Plugin Activation :
@@ -108,7 +109,6 @@ function db_create_role_for_users()
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
-    
 }
 
 
