@@ -22,8 +22,7 @@
 function db_add_rest_status()
 {
     register_rest_field( 'donationboxes', 'project_status', array(
-
-        'get_callback' => 'get_status',       
+        'get_callback' => 'get_status',
         'update_callback' => null,
         'schema' => null,
                 
@@ -46,7 +45,6 @@ add_action( 'rest_api_init', 'db_add_rest_status' );
 function db_add_rest_current_amount()
 {
     register_rest_field( 'donationboxes', 'project_current_amount', array(
-        
         'get_callback' => 'get_current_amount',        
         'update_callback' => null,
         'schema' => null,
@@ -70,7 +68,6 @@ add_action( 'rest_api_init', 'db_add_rest_current_amount' );
 function db_add_rest_target_amount()
 {
     register_rest_field( 'donationboxes', 'project_target_amount', array(
-        
         'get_callback' => 'get_target_amount',   
         'update_callback' => null,
         'schema' => null,
@@ -89,12 +86,10 @@ add_action( 'rest_api_init', 'db_add_rest_target_amount' );
 
 
 
-
 // Project Orgaanization(s) :
 function db_add_rest_organizations()
 {
     register_rest_field('donationboxes', 'project_organizations' , array(
-        
         'get_callback'      =>  'get_organizations',
         'update_callback'   => null,
         'schema'            => null,
@@ -125,7 +120,6 @@ add_action('rest_api_init' , 'db_add_rest_organizations' );
 function db_add_rest_stylesheet_file()
 {
     register_rest_field('donationboxes', 'project_stylesheet_file' , array(
-        
         'get_callback'      =>  'get_stylesheet_file',
         'update_callback'   => null,
         'schema'            => null,
@@ -138,7 +132,7 @@ function db_add_rest_stylesheet_file()
 
         if ( count($project_css_file) > 0  &&  is_array($project_css_file) )
         {
-            return $project_css_file[0]['url'];
+            return utf8_uri_encode( $project_css_file[0]['url'] );
         }
         else
         {
@@ -149,3 +143,71 @@ function db_add_rest_stylesheet_file()
 }
 
 add_action('rest_api_init' , 'db_add_rest_stylesheet_file' );
+
+
+
+
+
+// Project video file :
+function db_add_rest_video_file()
+{
+    register_rest_field('donationboxes', 'project_video_file' , array(
+        'get_callback'      =>  'get_video_file',
+        'update_callback'   => null,
+        'schema'            => null,
+        
+    ) );
+    
+    function get_video_file( $post )
+    {
+        $project_video_file = get_post_meta( $post['id'], '_db_project_video_file', true );
+
+        if ( count($project_video_file) > 0  &&  is_array($project_video_file) )
+        {
+            return utf8_uri_encode( $project_video_file[0]['url'] );
+        }
+        else
+        {
+            return '';
+        }
+        
+    }
+}
+
+add_action('rest_api_init' , 'db_add_rest_video_file' );
+
+
+
+
+
+// Project image file :
+function db_add_rest_image_file()
+{
+    register_rest_field('donationboxes', 'project_image_file' , array(
+        'get_callback'      =>  'get_image_file',
+        'update_callback'   => null,
+        'schema'            => null,
+        
+    ) );
+    
+    function get_image_file( $post )
+    {
+        $project_image_file = get_post_meta( $post['id'], '_db_project_image_file', true );
+
+        if ( count($project_image_file) > 0  &&  is_array($project_image_file) )
+        {
+            return utf8_uri_encode( $project_image_file[0]['url'] );
+        }
+        else
+        {
+            return '';
+        }
+        
+    }
+}
+
+add_action('rest_api_init' , 'db_add_rest_image_file' );
+
+
+
+

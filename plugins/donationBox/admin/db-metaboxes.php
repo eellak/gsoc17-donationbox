@@ -101,7 +101,8 @@ function db_preview_callback( $post )
     $preview_page .= '?db_preview_id=' . get_the_ID();
 
     $category_detail = get_the_category( get_the_ID() ); 
-
+    
+    
     ?>
     <p>
         <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
@@ -287,28 +288,23 @@ function db_save_metaboxes_data( $post_id )
         return;
     }
     
-    
     // Validations for stylesheet file.
     if ( db_css_file_validations() )
     {
         // Upload css file :
-        // Make sure the file array isn't empty  
         if( ! empty( $_FILES['db_project_css_file_field']['name'] ) )
         {
-            // Get the file type of the upload  
             $flag = 0;
 
             if( !empty($_FILES['db_project_css_file_field']['name']) )
             {
                 $flag = 1;
-                // Use the WordPress API to upload the multiple files
                 $upload[] = wp_upload_bits(
                                             $_FILES['db_project_css_file_field']['name'],
                                             null,
                                             file_get_contents( $_FILES['db_project_css_file_field']['tmp_name'] )
                                         );
             }
-
             if ( $flag == 1 )
             {
                 update_post_meta( $post_id, '_db_project_stylesheet_file', $upload);
@@ -327,8 +323,10 @@ function db_save_metaboxes_data( $post_id )
     }
     
     
+	//  Validations for video file.
     if ( db_video_file_validations() )
     {
+        // Upload video file :
         if( ! empty( $_FILES['db_project_video_field']['name'] ) )
         {
             $flag = 0;
@@ -404,7 +402,6 @@ function db_save_metaboxes_data( $post_id )
             {
                 $status_data_int =  1;
             }
-
             else if ( strcmp($status_data, 'deactivate') == 0 )
             {
                 $status_data_int = 0;
@@ -431,9 +428,9 @@ function db_save_metaboxes_data( $post_id )
             $target_amount_data = esc_attr( sanitize_text_field( $_POST['db_project_target_amount_field'] ) ) ;
             settype($target_amount_data, 'integer');
             update_post_meta(
-                    $post_id,
-                    '_db_project_target_amount',
-                    $target_amount_data
+                    $post_id,                       // post_id
+                    '_db_project_target_amount',    // meta_key
+                    $target_amount_data             // meta_value
                     );
         }
     }
@@ -462,9 +459,6 @@ add_filter( 'redirect_post_location', function( $location, $post_id )
 
 
 
-
-
-
 // Create me own admin notice for fail save post!
 function sample_admin_notice__error()
 {
@@ -478,40 +472,40 @@ function sample_admin_notice__error()
         switch ( $_GET['message'] )
         {
             case 100 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Upload error with css file. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>100: Upload error with css file. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 101 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with css file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>101: Problem with css file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 102 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with css file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>102: Problem with css file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 103 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with css file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>103: Problem with css file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 200 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Upload error with video file. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>200: Upload error with video file. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 201 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with video file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>201: Problem with video file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 202 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with video file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>202: Problem with video file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 203 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with video file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>203: Problem with video file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 300 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Upload error with image file. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>300: Upload error with image file. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 301 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with image file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>301: Problem with image file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 302 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with image file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>302: Problem with image file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
             case 303 : 
-                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with iamge file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>303: Problem with iamge file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
                 break;
         }
     }
@@ -520,7 +514,6 @@ function sample_admin_notice__error()
 }
 
 add_action( 'admin_notices', 'sample_admin_notice__error' );
-
 
 
 

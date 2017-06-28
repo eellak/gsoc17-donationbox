@@ -36,66 +36,63 @@ function db_css_file_validations()
             && ( wp_verify_nonce( $_POST['db_upload_stylesheet_file_meta_box_nonce'], 'db_save_stylesheet_file' ) )
             && ! isset( $_POST['remove_css'] ) )
     {
+        $uploaded_temp_file = $_FILES[$input_field]['name'];
+        $extension = pathinfo( $uploaded_temp_file, PATHINFO_EXTENSION );
 
-            $uploaded_temp_file = $_FILES[$input_field]['name'];
-            $extension = pathinfo( $uploaded_temp_file, PATHINFO_EXTENSION );
+        if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
+        {
+            wp_die( $message , "Security issue!");
+        }
 
-            if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
+        switch ( $_FILES[$input_field]['error'] )
+        {
+            case UPLOAD_ERR_OK:
+                break;// No error, all good
+            case UPLOAD_ERR_NO_FILE:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '101';
+                return false;
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '102';
+                return false;
+            default:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '103';
+                return false;
+        }
+
+        if ( $extension != 'css')
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        if( $_FILES[$input_field]['type'] != $file_type )
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension ) ) 
+        {
+            if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension) ) )
             {
                 wp_die( $message , "Security issue!");
             }
+        }
 
-            switch ( $_FILES[$input_field]['error'] )
-            {
-                case UPLOAD_ERR_OK:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '100';
-                    return false;
-                case UPLOAD_ERR_NO_FILE:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '101';
-                    return false;
-                case UPLOAD_ERR_INI_SIZE:
-                case UPLOAD_ERR_FORM_SIZE:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '102';
-                    return false;
-                default:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '103';
-                    return false;
-            }
+        if ( substr_count( $_FILES[$input_field]['name'], '.') > 1 )
+        {
+            wp_die( $message , "Security issue!");
+        }
 
-            if ( $extension != 'css')
-            {
-                wp_die( $message , "Security issue!");
-            }
+        // Max limit for css file is 150 KB ( bootstrap css file has 146 KB ).
+        if ($_FILES[$input_field]["size"] > 150 * KB )
+        {
+            wp_die( $message , "Sorry, your file is too large.");
+        }
 
-            if( $_FILES[$input_field]['type'] != $file_type )
-            {
-                wp_die( $message , "Security issue!");
-            }
-            
-            if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension ) ) 
-            {
-                if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension) ) )
-                {
-                    wp_die( $message , "Security issue!");
-                }
-            }
-            
-            if ( substr_count( $_FILES[$input_field]['name'], '.') > 1 )
-            {
-                wp_die( $message , "Security issue!");
-            }
-            
-            // Max limit for css file is 150 KB ( bootstrap css file has 146 KB ).
-            if ($_FILES[$input_field]["size"] > 150 * KB )
-            {
-                wp_die( $message , "Sorry, your file is too large.");
-            }
-            
-            return true;
+        return true;
     }
     return false;
 }
@@ -128,65 +125,63 @@ function db_video_file_validations()
             && wp_verify_nonce( $_POST['db_upload_video_file_meta_box_nonce'], 'db_save_video_file' )
             && ! isset( $_POST['rm_video'] ) )
     {
-            if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
+        if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        switch ( $_FILES[$input_field]['error'] )
+        {
+            case UPLOAD_ERR_OK:
+                break; // No error, all good
+            case UPLOAD_ERR_NO_FILE:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '201';
+                return false;
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '202';
+                return false;
+            default:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '203';
+                return false;
+        }
+
+        $uploaded_temp_file = $_FILES[$input_field]['name'];
+        $extension = pathinfo( $uploaded_temp_file, PATHINFO_EXTENSION );
+
+        if ( $extension != 'mp4')
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        if( $_FILES[$input_field]['type'] != $file_type )
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension) ) 
+        {
+            if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension) ) )
             {
                 wp_die( $message , "Security issue!");
             }
+        }
 
-            switch ( $_FILES[$input_field]['error'] )
-            {
-                case UPLOAD_ERR_OK:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '200';
-                    return false;
-                case UPLOAD_ERR_NO_FILE:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '201';
-                    return false;
-                case UPLOAD_ERR_INI_SIZE:
-                case UPLOAD_ERR_FORM_SIZE:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '202';
-                    return false;
-                default:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '203';
-                    return false;
-            }
+        if ( substr_count( $_FILES[$input_field]['name'], '.') > 1 )
+        {
+            wp_die( $message , "Security issue!");
+        }
 
-            $uploaded_temp_file = $_FILES[$input_field]['name'];
-            $extension = pathinfo( $uploaded_temp_file, PATHINFO_EXTENSION );
+        // Max limit for video is 10 MB.
+        if ($_FILES[$input_field]["size"] > 200 * MB )
+        {
+            wp_die( $message , "Sorry, your file is too large.");
+        }
 
-            if ( $extension != 'mp4')
-            {
-                wp_die( $message , "Security issue!");
-            }
-
-            if( $_FILES[$input_field]['type'] != $file_type )
-            {
-                wp_die( $message , "Security issue!");
-            }
-
-            if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension) ) 
-            {
-                if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension) ) )
-                {
-                    wp_die( $message , "Security issue!");
-                }
-            }
-            
-            if ( substr_count( $_FILES[$input_field]['name'], '.') > 1 )
-            {
-                wp_die( $message , "Security issue!");
-            }
-            
-            // Max limit for video is 10 MB.
-            if ($_FILES[$input_field]["size"] > 200 * MB )
-            {
-                wp_die( $message , "Sorry, your file is too large.");
-            }
-            
-            return true;
+        return true;
     }
     return false;
 }
@@ -215,103 +210,96 @@ function db_image_file_validations()
     $message .= 'Try uploading the file: "<b>' . $_FILES[$input_field]['name'] . '</b>"<br>' ;
     $message .= 'Be very careful, because your activity may be misunderstood...<br>';
     $message .= 'Each of your activities are recorded.';
-
-
-    if ( isset( $_POST['db_upload_image_file_meta_box_nonce'] ) 
+	
+    if ( isset( $_POST['db_upload_image_file_meta_box_nonce'] )
+            && ! empty( $_FILES[$input_field]['name'] ) 
             &&  wp_verify_nonce( $_POST['db_upload_image_file_meta_box_nonce'], 'db_save_image_file' ) 
-            && (! empty( $_FILES[$input_field]['name'] ) ) )
+            &&  ! isset( $_POST['rm_image'] ) )
     {
-
-        if (  ! isset( $_POST['rm_image'] ) )
+        if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
         {
-            if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
-            {
-                wp_die( $message , "Security issue!");
-            }
-
-            switch ( $_FILES[$input_field]['error'] )
-            {
-                case UPLOAD_ERR_OK:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '300';
-                    return false;
-                case UPLOAD_ERR_NO_FILE:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '301';
-                    return false;
-                case UPLOAD_ERR_INI_SIZE:
-                case UPLOAD_ERR_FORM_SIZE:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '302';
-                    return false;
-                default:
-                    $db_error['have'] = true;
-                    $db_error['message_code'] = '303';
-                    return false;
-            }
-
-            $uploaded_temp_file = $_FILES[$input_field]['name'];
-            $extension = pathinfo( $uploaded_temp_file, PATHINFO_EXTENSION );
-
-            if ( $extension != 'jpg' && $extension != 'png')
-            {
-                wp_die( $message , "Security issue!");
-            }
-
-            if ( $_FILES[$input_field]['type'] != $file_type_jpeg && $_FILES[$input_field]['type'] != $file_type_png  )
-            {
-                wp_die( $message , "Security issue!");
-            }
-            
-            if ( $extension == 'jpg' )
-            {
-                if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension_jpg) ) 
-                {
-                    if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension_jpg) ) )
-                    {
-                        wp_die( $message , "Security issue!");
-                    }
-                }
-            }
-            
-            if ( $extension == 'png' )
-            {
-                if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension_png) ) 
-                {
-                    if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension_png) ) )
-                    {
-                        wp_die( $message , "Security issue!");
-                    }
-                }
-            }
-            
-            if ( ( exif_imagetype($_FILES[$input_field]['tmp_name']) != IMAGETYPE_JPEG ) && ( exif_imagetype($_FILES[$input_field]['tmp_name']) != IMAGETYPE_PNG ) )
-            {
-                wp_die( $message , "The picture is not valid.");
-            }
-            
-            if ( substr_count( $_FILES[$input_field]['name'], '.') > 1 )
-            {
-                wp_die( $message , "Security issue!");
-            }
-            
-            $verifyimg = getimagesize($_FILES[$input_field]['tmp_name']);
-            if ( $verifyimg['mime'] != $file_type_jpeg && $verifyimg['mime'] != $file_type_png )
-            {
-                wp_die( $message , "Security issue!");
-            }
-            
-            // Check file size, Max limit for image is 3 MB.
-            if ($_FILES[$input_field]["size"] > 3 * MB )
-            {
-                wp_die( $message , "Sorry, your file is too large.");
-            }            
-            
-            return true;    // Πέρασε επιτυχώς όλους του ελέγχους.
+            wp_die( $message , "Security issue!");
         }
-        return false;   // Δεν έχει πατίσει όμως να διαγράψει το αρχείο.
+
+        switch ( $_FILES[$input_field]['error'] )
+        {
+            case UPLOAD_ERR_OK:
+                break; // No error, all good
+            case UPLOAD_ERR_NO_FILE:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '301';
+                return false;
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '302';
+                return false;
+            default:
+                $db_error['have'] = true;
+                $db_error['message_code'] = '303';
+                return false;
+        }
+
+        $uploaded_temp_file = $_FILES[$input_field]['name'];
+        $extension = pathinfo( $uploaded_temp_file, PATHINFO_EXTENSION );
+
+        if ( $extension != 'jpg' && $extension != 'png')
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        if ( $_FILES[$input_field]['type'] != $file_type_jpeg && $_FILES[$input_field]['type'] != $file_type_png  )
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        if ( $extension == 'jpg' )
+        {
+            if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension_jpg) ) 
+            {
+                if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension_jpg) ) )
+                {
+                    wp_die( $message , "Security issue!");
+                }
+            }
+        }
+
+        if ( $extension == 'png' )
+        {
+            if ( $pure_name_length = strrpos($_FILES[$input_field]['name'], $valid_file_extension_png) ) 
+            {
+                if (  $pure_name_length != ( strlen($_FILES[$input_field]['name']) - strlen($valid_file_extension_png) ) )
+                {
+                    wp_die( $message , "Security issue!");
+                }
+            }
+        }
+
+        if ( ( exif_imagetype($_FILES[$input_field]['tmp_name']) != IMAGETYPE_JPEG ) && ( exif_imagetype($_FILES[$input_field]['tmp_name']) != IMAGETYPE_PNG ) )
+        {
+            wp_die( $message , "The picture is not valid.");
+        }
+
+        if ( substr_count( $_FILES[$input_field]['name'], '.') > 1 )
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        $verifyimg = getimagesize($_FILES[$input_field]['tmp_name']);
+        if ( $verifyimg['mime'] != $file_type_jpeg && $verifyimg['mime'] != $file_type_png )
+        {
+            wp_die( $message , "Security issue!");
+        }
+
+        // Check file size, Max limit for image is 3 MB.
+        if ($_FILES[$input_field]["size"] > 3 * MB )
+        {
+            wp_die( $message , "Sorry, your file is too large.");
+        }
+
+        return true;
     }
-    return false;   // Δεν πάτησε κάν ώστε να προσθέσει ένα αρχείο σε αυτό το πεδίο.
+    return false;
 }
 
 
@@ -330,21 +318,21 @@ function db_status_validations()
     if ( ! isset( $_POST['db_status_meta_box_nonce'] ) )
     {
         $db_error['have'] = true;
-        $db_error['message'] = 'Problem with status';
+        $db_error['message_code'] = 'Problem with status';
         return false;
     }
     
     if ( !wp_verify_nonce( $_POST['db_status_meta_box_nonce'], 'db_save_project_status' ) )
     {
         $db_error['have'] = true;
-        $db_error['message'] = 'Problem with status';
+        $db_error['message_code'] = 'Problem with status';
         return false;
     }
     
     if ( ! isset( $_POST['db_project_state_field'] ) )
     {
         $db_error['have'] = true;
-        $db_error['message'] = 'Problem with status';
+        $db_error['message_code'] = 'Problem with status';
         return false;
     }
     
@@ -367,21 +355,21 @@ function db_target_amount_validations()
     if ( ! isset( $_POST['db_target_amount_meta_box_nonce'] ) )
     {
         $db_error['have'] = true;
-        $db_error['message'] = 'Problem with target amount';
+        $db_error['message_code'] = 'Problem with target amount';
         return false;
     }
 
     if ( !wp_verify_nonce( $_POST['db_target_amount_meta_box_nonce'] , 'db_save_target_amount' ) )
     {
         $db_error['have'] = true;
-        $db_error['message'] = 'Problem with target amount';
+        $db_error['message_code'] = 'Problem with target amount';
         return false;
     }
 
     if ( ! isset( $_POST['db_project_target_amount_field'] ) )
     {
         $db_error['have'] = true;
-        $db_error['message'] = 'Problem with target amount';
+        $db_error['message_code'] = 'Problem with target amount';
         return false;
     }
 
