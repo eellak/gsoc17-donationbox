@@ -43,53 +43,28 @@ define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
 
 
+/*
+ * Definition of Global Variables for handling errors.
+ */
+
 global $db_error;
+
 $db_error = array(
             'have'  => false,
             'message'  => 'Unexpected error.',
                 );
 
 
-// Plugin Activation :
+/*
+ * Plugin Activation.
+ * 
+ * What to do when the plugin activated.
+ */
+
 register_activation_hook( __FILE__, 'db_create_role_for_users');
 function db_create_role_for_users()
 {
-//    $capabilities = array(
-//                            'publish_posts'             => 'db_publish_posts',
-//                            'edit_posts'                => 'db_edit_posts',
-//                            'edit_others_posts'         => 'db_edit_others_posts',
-//                            'delete_posts'              => 'db_delete_posts',
-//                            'delete_others_posts'       => 'db_delete_others_posts',
-//                            'read_private_posts'        => 'db_read_private_posts',
-//                            'edit_post'                 => 'db_edit_post',
-//                            'delete_post'               => 'db_delete_post',
-//                            'read_post'                 => 'db_read_post',
-//                            'read'                      => 'db_read',
-//                            'upload_files'              => 'db_upload_files',
-//                            'delete_published_posts'    => 'db_delete_published_posts',
-//                            'edit_private_posts'        => 'db_edit_private_posts',
-//                            'edit_published_posts'      => 'db_edit_published_posts',
-//                        );
 
-    
-//        $capabilities = array(
-//                            'db_publish_posts'                => true,
-//                            'db_edit_posts'                   => true,
-//                            'db_edit_others_posts'            => true,
-//                            'db_delete_posts'                 => true,
-//                            'db_delete_others_posts'          => true,
-//                            'db_read_private_posts'           => true,
-//                            'db_edit_post'                    => true,
-//                            'db_delete_post'                  => true,
-//                            'db_read_post'                    => true,
-//                            'db_read'                         => true,
-//                            'db_upload_files'                 => true,
-//                            'db_delete_published_posts'       => true,
-//                            'db_edit_private_posts'           => true,
-//                            'db_edit_published_posts'         => true,
-//                        );
-    
-    
     $capabilities = array(
         'read'                      => true,
         'edit_posts'                => true,
@@ -102,10 +77,7 @@ function db_create_role_for_users()
         'publish_posts'             => true
 //        'upload_files'              => true, // να μην μπορεί να ανεβάζει stylesheet files.
 //        'manage_categories'         => true, // να μην μπορεί να αλλάζει την κατηγορία των donation projects 
-        
-        
-
-        
+      
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
@@ -115,7 +87,12 @@ function db_create_role_for_users()
 
 
 
-// Plugin Deactivation :
+/*
+ * Plugin Deactivation.
+ * 
+ * What to do when the plugin deactivated.
+ */
+
 register_deactivation_hook( __FILE__, 'db_delete_role_for_users');
 function db_delete_role_for_users()
 {
@@ -144,7 +121,7 @@ add_action('plugins_loaded', 'db_create_plugin_menu');
 /**
  * Grab latest post title by an author!
  *
- * @param array $data Options for the function.
+ * @param array $request all options - arguments from the request.
  * @return string|null Post title for the latest,  * or null if none.
  * 
  * Αυτή είναι μια συνάρτηση που την κατασκευάζω να κάνει κάτι..
@@ -158,7 +135,6 @@ function my_awesome_func( $request )
     
     // Search args :
     $args = array(
-//                'author' => $data['id'],
                 'post_type' => 'donationboxes'
                 );
     
@@ -175,7 +151,7 @@ function my_awesome_func( $request )
     for ( $i = 0; $i < count($posts); $i++ )
     {
         // Because post_modified is like "2017-06-20 13:50:08", that's very good! :)
-        
+
         $request_date = new DateTime( $date_param .' '.$time_param );
         $currnet_post_time = new DateTime($posts[$i]->post_modified);
         
@@ -191,25 +167,7 @@ function my_awesome_func( $request )
     {
         $data = null;
     }
-        
 
-    
-//        $response->set_data( $current_post[0]->post_title );
-    
-//    $response->set_data($posts[0]->post_title);
-    
-//    $ok = array( "1" => 'ok' , "2" => 'pera vrexi' );
-//    $response->set_data( $ok );
-    
-//    $controller = new WP_REST_Posts_Controller( 'type' );
-//
-//    foreach ( $posts as $post )
-//    {
-//        $data    = $controller->prepare_item_for_response( "$post", $request );
-//        $posts[] = $controller->prepare_response_for_collection( $data );
-//    }
-    
-    
     $response = new WP_REST_Response( $data );
 
     // Add a custom status code
@@ -236,11 +194,6 @@ function my_awesome_func( $request )
  * for my example : 
  * http://localhost:8000/wp-json/myplugin/v1/author/1
  * 
- * Εδώ από ότι καταλαβαίνω κατασκευάζω - σχεδιάζω - θέτω την REST API διαδρομή.
- * Τι θα δέχετε ως όρισμα, 
- * τι επιτρεπόμενες μεθόδους καλέσματος έχει
- * και τέλος ποια συνάρτηση θα ανταποκρίνετε στο κάλεσμα αυτής της διαδρομής.
- * 
  */
 
 
@@ -248,9 +201,9 @@ function db_custm_rest_route()
 {
     register_rest_route( 
             'donationboxes/v1',          /* Namespace - Route. */
-            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',  /* Endpoint with parameters. - Μπορώ να ορίσω και άλλα μάλλον - */
+            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',  /* Endpoint with parameters. */
             array(
-                'methods' => 'GET', /* Τι μεθόδοι επιτρέπονται για αυτό το endpoint. */
+                'methods' => 'GET',
                 'callback' => 'my_awesome_func', /* Call back function for this endpoint. */
                 'args' => array(
                             'date' => array(
@@ -266,10 +219,7 @@ function db_custm_rest_route()
                                         }
                                         )
                                 ),
-//                                'permission_callback' => function () 
-//                                {
-//                                    return current_user_can( 'edit_others_posts' );
-//                                }
+
                 )
     );
 }

@@ -17,12 +17,7 @@ function()
     {
         if ( jQuery(this).find('input').is(':checked') )
         {
-            this.style.color = "red";
             how_many_times++;
-        }
-        else
-        {
-            this.style.color = '';
         }
 
     }
@@ -30,6 +25,15 @@ function()
 
     if ( how_many_times > 1 )
     {
+        // I make all fields red.
+        jQuery('ul#organizationchecklist li').each(
+        function()
+        {
+            this.style.color = "red";
+        }
+        );
+        
+        // I alert the user.
         var message = 'Sorry, you can choose *only one* organization for each donation project.\nYou choose ';
         message += how_many_times;
         message += ' organizations!\nFix it and then go ahead with saving of the donation project. :)';
