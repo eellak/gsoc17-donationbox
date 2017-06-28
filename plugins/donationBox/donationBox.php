@@ -51,7 +51,7 @@ global $db_error;
 
 $db_error = array(
             'have'  => false,
-            'message'  => 'Unexpected error.',
+            'message_code'  => '0'
                 );
 
 

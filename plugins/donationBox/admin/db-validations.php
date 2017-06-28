@@ -48,19 +48,21 @@ function db_css_file_validations()
             switch ( $_FILES[$input_field]['error'] )
             {
                 case UPLOAD_ERR_OK:
-                    break;
+                    $db_error['have'] = true;
+                    $db_error['message_code'] = '100';
+                    return false;
                 case UPLOAD_ERR_NO_FILE:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with css file [UPLOAD_ERR_NO_FILE]';
+                    $db_error['message_code'] = '101';
                     return false;
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with css file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]';
+                    $db_error['message_code'] = '102';
                     return false;
                 default:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with css file [Something went wrong]';
+                    $db_error['message_code'] = '103';
                     return false;
             }
 
@@ -134,19 +136,21 @@ function db_video_file_validations()
             switch ( $_FILES[$input_field]['error'] )
             {
                 case UPLOAD_ERR_OK:
-                    break;
+                    $db_error['have'] = true;
+                    $db_error['message_code'] = '200';
+                    return false;
                 case UPLOAD_ERR_NO_FILE:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with video file [UPLOAD_ERR_NO_FILE] ';
+                    $db_error['message_code'] = '201';
                     return false;
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with video file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE] ';
+                    $db_error['message_code'] = '202';
                     return false;
                 default:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with video file [Something went wrong]';
+                    $db_error['message_code'] = '203';
                     return false;
             }
 
@@ -228,19 +232,21 @@ function db_image_file_validations()
             switch ( $_FILES[$input_field]['error'] )
             {
                 case UPLOAD_ERR_OK:
-                    break;
+                    $db_error['have'] = true;
+                    $db_error['message_code'] = '300';
+                    return false;
                 case UPLOAD_ERR_NO_FILE:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with image file [UPLOAD_ERR_NO_FILE]';
+                    $db_error['message_code'] = '301';
                     return false;
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with image file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]';
+                    $db_error['message_code'] = '302';
                     return false;
                 default:
                     $db_error['have'] = true;
-                    $db_error['message'] = 'Problem with iamge file [Something went wrong]';
+                    $db_error['message_code'] = '303';
                     return false;
             }
 

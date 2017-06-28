@@ -448,12 +448,11 @@ add_action('save_post' , 'db_save_metaboxes_data');
 
 add_filter( 'redirect_post_location', function( $location, $post_id ) 
 {
-
     global $db_error;
 
     if ( $db_error['have'] )
     {
-        $location = add_query_arg( 'message', 11, get_edit_post_link( $post_id, 'url' ) );
+        $location = add_query_arg( 'message', $db_error['message_code'], get_edit_post_link( $post_id, 'url' ) );
     }
 
     return $location;
@@ -471,17 +470,55 @@ function sample_admin_notice__error()
 {
     global $db_error;
     
-    if ( $_GET['message'] == 11 )
+    $class = 'notice notice-error is-dismissible';
+    $message = __( 'Failed saving/updating.' , 'sample-text-domain' );
+    
+    if ( isset( $_GET['message'] ) )
     {
-		$class = 'notice notice-error is-dismissible';
-		
-		$message = __( 'Failed saving/updating.' , 'sample-text-domain' );
-
-		printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>' . $db_error['message'] . '</p></div>', esc_attr( $class ), esc_html( $message ) );
-		$db_error['have'] = false;
+        switch ( $_GET['message'] )
+        {
+            case 100 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Upload error with css file. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 101 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with css file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 102 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with css file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 103 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with css file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 200 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Upload error with video file. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 201 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with video file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 202 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with video file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 203 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with video file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 300 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Upload error with image file. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 301 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with image file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 302 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with image file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+            case 303 : 
+                printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br> Problem with iamge file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+                break;
+        }
     }
+        
 
 }
+
 add_action( 'admin_notices', 'sample_admin_notice__error' );
 
 
