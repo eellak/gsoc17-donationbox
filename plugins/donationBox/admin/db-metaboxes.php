@@ -49,9 +49,11 @@ add_action('add_meta_boxes' , 'db_project_status_metabox' , 1 );
 
 function db_target_amount_callback( $post )
 {
+    // For current amount :
     wp_nonce_field( 'db_save_current_amount', 'db_current_amount_meta_box_nonce');
     $current_amount_value = get_post_meta( $post->ID , '_db_project_current_amount', true);
     
+    // For target amount :
     wp_nonce_field(
             'db_save_target_amount',
             'db_target_amount_meta_box_nonce'
@@ -73,10 +75,6 @@ function db_target_amount_callback( $post )
     <?php
     
 }
-
-
-
-
 
 function db_project_target_amount_metabox()
 {
@@ -104,6 +102,7 @@ function db_preview_callback( $post )
 
     $category_detail = get_the_category( get_the_ID() ); 
     
+    
     ?>
     <p>
         <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
@@ -112,7 +111,6 @@ function db_preview_callback( $post )
     </p>
     <?php
 }
-
 
 function db_project_preview_metabox()
 {
@@ -207,7 +205,6 @@ function db_video_callback( $post )
     echo '</p>';
 }
 
-
 function db_project_video()
 {
     add_meta_box(
@@ -253,7 +250,6 @@ function db_image_callback( $post )
     echo '</p>';
 }
 
-
 function db_project_image()
 {
     add_meta_box(
@@ -285,17 +281,14 @@ function update_edit_form()
 // Save meta boxes data.
 function db_save_metaboxes_data( $post_id )
 {
-
-    // If it's autosave, DON'T save anything!
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
     {
         return;
     }
-
+    
     // Validations for stylesheet file.
     if ( db_css_file_validations() )
     {
-        // Upload css file :
         // Make sure the file array isn't empty  
         if( ! empty( $_FILES['db_project_css_file_field']['name'] ) )
         {
@@ -322,7 +315,7 @@ function db_save_metaboxes_data( $post_id )
     }
     
     
-    // For delete css file. Maybe it's necessary to canmore validations here..
+    // For delete css file.
     if (  isset( $_POST['remove_css'] ) )
     {
         $theFILE = get_post_meta( $post_id, '_db_project_stylesheet_file', true );
@@ -436,7 +429,7 @@ function db_save_metaboxes_data( $post_id )
         if ( isset( $_POST['db_project_target_amount_field'] ) )
         {
             $target_amount_data = esc_attr( sanitize_text_field( $_POST['db_project_target_amount_field'] ) ) ;
-            settype($target_amount_data, 'integer');
+            settype($target_amount_data, 'integer'); // For more more more secure!!!
             update_post_meta(
                     $post_id,
                     '_db_project_target_amount',
@@ -448,7 +441,6 @@ function db_save_metaboxes_data( $post_id )
 }
 
 add_action('save_post' , 'db_save_metaboxes_data');
-
 
 
 
@@ -487,37 +479,63 @@ function db_send_data_to_donationBox_database( $donation_project_id )
     );
 
     $response = wp_remote_post( get_option( 'database_url_field '), $args );
+
+
+    $script = '<script>';
+    $script .= 'jQuery(document).ready(';
+    $script .= 'function(){';
+    $script .= "var pageTitle = jQuery('div #message');";    
+    
     
     if ( is_wp_error($response) )
     {
         $error_message = $response->get_error_message();
         
-        $script = '<script>';
-        $script .= 'jQuery(document).ready(';
-        $script .= 'function(){';
-
-        $script .= "var pageTitle = jQuery('div #message');";
         $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data could not be sent to the donation boxes database";
-        $script .= "</p></div>');";
+        $script .= "The donation project data could not be <b>sent</b> to the donation boxes database!<br>";
+        $script .= $error_message;
 
+        $script .= "</p></div>');";
         $script .= '});';
         $script .= '</script>';
+        
+        echo $script;
+    }
+    else if ( $response['response']['code'] != '200' && $response['response']['code'] != '455' )
+    {
+        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project data could not be <b>saved</b> to the donation boxes database!<br>";
+        $script .= $response['response']['code'] . ' [' . $response['response']['message'] . '] ';
+
+        $script .= "</p></div>');";
+        $script .= '});';
+        $script .= '</script>';
+
+        echo $script;
+    }
+    else if ( $response['response']['code'] == '455' )
+    {
+        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
+        $script .= "Invalid user credentials! The donation project data could not be <b>saved</b> to the donation boxes database, ";
+        $script .= "because you haven\'t provided the appropriate user credentials.<br>";
+        $script .= $response['response']['code'] . ' [ Invalid credentials ] ';
+        
+        $script .= "</p></div>');";
+        $script .= '});';
+        $script .= '</script>';
+        
         echo $script;
     }
     else
     {
-        $script = '<script>';
-        $script .= 'jQuery(document).ready(';
-        $script .= 'function(){';
-
-        $script .= "var pageTitle = jQuery('div #message');";
         $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data has been also sent it and successfully stored in the donation boxes database.";
-        $script .= "</p></div>');";
+        $script .= "The donation project data has been also sent it successfully in the donation boxes database.<br>";
+        $script .= 'Donation boxes database : ' . trim($response['body']) ;
 
+        $script .= "</p></div>');";
         $script .= '});';
         $script .= '</script>';
+        
         echo $script;
     }
 
@@ -542,6 +560,19 @@ add_filter( 'redirect_post_location', function( $location, $post_id )
 
 
 
+/*
+ * Function that is responsible for displaying the error code ($code)
+ * and the error message to the user in the right area.
+ */
+function db_print_user_error( $code , $message )
+{
+    $class = 'notice notice-error is-dismissible';
+    $message_title = __( 'Failed saving/updating.' , 'sample-text-domain' );
+
+    echo '<div class="'.$class.'"><p><b>Failed!</b> '.$message_title.'<br>'.$code.': '.$message.' </p></div>';
+}
+
+
 
 
 
@@ -550,40 +581,37 @@ function db_admin_notice_error()
 {
     global $db_error;
     
-    $class = 'notice notice-error is-dismissible';
-    $message = __( 'Failed saving/updating.' , 'sample-text-domain' );
-    
     switch ( $_GET['message'] )
     {
         case 1:
             db_send_data_to_donationBox_database( $_GET['post'] );
             break;
         case 101 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>101: Problem with css file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '101', 'Problem with css file [UPLOAD_ERR_NO_FILE].' );
             break;
         case 102 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>102: Problem with css file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '102', 'Problem with css file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE].' );
             break;
         case 103 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>103: Problem with css file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '103', 'Problem with css file [Something went wrong].' );
             break;
         case 201 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>201: Problem with video file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '201', 'Problem with video file [UPLOAD_ERR_NO_FILE].' );
             break;
         case 202 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>202: Problem with video file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '202', 'Problem with video file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE].' );
             break;
         case 203 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>203: Problem with video file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '203', 'Problem with video file [Something went wrong]. ' );
             break;
         case 301 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>301: Problem with image file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '301', 'Problem with image file [UPLOAD_ERR_NO_FILE].' );
             break;
         case 302 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>302: Problem with image file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '302', 'Problem with image file [UPLOAD_ERR_INI_SIZE] || [UPLOAD_ERR_FORM_SIZE].' );
             break;
         case 303 : 
-            printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>303: Problem with image file [Something went wrong]. </p></div>', esc_attr( $class ), esc_html( $message ) );
+            db_print_user_error( '303', 'Problem with image file [Something went wrong].' );
             break;
     }
         
@@ -591,9 +619,6 @@ function db_admin_notice_error()
 }
 
 add_action( 'admin_notices', 'db_admin_notice_error' );
-
-
-
 
 
 
