@@ -3,21 +3,6 @@
 /* Create new submenu to add new Donation project - with register post type */
 function db_register_new_post_type()
 {
-    
-    
-    
-//    $capabilities = array(
-//        'read'                      => true,
-//        'edit_posts'                => true,
-//        'edit_others_posts'         => true,
-//        'edit_private_posts'        => true,
-//        'edit_published_posts'      => true,
-//        'delete_posts'              => true,
-//        'delete_others_posts'       => true,
-//        'delete_published_posts'    => true,
-//        'publish_posts'             => true,
-//        'db_projects'         => true
-//        );
 
     $labels = array(
 		'name'               => _x( 'DonationBoxes', 'post type general name', 'your-plugin-textdomain' ),
@@ -46,8 +31,6 @@ function db_register_new_post_type()
 		'show_in_menu'       => true,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'donationBoxes' ),
-//		'capability_type'    => 'db',
-//		'capabilities'       => $capabilities,
 		'capability'         => 'project_creator',
 		'map_meta_cap'       => true,
 		'has_archive'        => true,
@@ -126,9 +109,9 @@ function db_add_custom_submenu()
         'edit.php?post_type=donationboxes', // Parrent menu Slug.
         'Donation Boxes Settings',          // Page title.
         'General Settings',                 // The side bar Menu title.
-        'administrator',                    // Capability.  project_creator   <---------- Εδώ θα μπορούσα αυτό να μη το βάλω για τους απλύς χρήστες!!!!!
-        'db-settings-menu',                 // menu_slug - Επειδή βάζω το ίδιο με το κυρίως μενού μου, για αυτό θα εμφανίσει αμέσω σαν επιλεγμένο αυτό το submenu. Είναι λες και είναι το ίδιο.
-        'db_settings_page'                  // Callback Function. - Επίσης βάζω την ίδια συνάρτηση. Για να εμφανίσει ένα πράγματα.
+        'administrator',                    // Capability.
+        'db-settings-menu',                 // menu_slug.
+        'db_settings_page'                  // Callback Function.
         );  
 
 }
@@ -145,24 +128,39 @@ function display_options()
 {
     
     // For "General" submenu :
-    /* Δημιουργία πρώτα ενώς section - μια περιοχής - κατηγορίας - ενότητας - τμήματος, όπως γουστάρεις πες το. :) */
     add_settings_section(
-            "general_section",                   /* The unique name of section. <-- Με αυτό το όνομα θα αναφέρομαι πλέον στο section αυτό! */
-            "General Settings",                  /* The display name of section. όπου θα φαίνεται στη σελίδα! */
-            "display_header_options_content",    /* Callback Function. Μια συνάρτηση που ίσος εμφανίζει ή κάνει κάτι για αυτό το section.  */
-            "db-settings-menu");                 /* Σε ποια σελίδα να εμφανιστεί - θα επισυναπτεί ( Page to which section is attached. ) την ορίζουμε από το unique identifier του μενού - σελίδας που έχουμε κάνει προολίγου */
+        "general_section",                   /* The unique name of section. */
+        "General Settings",                  /* The display name of section. */
+        "display_header_options_content",    /* Callback Function.*/
+        "db-settings-menu");                 /* Page to which section is attached. */
 
-    
-    /* Εφόσον δημιουργήσαμε την περιοχή όπου θα βάλουμε μέσα πράγματα. Τώρα πάμε να δημιουργήσουμε τα πράγματα αυτά. */
     add_settings_field(
-            "database_url_field",        /* The unique setting ID name. <--- με αυτό το όνομα θα αναφέρομαι πλέον στο πεδίο αυτό. */
-            "Database Url",              /* The display name of field. όπου θα φαίνεται στη σελίδα! */
-            "display_logo_form_element", /* Callback Function. Μία συνάρτηση που : Σε αυτή θα γράψω τον κώδικα όπου θα εμφανίζεται  */
-            "db-settings-menu",          /* Σε ποια σελίδα θα εμφανιστεί - Page in which field is displayed. -, την ορίζω με το όνομα unique identifier της */
-            "general_section");          /* Section. Και σε ποιο section της σελίδας θα μπει! Βάζω το unique name του. */
+        "db_username_field",            /* The unique setting ID name. */
+        "Username",                     /* The display name of field. */
+        "display_user_form_element",    /* Callback Function. */
+        "db-settings-menu",             /* Page in which field is displayed. */
+        "general_section");             /* Section. */
+
+    add_settings_field(
+        "db_password_field",
+        "Password",
+        "display_password_form_element",
+        "db-settings-menu",
+        "general_section");
+
+    add_settings_field(
+        "database_url_field",
+        "Database Url",
+        "display_database_form_element",
+        "db-settings-menu",
+        "general_section");
 
 
     register_setting("general_section", "database_url_field");
+    register_setting("general_section", "db_username_field");
+    register_setting("general_section", "db_password_field");
+
+        
 
 }
 
@@ -172,14 +170,31 @@ function display_header_options_content()
 }
 
 
-function display_logo_form_element()
+function display_database_form_element()
 {
-    // id and name of form element should be same as the setting name.
     $database_URL = esc_url( get_option( 'database_url_field' ) ) ;
     ?>
-        
         <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." value="<?php echo $database_URL ?>" required="required" aria-describedby="tagline-description" />
         <p id="tagline-description" class="description">The database should be there.</p>
+    <?php
+}
+
+
+function display_user_form_element()
+{
+    $db_username = get_option( 'db_username_field' );
+    ?>
+        <input type="text" name="db_username_field" id="db_username_field" value="<?php echo $db_username ?>" required="required" aria-describedby="tagline-description" />
+        <p id="tagline-description" class="description">This user has privileges to send data to the machine where the database is located.</p>
+    <?php
+}
+
+
+function display_password_form_element()
+{
+    $db_password = get_option( 'db_password_field' );
+    ?>
+        <input type="password" name="db_password_field" id="db_password_field" value="<?php echo $db_password ?>" required="required" aria-describedby="tagline-description" />
     <?php
 }
 
@@ -194,14 +209,12 @@ require_once( plugin_dir_path(__FILE__) . 'db-metaboxes.php' );
 
 
 
+
 // Add more data to "All donation projects" table-list.
 
 
-
-//add_filter( 'manage_yourcustomposttype_posts_columns' );
 add_filter( 'manage_donationboxes_posts_columns' , 'db_set_donation_projects_list_collumns' );
 add_action( 'manage_donationboxes_posts_custom_column', 'db_donation_projects_custom_collum', 10, 2 );
-
 
 
 function db_set_donation_projects_list_collumns( $columns )
@@ -216,17 +229,14 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns['status'] = 'Status';
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
-
-// Βρήκα τις τρέχουσες τιμές που είχεο πίνακας $columns με τον παρακάτω τρόπο κοιτώντας στον κώδικα της σελίδας : 
-//    echo '<br> <br> -------------------- <br> <br>';
-//    var_dump( $columns );
-//    echo '<br> <br> -------------------- <br> <br>';
-    
+   
     return $newColumns;
 }
 
 
-// Αυτή η μέθοδος είναι μια loop για κάθε γραμμή.
+
+
+
 function db_donation_projects_custom_collum( $column , $post_id )
 {
     
@@ -262,20 +272,21 @@ function my_custom_post_type_rest_support()
 {
     global $wp_post_types;
 
-    //be sure to set this to the name of your post type!
     $post_type_name = 'donationboxes';
     
     if( isset( $wp_post_types[ $post_type_name ] ) )
     {
         $wp_post_types[$post_type_name]->show_in_rest = true;
-        // Optionally customize the rest_base or controller class
         $wp_post_types[$post_type_name]->rest_base = $post_type_name;
         $wp_post_types[$post_type_name]->rest_controller_class = 'WP_REST_Posts_Controller';
     }
 }
 
 
-/**
+
+
+
+/*
  * Add REST API support to an already registered taxonomy.
  */
 add_action( 'init', 'my_custom_taxonomy_rest_support', 25 );
@@ -283,19 +294,17 @@ add_action( 'init', 'my_custom_taxonomy_rest_support', 25 );
 function my_custom_taxonomy_rest_support()
 {
     global $wp_taxonomies;
-
-    //be sure to set this to the name of your taxonomy!
+    
     $taxonomy_name = 'organization';
 
     if ( isset( $wp_taxonomies[ $taxonomy_name ] ) ) 
     {
         $wp_taxonomies[ $taxonomy_name ]->show_in_rest = true;
-
-        // Optionally customize the rest_base or controller class
         $wp_taxonomies[ $taxonomy_name ]->rest_base = $taxonomy_name;
         $wp_taxonomies[ $taxonomy_name ]->rest_controller_class = 'WP_REST_Terms_Controller';
     }
 }
+
 
 // Modifying built-in REST API responses.
 require_once( plugin_dir_path(__FILE__) . 'db-rest-api-modifying-responses.php' );

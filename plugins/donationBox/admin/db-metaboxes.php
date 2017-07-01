@@ -49,19 +49,17 @@ add_action('add_meta_boxes' , 'db_project_status_metabox' , 1 );
 
 function db_target_amount_callback( $post )
 {
-    // For current amount :
     wp_nonce_field( 'db_save_current_amount', 'db_current_amount_meta_box_nonce');
     $current_amount_value = get_post_meta( $post->ID , '_db_project_current_amount', true);
     
-    // For target amount :
     wp_nonce_field(
-            'db_save_target_amount',            // action
-            'db_target_amount_meta_box_nonce'   // name
+            'db_save_target_amount',
+            'db_target_amount_meta_box_nonce'
             );
     $target_amount_value = get_post_meta(
-                                $post->ID,                      // post id
-                                '_db_project_target_amount',    // unique id for database -- NEED to start with "_" -- 
-                                true);                          // single
+                                $post->ID,
+                                '_db_project_target_amount',
+                                true);
     
     ?>
     <div class="form-field form-required" >
@@ -75,6 +73,10 @@ function db_target_amount_callback( $post )
     <?php
     
 }
+
+
+
+
 
 function db_project_target_amount_metabox()
 {
@@ -102,7 +104,6 @@ function db_preview_callback( $post )
 
     $category_detail = get_the_category( get_the_ID() ); 
     
-    
     ?>
     <p>
         <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
@@ -111,6 +112,7 @@ function db_preview_callback( $post )
     </p>
     <?php
 }
+
 
 function db_project_preview_metabox()
 {
@@ -205,6 +207,7 @@ function db_video_callback( $post )
     echo '</p>';
 }
 
+
 function db_project_video()
 {
     add_meta_box(
@@ -250,6 +253,7 @@ function db_image_callback( $post )
     echo '</p>';
 }
 
+
 function db_project_image()
 {
     add_meta_box(
@@ -279,32 +283,36 @@ function update_edit_form()
 
 
 // Save meta boxes data.
-
 function db_save_metaboxes_data( $post_id )
 {
 
+    // If it's autosave, DON'T save anything!
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
     {
         return;
     }
-    
+
     // Validations for stylesheet file.
     if ( db_css_file_validations() )
     {
         // Upload css file :
+        // Make sure the file array isn't empty  
         if( ! empty( $_FILES['db_project_css_file_field']['name'] ) )
         {
+            // Get the file type of the upload  
             $flag = 0;
 
             if( !empty($_FILES['db_project_css_file_field']['name']) )
             {
                 $flag = 1;
+                // Use the WordPress API to upload the multiple files
                 $upload[] = wp_upload_bits(
                                             $_FILES['db_project_css_file_field']['name'],
                                             null,
                                             file_get_contents( $_FILES['db_project_css_file_field']['tmp_name'] )
                                         );
             }
+
             if ( $flag == 1 )
             {
                 update_post_meta( $post_id, '_db_project_stylesheet_file', $upload);
@@ -323,10 +331,9 @@ function db_save_metaboxes_data( $post_id )
     }
     
     
-	//  Validations for video file.
+    //  Validations for video file.
     if ( db_video_file_validations() )
     {
-        // Upload video file :
         if( ! empty( $_FILES['db_project_video_field']['name'] ) )
         {
             $flag = 0;
@@ -340,6 +347,7 @@ function db_save_metaboxes_data( $post_id )
                                             file_get_contents( $_FILES['db_project_video_field']['tmp_name'] )
                                         );
             }
+
             if ( $flag == 1 )
             {
                 update_post_meta( $post_id, '_db_project_video_file', $upload);
@@ -357,7 +365,7 @@ function db_save_metaboxes_data( $post_id )
     }
     
     
-	//  Validations for image file.
+    //  Validations for image file.
     if ( db_image_file_validations() )
     {
         if( ! empty( $_FILES['db_project_image_field']['name'] ) )
@@ -373,6 +381,7 @@ function db_save_metaboxes_data( $post_id )
                                             file_get_contents( $_FILES['db_project_image_field']['tmp_name'] )
                                         );
             }
+
             if ( $flag == 1 )
             {
                 update_post_meta( $post_id, '_db_project_image_file', $upload);
@@ -402,6 +411,7 @@ function db_save_metaboxes_data( $post_id )
             {
                 $status_data_int =  1;
             }
+
             else if ( strcmp($status_data, 'deactivate') == 0 )
             {
                 $status_data_int = 0;
@@ -443,6 +453,80 @@ add_action('save_post' , 'db_save_metaboxes_data');
 
 
 
+/*
+ * This function called when data is stored in the WordpPress database.
+ * Every successful update of a donation project, the donation box database
+ * should be updated.
+ * 
+ */
+function db_send_data_to_donationBox_database( $donation_project_id )
+{
+    
+    $body = array(
+        'username'              => get_option( 'db_username_field' ),
+        'password'              => get_option( 'db_password_field' ),
+        'donation_project_id'   => $donation_project_id,
+        'title'                 => get_the_title(),
+        'content'               => esc_sql( get_post_field('post_content', $donation_project_id ) ),
+        'image_url'             => get_post_meta( $donation_project_id, '_db_project_image_file', true)[0]['url'],
+        'video_url'             => get_post_meta( $donation_project_id, '_db_project_video_file', true)[0]['url'] ,
+        'stylesheet_file_url'   => get_post_meta( $donation_project_id, '_db_project_stylesheet_file', true )[0]['url'] ,
+        'status'                => get_post_meta( $donation_project_id, '_db_project_status', true ) == 1 ? 'Activate' : 'Deactivate' ,
+        'organization'          => get_the_terms( $donation_project_id, 'organization' )[0]->name,
+        'target_amount'         => get_post_meta( $donation_project_id, '_db_project_target_amount', true), 
+    );
+
+    $args = array(
+    'body' => $body,
+    'timeout' => '5',
+    'redirection' => '5',
+    'httpversion' => '1.0',
+    'blocking' => true,
+    'headers' => array(),
+    'cookies' => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+    
+    if ( is_wp_error($response) )
+    {
+        $error_message = $response->get_error_message();
+        
+        $script = '<script>';
+        $script .= 'jQuery(document).ready(';
+        $script .= 'function(){';
+
+        $script .= "var pageTitle = jQuery('div #message');";
+        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project data could not be sent to the donation boxes database";
+        $script .= "</p></div>');";
+
+        $script .= '});';
+        $script .= '</script>';
+        echo $script;
+    }
+    else
+    {
+        $script = '<script>';
+        $script .= 'jQuery(document).ready(';
+        $script .= 'function(){';
+
+        $script .= "var pageTitle = jQuery('div #message');";
+        $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project data has been also sent it and successfully stored in the donation boxes database.";
+        $script .= "</p></div>');";
+
+        $script .= '});';
+        $script .= '</script>';
+        echo $script;
+    }
+
+}
+
+
+
+
+
 add_filter( 'redirect_post_location', function( $location, $post_id ) 
 {
     global $db_error;
@@ -459,6 +543,8 @@ add_filter( 'redirect_post_location', function( $location, $post_id )
 
 
 
+
+
 // Create me own admin notice for fail save post!
 function db_admin_notice_error()
 {
@@ -469,6 +555,9 @@ function db_admin_notice_error()
     
     switch ( $_GET['message'] )
     {
+        case 1:
+            db_send_data_to_donationBox_database( $_GET['post'] );
+            break;
         case 101 : 
             printf( '<div class="%1$s"><p><b>Failed!</b> %2$s<br>101: Problem with css file [UPLOAD_ERR_NO_FILE]. </p></div>', esc_attr( $class ), esc_html( $message ) );
             break;
@@ -502,6 +591,9 @@ function db_admin_notice_error()
 }
 
 add_action( 'admin_notices', 'db_admin_notice_error' );
+
+
+
 
 
 
