@@ -9,8 +9,9 @@
 wp_enqueue_style('bootstrap-css', plugins_url( '/css/bootstrap.min.css' , __FILE__ ) , 11 );
 wp_enqueue_script('bootstrap-js', plugins_url( '/js/bootstrap.min.js', __FILE__ ) , 11 );
 wp_enqueue_script('myScripts-js', plugins_url( '/js/db-scripts.js', __FILE__ ) , 11 );
-require_once('db-validations.php');
 
+require_once('db-validations.php');
+require_once('db_send_data_to_db.php');
 
 
 /* Project status meta box. */
@@ -441,105 +442,6 @@ function db_save_metaboxes_data( $post_id )
 }
 
 add_action('save_post' , 'db_save_metaboxes_data');
-
-
-
-
-/*
- * This function called when data is stored in the WordpPress database.
- * Every successful update of a donation project, the donation box database
- * should be updated.
- * 
- */
-function db_send_data_to_donationBox_database( $donation_project_id )
-{
-    
-    $body = array(
-        'username'              => get_option( 'db_username_field' ),
-        'password'              => get_option( 'db_password_field' ),
-        'donation_project_id'   => $donation_project_id,
-        'title'                 => get_the_title(),
-        'content'               => esc_sql( get_post_field('post_content', $donation_project_id ) ),
-        'image_url'             => get_post_meta( $donation_project_id, '_db_project_image_file', true)[0]['url'],
-        'video_url'             => get_post_meta( $donation_project_id, '_db_project_video_file', true)[0]['url'] ,
-        'stylesheet_file_url'   => get_post_meta( $donation_project_id, '_db_project_stylesheet_file', true )[0]['url'] ,
-        'status'                => get_post_meta( $donation_project_id, '_db_project_status', true ) == 1 ? 'Activate' : 'Deactivate' ,
-        'organization'          => get_the_terms( $donation_project_id, 'organization' )[0]->name,
-        'target_amount'         => get_post_meta( $donation_project_id, '_db_project_target_amount', true), 
-    );
-
-    $args = array(
-    'body' => $body,
-    'timeout' => '5',
-    'redirection' => '5',
-    'httpversion' => '1.0',
-    'blocking' => true,
-    'headers' => array(),
-    'cookies' => array()
-    );
-
-    $response = wp_remote_post( get_option( 'database_url_field '), $args );
-
-
-    $script = '<script>';
-    $script .= 'jQuery(document).ready(';
-    $script .= 'function(){';
-    $script .= "var pageTitle = jQuery('div #message');";    
-    
-    
-    if ( is_wp_error($response) )
-    {
-        $error_message = $response->get_error_message();
-        
-        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data could not be <b>sent</b> to the donation boxes database!<br>";
-        $script .= $error_message;
-
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-        
-        echo $script;
-    }
-    else if ( $response['response']['code'] != '200' && $response['response']['code'] != '455' )
-    {
-        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data could not be <b>saved</b> to the donation boxes database!<br>";
-        $script .= $response['response']['code'] . ' [' . $response['response']['message'] . '] ';
-
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-
-        echo $script;
-    }
-    else if ( $response['response']['code'] == '455' )
-    {
-        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "Invalid user credentials! The donation project data could not be <b>saved</b> to the donation boxes database, ";
-        $script .= "because you haven\'t provided the appropriate user credentials.<br>";
-        $script .= $response['response']['code'] . ' [ Invalid credentials ] ';
-        
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-        
-        echo $script;
-    }
-    else
-    {
-        $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data has been also sent it successfully in the donation boxes database.<br>";
-        $script .= 'Donation boxes database : ' . trim($response['body']) ;
-
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-        
-        echo $script;
-    }
-
-}
 
 
 
