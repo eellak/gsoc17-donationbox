@@ -23,7 +23,7 @@ function()
     }
     );
 
-    if ( how_many_times > 1 )
+    if ( how_many_times == 0 || how_many_times > 1 )
     {
         // I make all fields red.
         jQuery('ul#organizationchecklist li').each(
@@ -34,11 +34,24 @@ function()
         );
         
         // I alert the user.
-        var message = 'Sorry, you can choose *only one* organization for each donation project.\nYou choose ';
-        message += how_many_times;
-        message += ' organizations!\nFix it and then go ahead with saving of the donation project. :)';
-        alert(message);
-        return false; // Stop submitting.
+        
+        if ( how_many_times == 0 )
+        {
+            var message = 'It is necessary to choose an organization.\n';
+            message += 'Select only one organization.';
+            alert(message);
+            return false; // Stop submitting.
+        }
+        
+        if ( how_many_times > 1 )
+        {
+            var message = 'Sorry, you can choose *only one* organization for each donation project.\nYou choose ';
+            message += how_many_times;
+            message += ' organizations!\nFix it and then go ahead with saving of the donation project. :)';
+            alert(message);
+            return false; // Stop submitting.
+        }
+        
     }
 
     return true; // Continue to submitting.
