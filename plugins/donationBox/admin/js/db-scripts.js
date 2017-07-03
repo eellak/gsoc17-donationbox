@@ -10,52 +10,59 @@ function()
      */
     function organizations_check()
     {
-    var how_many_times = 0;
-
-    jQuery('ul#organizationchecklist li').each(
-    function()
-    {
-        if ( jQuery(this).find('input').is(':checked') )
+        // If elemet not exists ( other post type posts ) :
+        if ( ! jQuery('ul#organizationchecklist li').length )
         {
-            how_many_times++;
+            return true; // No problem.
         }
+        
+        var how_many_times = 0;
 
-    }
-    );
-
-    if ( how_many_times == 0 || how_many_times > 1 )
-    {
-        // I make all fields red.
         jQuery('ul#organizationchecklist li').each(
         function()
         {
-            this.style.color = "red";
+            if ( jQuery(this).find('input').is(':checked') )
+            {
+                how_many_times++;
+            }
+
         }
         );
-        
-        // I alert the user.
-        
-        if ( how_many_times == 0 )
-        {
-            var message = 'It is necessary to choose an organization.\n';
-            message += 'Select only one organization.';
-            alert(message);
-            return false; // Stop submitting.
-        }
-        
-        if ( how_many_times > 1 )
-        {
-            var message = 'Sorry, you can choose *only one* organization for each donation project.\nYou choose ';
-            message += how_many_times;
-            message += ' organizations!\nFix it and then go ahead with saving of the donation project. :)';
-            alert(message);
-            return false; // Stop submitting.
-        }
-        
-    }
 
-    return true; // Continue to submitting.
+        if ( how_many_times == 0 || how_many_times > 1 )
+        {
+            // I make all fields red.
+            jQuery('ul#organizationchecklist li').each(
+            function()
+            {
+                this.style.color = "red";
+            }
+            );
+
+            // I alert the user.
+
+            if ( how_many_times == 0 )
+            {
+                var message = 'It is necessary to choose an organization.\n';
+                message += 'Select only one organization.';
+                alert(message);
+                return false; // Stop submitting.
+            }
+
+            if ( how_many_times > 1 )
+            {
+                var message = 'Sorry, you can choose *only one* organization for each donation project.\nYou choose ';
+                message += how_many_times;
+                message += ' organizations!\nFix it and then go ahead with saving of the donation project. :)';
+                alert(message);
+                return false; // Stop submitting.
+            }
+
+        }
+
+        return true; // Continue to submitting.
     }
+    
     
     
     
@@ -149,6 +156,13 @@ function()
     
     
     
+    
+    /*
+     * Function that is triggered when the user click the "Donation Box Preview"
+     * button. It is targeted to display a window with specific dimensions,
+     * which resembles with the screen of the final donation box.
+     * In this (popup) window will display all project data.
+     */
     
     jQuery('#db_preview_button').click( function ( event )
     {
