@@ -11,7 +11,7 @@ wp_enqueue_script('bootstrap-js', plugins_url( '/js/bootstrap.min.js', __FILE__ 
 wp_enqueue_script('myScripts-js', plugins_url( '/js/db-scripts.js', __FILE__ ) , 11 );
 
 require_once('db-validations.php');
-require_once('db_send_data_to_db.php');
+require_once('db-send_data_to_db.php');
 
 
 /* Project status meta box. */
