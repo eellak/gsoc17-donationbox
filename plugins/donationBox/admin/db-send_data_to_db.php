@@ -8,6 +8,60 @@
 
 
 
+/*
+ * 
+ */
+
+function db_print_response_message( $response )
+{
+    $script = '<script>';
+    $script .= 'jQuery(document).ready(';
+    $script .= 'function(){';
+    $script .= "var pageTitle = jQuery('div #message');";    
+    
+    if ( is_wp_error($response) )
+    {
+        $error_message = $response->get_error_message();
+        
+        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project data could not be <b>sent</b> to the donation boxes database!<br>";
+        $script .= $error_message;
+    }
+    elseif ( $response['response']['code'] == '200' ) // Add new or update a donation project.
+    {
+        $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project data has been also sent it successfully in the donation boxes database.<br>";
+        $script .= 'Donation boxes database : ' . trim($response['body']) ;
+    }
+    else if ( $response['response']['code'] == '455' ) // Invalid credentials
+    {
+        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
+        $script .= "Invalid user credentials! The donation project data could not be <b>saved</b> to the donation boxes database, ";
+        $script .= "because you haven\'t provided the appropriate user credentials.<br>";
+        $script .= $response['response']['code'] . ' [ Invalid credentials ] ';
+    }
+    else if ( $response['response']['code'] == '460' ) // The donation project was deleted from donation box database.
+    {
+        $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project was <b>deleted</b> successfully from donation box database.<br>";
+        $script .= 'Donation boxes database : ' . trim($response['body']) ;
+    }
+    else // != 200 , != 455 , != 460
+    {
+        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
+        $script .= "The donation project data could not be <b>saved</b> to the donation boxes database!<br>";
+        $script .= $response['response']['code'] . ' [' . $response['response']['message'] . '] ';
+    }
+
+    $script .= "</p></div>'); }); </script>";
+    
+    echo $script;
+    return $response['response']['code'];
+}
+
+
+
+
 
 /*
  * This function are responsible to collect all project data.
@@ -69,7 +123,7 @@ function db_collect_all_data( $project_id )
     $data = array(
         'username'              => get_option( 'db_username_field' ),
         'password'              => get_option( 'db_password_field' ),
-        'donation_project_id'   => $project_id,
+        'id'                    => $project_id,
         'title'                 => get_the_title($project_id),
         'content'               => esc_sql( get_post_field('post_content', $project_id ) ),
         'image_url'             => $image,
@@ -107,84 +161,61 @@ function db_collect_all_data( $project_id )
 
 function db_send_data_to_donationBox_database( $donation_project_id )
 {
-    // If the project has not been saved in the WordPress database as "published"
-    if ( get_post_status( $donation_project_id) == 'auto-draft' || get_post_status( $donation_project_id ) == 'draft' )
+    if (  ( ! db_post_status_is_draft ) || ( ! db_post_type_is_donationboxes($donation_project_id) ) )
     {
-        // No data is sent to the donation boxes database.
-        return;
+        return; // No data is sent to the donation boxes database.
     }
    
     $body = db_collect_all_data($donation_project_id);
 
     $args = array(
-    'body' => $body,
-    'timeout' => '5',
-    'redirection' => '5',
-    'httpversion' => '1.0',
-    'blocking' => true,
-    'headers' => array(),
-    'cookies' => array()
+        'body' => $body,
+        'timeout' => '5',
+        'redirection' => '5',
+        'httpversion' => '1.0',
+        'blocking' => true,
+        'headers' => array(),
+        'cookies' => array()
     );
 
     $response = wp_remote_post( get_option( 'database_url_field '), $args );
-
     
-    $script = '<script>';
-    $script .= 'jQuery(document).ready(';
-    $script .= 'function(){';
-    $script .= "var pageTitle = jQuery('div #message');";    
-    
-    if ( is_wp_error($response) )
-    {
-        $error_message = $response->get_error_message();
-        
-        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data could not be <b>sent</b> to the donation boxes database!<br>";
-        $script .= $error_message;
-
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-        
-        echo $script;
-    }
-    else if ( $response['response']['code'] != '200' && $response['response']['code'] != '455' )
-    {
-        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data could not be <b>saved</b> to the donation boxes database!<br>";
-        $script .= $response['response']['code'] . ' [' . $response['response']['message'] . '] ';
-
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-
-        echo $script;
-    }
-    else if ( $response['response']['code'] == '455' ) 
-    {
-        $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
-        $script .= "Invalid user credentials! The donation project data could not be <b>saved</b> to the donation boxes database, ";
-        $script .= "because you haven\'t provided the appropriate user credentials.<br>";
-        $script .= $response['response']['code'] . ' [ Invalid credentials ] ';
-        
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-        
-        echo $script;
-    }
-    else
-    {
-        $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
-        $script .= "The donation project data has been also sent it successfully in the donation boxes database.<br>";
-        $script .= 'Donation boxes database : ' . trim($response['body']) ;
-
-        $script .= "</p></div>');";
-        $script .= '});';
-        $script .= '</script>';
-        
-        echo $script;
-    }
-
+    db_print_response_message($response);
 }
 
+
+
+
+
+/*
+ * This function called when a donation project must be deleted from the 
+ * donation box database.
+ * 
+ * @donation_project_id : The donation project id for which a delete request
+ * will be sent to the database.
+ * 
+ */
+
+function db_delete_data_from_donationBox_database( $donation_project_id )
+{
+    $body = array(
+        'username'              => get_option( 'db_username_field' ),
+        'password'              => get_option( 'db_password_field' ),
+        'id'                    => $donation_project_id,
+        'delete'                => 1,
+    );
+
+    $args = array(
+        'body' => $body,
+        'timeout' => '5',
+        'redirection' => '5',
+        'httpversion' => '1.0',
+        'blocking' => true,
+        'headers' => array(),
+        'cookies' => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+    
+    return db_print_response_message($response);
+}
