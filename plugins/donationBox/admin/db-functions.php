@@ -5,16 +5,16 @@
  */
 
 
-define('KB', 1024);
-define('MB', 1048576);
-define('GB', 1073741824);
+define('kB', 1024);
+define('MB', 1024 * 1024);
+define('GB', 1024 * 1024 * 1024);
 
 
 
 
 
 /*
- * A function with which i find the user ip address.
+ * Function which return the user's IP address..
  * @return : The user ip address.
  */
 
@@ -76,7 +76,7 @@ function db_delete_css_file( $post_id )
 function db_delete_video_file( $post_id )
 {
     $video = get_post_meta($post_id, '_db_project_video_file', true);
-    if ( count($video) > 0  &&  is_array($video) )
+    if ( count($video) > 0 && is_array($video) )
     {
         wp_delete_file( $video[0]['file'] );
         delete_post_meta($post_id, '_db_project_video_file');
@@ -122,7 +122,7 @@ function db_delete_image_file( $post_id )
 
 function db_post_type_is_donationboxes( $post_id )
 {
-    return get_post_type($post_id) === "donationboxes";
+    return get_post_type($post_id) == "donationboxes";
 }
 
 
@@ -150,6 +150,8 @@ function db_post_status_is_draft( $post_id )
 /*
  * Function that is responsible for displaying the error code ($code)
  * and the error message to the user in the right area.
+ * 
+ * Reference : https://codex.wordpress.org/Plugin_API/Action_Reference/admin_notices
  */
 
 function db_print_user_error( $code , $message )
@@ -159,3 +161,4 @@ function db_print_user_error( $code , $message )
 
     echo '<div class="'.$class.'"><p><b>Failed!</b> '.$message_title.'<br>'.$code.': '.$message.' </p></div>';
 }
+
