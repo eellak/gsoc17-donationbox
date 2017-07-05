@@ -212,9 +212,11 @@ function()
 
 
 
+    /* Only if user is administrator, can "Delete Permanently"
+     * a donation project from WordPress...
+     */
 
-
-
+//    jQuery('.delete').hide();
 
 
 

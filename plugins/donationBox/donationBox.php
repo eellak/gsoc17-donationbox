@@ -37,10 +37,11 @@ if ( !defined( 'ABSPATH' ) )
     exit;
 }
 
-
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
+
+require_once( plugin_dir_path(__FILE__) . 'admin/db-functions.php');
 
 
 /*
@@ -62,9 +63,10 @@ $db_error = array(
  */
 
 register_activation_hook( __FILE__, 'db_create_role_for_users');
+
+
 function db_create_role_for_users()
 {
-
     $capabilities = array(
         'read'                      => true,
         'edit_posts'                => true,
@@ -75,9 +77,6 @@ function db_create_role_for_users()
         'delete_others_posts'       => true,
         'delete_published_posts'    => true,
         'publish_posts'             => true
-//        'upload_files'              => true, // να μην μπορεί να ανεβάζει stylesheet files.
-//        'manage_categories'         => true, // να μην μπορεί να αλλάζει την κατηγορία των donation projects 
-      
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
@@ -127,7 +126,8 @@ add_action('plugins_loaded', 'db_create_plugin_menu');
  * Αυτή είναι μια συνάρτηση που την κατασκευάζω να κάνει κάτι..
  * αυτή την συνάρτηση θα ορίσω παρακάτω σε ένα endpoint να την καλεί.. ;)
  */
-function my_awesome_func( $request ) 
+
+function db_create_endpoint_REST_API( $request ) 
 {
     
     $date_param = $request->get_param( 'date' );
@@ -162,23 +162,17 @@ function my_awesome_func( $request )
         }
     }
     
-    // Αν δε βρει τίποτα :
     if ( empty($data) )
     {
         $data = null;
     }
-
+    
     $response = new WP_REST_Response( $data );
 
-    // Add a custom status code
     $response->set_status( 201 );
-
-    // Add a custom header
-//    $response->header( 'Location', 'http://example.com/' );
     
     return $response ;
 }
-
 
 
 /*
@@ -194,8 +188,12 @@ function my_awesome_func( $request )
  * for my example : 
  * http://localhost:8000/wp-json/myplugin/v1/author/1
  * 
+ * Εδώ από ότι καταλαβαίνω κατασκευάζω - σχεδιάζω - θέτω την REST API διαδρομή.
+ * Τι θα δέχετε ως όρισμα, 
+ * τι επιτρεπόμενες μεθόδους καλέσματος έχει
+ * και τέλος ποια συνάρτηση θα ανταποκρίνετε στο κάλεσμα αυτής της διαδρομής.
+ * 
  */
-
 
 function db_custm_rest_route()
 {
@@ -204,7 +202,7 @@ function db_custm_rest_route()
             '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',  /* Endpoint with parameters. */
             array(
                 'methods' => 'GET',
-                'callback' => 'my_awesome_func', /* Call back function for this endpoint. */
+                'callback' => 'db_create_endpoint_REST_API',
                 'args' => array(
                             'date' => array(
                                         'validate_callback' => function($param, $request, $key) 
@@ -219,11 +217,14 @@ function db_custm_rest_route()
                                         }
                                         )
                                 ),
-
                 )
     );
 }
 
 add_action( 'rest_api_init', 'db_custm_rest_route');
+
+
+
+
 
 
