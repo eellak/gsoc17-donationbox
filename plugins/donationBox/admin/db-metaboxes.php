@@ -12,6 +12,8 @@ wp_enqueue_script('myScripts-js', plugins_url( '/js/db-scripts.js', __FILE__ ) ,
 
 require_once('db-validations.php');
 require_once('db-send_data_to_db.php');
+require_once('db-functions.php');
+
 
 
 /* Project status meta box. */
@@ -259,7 +261,7 @@ function db_project_image()
         'db_image_callback',    // Callback function.
         'donationboxes',        // On which page it will appear.
         'normal',               // In which position.
-        'high'                  // Priority.
+        'high'                  // Priority. 
         );
 
 }
@@ -280,16 +282,13 @@ function update_edit_form()
 
 
 // Save meta boxes data.
+
 function db_save_metaboxes_data( $post_id )
 {
-    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
-    {
-        return;
-    }
-    
     // Validations for stylesheet file.
     if ( db_css_file_validations() )
     {
+        // Upload css file :
         // Make sure the file array isn't empty  
         if( ! empty( $_FILES['db_project_css_file_field']['name'] ) )
         {
@@ -316,12 +315,10 @@ function db_save_metaboxes_data( $post_id )
     }
     
     
-    // For delete css file.
+    // For delete css file. Maybe it's necessary to canmore validations here..
     if (  isset( $_POST['remove_css'] ) )
     {
-        $theFILE = get_post_meta( $post_id, '_db_project_stylesheet_file', true );
-        wp_delete_file( $theFILE[0]['file'] );
-        delete_post_meta($post_id, '_db_project_stylesheet_file');
+        db_delete_css_file($post_id);
     }
     
     
@@ -353,9 +350,7 @@ function db_save_metaboxes_data( $post_id )
     // For delete video file.
     if (  isset( $_POST['remove_video'] ) )
     {
-        $theFILE = get_post_meta( $post_id, '_db_project_video_file', true );
-        wp_delete_file( $theFILE[0]['file'] );
-        delete_post_meta($post_id, '_db_project_video_file');
+        db_delete_video_file($post_id);
     }
     
     
@@ -387,9 +382,7 @@ function db_save_metaboxes_data( $post_id )
     // For delete image file.
     if (  isset( $_POST['remove_image'] ) )
     {
-        $theFILE = get_post_meta( $post_id, '_db_project_image_file', true );
-        wp_delete_file( $theFILE[0]['file'] );
-        delete_post_meta($post_id, '_db_project_image_file');
+        db_delete_image_file($post_id);
     }
     
     
@@ -403,7 +396,7 @@ function db_save_metaboxes_data( $post_id )
 
             if ( strcmp($status_data, 'activate') == 0 )
             {
-                $status_data_int =  1;
+                $status_data_int =  1;  // Θα αποθηκεύω αριθμούς στη βάση δεδομένων. Λόγο του ότι μπορεί να υπάρχουν & περισσότερο των 2 καταστάσεων και είναι πιο βέλτιστο έτσι
             }
 
             else if ( strcmp($status_data, 'deactivate') == 0 )
@@ -441,10 +434,79 @@ function db_save_metaboxes_data( $post_id )
 
 }
 
-add_action('save_post' , 'db_save_metaboxes_data');
+add_action('save_post_donationboxes' , 'db_save_metaboxes_data');
 
 
 
+
+
+/*
+ * 
+ */
+
+//function db_delete_metaboxes_data( $post_id )
+//{
+//    $trash_url = 'edit.php?post_status=trash&post_type=donationboxes&fail_remote_delete=461';
+//    
+//    
+//    if ( db_post_type_is_donationboxes($post_id) )
+//    {
+//        echo '<script> alert("ma ti ginete re pedia!"); </script>';
+//        wp_die('eee');
+//        
+//        // Delete from WordPress Database.
+//        db_delete_css_file($post_id);
+//        db_delete_video_file($post_id);
+//        db_delete_image_file($post_id);
+//        
+//        // Delete from Donation boxes Database.
+//        if ( db_delete_data_from_donationBox_database($post_id) != '460')
+//        {
+//            $message = '<h1>The donation project was not deleted.</h1>';
+//            $message .= 'The donation project can not be deleted, because ';
+//            $message .= 'the server where the donation box database is located ';
+//            $message .= 'returned error. ';
+//            $message .= '<a href="'. get_admin_url($post_id , $trash_url).'">Go back..</a> ';
+//            wp_die($message, 'Could not delete');
+//        }
+//        
+//    }
+//
+//    global $wp;
+//    $current_url = home_url(add_query_arg(array(),$wp->request));
+//    echo '<script> alert("Deleted all!"); </script>';
+//    
+//}
+//
+//add_action('before_delete_post' , 'db_delete_metaboxes_data');
+
+
+/*
+ * 
+ */
+
+//function db_move_to_trash( $post_id )
+//{
+//    echo '<script> alert("Op op op!"); </script>';
+//    echo '<script> confirm("Press a button!"); </scirpt>';
+//    die();
+//}
+//
+//add_action('wp_trash_post', 'db_move_to_trash');
+
+
+
+
+
+
+//add_filter( 'post_updated_messages', function( $messages ) 
+//{
+//    //create another message code, i.e 11
+//    $messages['post'] = $messages['post'] + array( 11 => __( 'Something Wrong', 'textdomain' ) );
+//
+//    return $messages;
+//}
+//);
 
 
 add_filter( 'redirect_post_location', function( $location, $post_id ) 
@@ -462,30 +524,17 @@ add_filter( 'redirect_post_location', function( $location, $post_id )
 
 
 
-/*
- * Function that is responsible for displaying the error code ($code)
- * and the error message to the user in the right area.
- */
-function db_print_user_error( $code , $message )
-{
-    $class = 'notice notice-error is-dismissible';
-    $message_title = __( 'Failed saving/updating.' , 'sample-text-domain' );
-
-    echo '<div class="'.$class.'"><p><b>Failed!</b> '.$message_title.'<br>'.$code.': '.$message.' </p></div>';
-}
-
-
-
-
 
 // Create me own admin notice for fail save post!
-function db_admin_notice_error()
+function db_admin_notices( $post_id )
 {
-    global $db_error;
-    
+
     switch ( $_GET['message'] )
     {
-        case 1:
+        case 1: // Update post.
+            db_send_data_to_donationBox_database( $_GET['post'] );
+            break;
+        case 6: // Create new post.
             db_send_data_to_donationBox_database( $_GET['post'] );
             break;
         case 101 : 
@@ -516,11 +565,20 @@ function db_admin_notice_error()
             db_print_user_error( '303', 'Problem with image file [Something went wrong].' );
             break;
     }
-        
+
+    if ( isset( $_GET["trashed"] ) ) // If he sends donation projects in the trash.
+    {
+        if ( isset( $_GET['ids'] ) )
+        {
+            db_delete_data_from_donationBox_database( $_GET['ids'] );
+        }
+    }
 
 }
 
-add_action( 'admin_notices', 'db_admin_notice_error' );
+add_action( 'admin_notices', 'db_admin_notices' );
+
+
 
 
 
