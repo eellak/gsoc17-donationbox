@@ -9,54 +9,95 @@
 
 
 /*
+ * Function that informs the user if they can successfully communicate
+ * with the database.
+ * 
+ * Attention! : This function does not just inform the user if everything went
+ * well or not, but first of all (and its most important) is that check
+ * whether the communication was done properly with the donation box database.
+ * For this reason it returns true or false.
+ * 
+ * @$response : What response we received when sending data to the database.
+ * 
+ * @retuern :
+ *      - True : If there were *no* problems.
+ *      - False : If there were problems.
  * 
  */
 
-function db_print_response_message( $response )
+function db_check_and_print_response_message( $response )
 {
+    $flag = TRUE;
+    $current_url  = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+    
     $script = '<script>';
     $script .= 'jQuery(document).ready(';
     $script .= 'function(){';
     $script .= "var pageTitle = jQuery('div #message');";    
     
+    $warning_message = "pageTitle.after('<div class=\"warning notice notice-warning is-dismissible \"><p>";
+    $warning_message .= 'But do not worry, you are very good boy. <br>';
+    $warning_message .= 'Report this error to the system administrator to resolve it. <br>';
+    $warning_message .= 'When this problem resolved, <u>the system will automatically resend</u> the donation project to the donation box database.';
+    $warning_message .= '<br> So, be happy. ' .  convert_smilies(':)') . ' <i> (If you want, ';
+    $warning_message .= '<a id="try_again" href="http://'.$current_url.'">try once again to send the request to the donation box database.</a>)</i>' ;
+    $warning_message .= "</p></div>');";
+    
     if ( is_wp_error($response) )
     {
         $error_message = $response->get_error_message();
         
+        $script .= $warning_message;
+        
         $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
         $script .= "The donation project data could not be <b>sent</b> to the donation boxes database!<br>";
         $script .= $error_message;
+        $script .= "</p></div>');";
+        
+        $flag = FALSE;
     }
-    elseif ( $response['response']['code'] == '200' ) // Add new or update a donation project.
+    else if ( $response['response']['code'] == '200' ) // Add new or update a donation project.
     {
         $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
         $script .= "The donation project data has been also sent it successfully in the donation boxes database.<br>";
         $script .= 'Donation boxes database : ' . trim($response['body']) ;
+        $script .= "</p></div>');";
     }
     else if ( $response['response']['code'] == '455' ) // Invalid credentials
     {
+        $script .= $warning_message;
+        
         $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
         $script .= "Invalid user credentials! The donation project data could not be <b>saved</b> to the donation boxes database, ";
         $script .= "because you haven\'t provided the appropriate user credentials.<br>";
-        $script .= $response['response']['code'] . ' [ Invalid credentials ] ';
+        $script .= $response['response']['code'] . ' [ Invalid credentials ] <br>';
+        $script .= "</p></div>');";
+        
+        $flag = FALSE;
     }
     else if ( $response['response']['code'] == '460' ) // The donation project was deleted from donation box database.
     {
         $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
         $script .= "The donation project was <b>deleted</b> successfully from donation box database.<br>";
         $script .= 'Donation boxes database : ' . trim($response['body']) ;
+        $script .= "</p></div>');";
     }
-    else // != 200 , != 455 , != 460
+    else // != 200 , != 455 , != 460 , Some other error...
     {
+        $script .= $warning_message;
+        
         $script .= "pageTitle.after('<div class=\"error notice notice-success is-dismissible \"><p>";
         $script .= "The donation project data could not be <b>saved</b> to the donation boxes database!<br>";
         $script .= $response['response']['code'] . ' [' . $response['response']['message'] . '] ';
+        $script .= "</p></div>');";
+        
+        $flag = FALSE;
     }
-
-    $script .= "</p></div>'); }); </script>";
+    
+    $script .= "}); </script>";
     
     echo $script;
-    return $response['response']['code'];
+    return $flag;
 }
 
 
@@ -69,8 +110,10 @@ function db_print_response_message( $response )
  * Attention :
  * 1) Some data may not have been given by the user, for this reason they are made
  * the necessary checks.
+ * 
  * 2) The current amount of money that has been collected for the donation
  * project is never taken from the WordPress database.
+ * 
  * 
  * @project_id : The donation project id for which all data will be collected
  *               from WordPress database.
@@ -180,7 +223,7 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 
     $response = wp_remote_post( get_option( 'database_url_field '), $args );
     
-    db_print_response_message($response);
+    db_check_and_print_response_message($response);
 }
 
 
@@ -189,33 +232,46 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 
 /*
  * This function called when a donation project must be deleted from the 
- * donation box database.
+ * donation box database. It is called when a donation project from
+ * Wordpress it was successfully transferred to the recycle bin ( Trash ).
  * 
- * @donation_project_id : The donation project id for which a delete request
+ * $donation_projects_ids : The donation projects ids for which a delete request
  * will be sent to the database.
+ * 
+ * Note : They may be given together, more than one project for deletion.
+ * (for example: ids=349,332,330 )
  * 
  */
 
-function db_delete_data_from_donationBox_database( $donation_project_id )
+function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
-    $body = array(
-        'username'              => get_option( 'db_username_field' ),
-        'password'              => get_option( 'db_password_field' ),
-        'id'                    => $donation_project_id,
-        'delete'                => 1,
-    );
-
-    $args = array(
-        'body' => $body,
-        'timeout' => '5',
-        'redirection' => '5',
-        'httpversion' => '1.0',
-        'blocking' => true,
-        'headers' => array(),
-        'cookies' => array()
-    );
-
-    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+    // Ξεχωρίζω ΑΝ τυχών έχει δώσει πάνω από ένα projects για μεταφορά στον κάδο ανακύκλωσης.
+    $ids = explode(",", $donation_projects_ids);
     
-    return db_print_response_message($response);
+    foreach ($ids as &$id)
+    {
+        $body = array(
+            'username'              => get_option( 'db_username_field' ),
+            'password'              => get_option( 'db_password_field' ),
+            'id'                    => $id,
+            'delete'                => 1,
+        );
+
+        $args = array(
+            'body' => $body,
+            'timeout' => '5',
+            'redirection' => '5',
+            'httpversion' => '1.0',
+            'blocking' => true,
+            'headers' => array(),
+            'cookies' => array()
+        );
+
+        $response = wp_remote_post( get_option( 'database_url_field '), $args );
+
+        if ( ! db_check_and_print_response_message($response) )
+        {
+            break;
+        }
+    }
 }
