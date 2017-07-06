@@ -212,12 +212,35 @@ function()
 
 
 
-    /* Only if user is administrator, can "Delete Permanently"
-     * a donation project from WordPress...
+
+    /*
+     * Removing from user's (which is the group "project_creator") field of view 
+     * the fields that enable them to : 
+     *      - trash a donation project
+     *      - untrash a donation project
+     *      - delete permanently a donation project
+     *
+     * Secure note : In this way, they are removed only from our field of view.
+     * So it is not removed here, really the ability of the user to take these
+     * actions. They just do not see these options.
+     * But in PHP code, i blocked/remove completely these user features.
+     * 
      */
 
-//    jQuery('.delete').hide();
+    var data = 
+    {
+        action: 'db_is_project_creator'
+    };
 
+    jQuery.post(ajaxurl, data, function(response)
+    {
+        if( response )
+        {
+            jQuery('ul.subsubsub li.trash').remove(); // Trash folder link.
+            jQuery('span.untrash').remove();         // Restore link.
+            jQuery('span.delete').remove();         // Delete Permanently link.
+        }
+    });
 
 
 
@@ -225,4 +248,3 @@ function()
 
 }
 );
-
