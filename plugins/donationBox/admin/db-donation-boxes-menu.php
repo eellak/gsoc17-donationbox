@@ -3,7 +3,6 @@
 /* Create new submenu to add new Donation project - with register post type */
 function db_register_new_post_type()
 {
-
     $labels = array(
 		'name'               => _x( 'DonationBoxes', 'post type general name', 'your-plugin-textdomain' ),
 		'singular_name'      => _x( 'DonationBoxes', 'post type singular name', 'your-plugin-textdomain' ),
@@ -131,9 +130,10 @@ function display_options()
     add_settings_section(
         "general_section",                   /* The unique name of section. */
         "General Settings",                  /* The display name of section. */
-        "display_header_options_content",    /* Callback Function.*/
+        "display_header_options_content",    /* Callback Function. */
         "db-settings-menu");                 /* Page to which section is attached. */
 
+    
     add_settings_field(
         "db_username_field",            /* The unique setting ID name. */
         "Username",                     /* The display name of field. */
@@ -210,11 +210,9 @@ require_once( plugin_dir_path(__FILE__) . 'db-metaboxes.php' );
 
 
 
-// Add more data to "All donation projects" table-list.
-
-
 add_filter( 'manage_donationboxes_posts_columns' , 'db_set_donation_projects_list_collumns' );
 add_action( 'manage_donationboxes_posts_custom_column', 'db_donation_projects_custom_collum', 10, 2 );
+
 
 
 function db_set_donation_projects_list_collumns( $columns )
@@ -229,12 +227,9 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns['status'] = 'Status';
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
-   
+    
     return $newColumns;
 }
-
-
-
 
 
 function db_donation_projects_custom_collum( $column , $post_id )
@@ -283,18 +278,16 @@ function my_custom_post_type_rest_support()
 }
 
 
-
-
-
 /*
  * Add REST API support to an already registered taxonomy.
  */
+
 add_action( 'init', 'my_custom_taxonomy_rest_support', 25 );
 
 function my_custom_taxonomy_rest_support()
 {
     global $wp_taxonomies;
-    
+
     $taxonomy_name = 'organization';
 
     if ( isset( $wp_taxonomies[ $taxonomy_name ] ) ) 
@@ -305,8 +298,43 @@ function my_custom_taxonomy_rest_support()
     }
 }
 
-
 // Modifying built-in REST API responses.
 require_once( plugin_dir_path(__FILE__) . 'db-rest-api-modifying-responses.php' );
 
 
+
+
+
+/*
+ * Function that checks whether a 'project_creator' user attempts to enter the page :
+ * http://localhost:8000/wp-admin/edit.php?post_status=trash&post_type=donationboxes
+ * 
+ * If he try to access this page, his request is rejected.
+ * This function is executed each time when the page "wp-admin/edit.php" is loaded.
+ * 
+ * Reference : https://codex.wordpress.org/Plugin_API/Action_Reference/load-(page)
+ * 
+ */
+
+function db_load_trash_folder()
+{
+
+    if ( current_user_can('project_creator') )
+    {
+        if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'donationboxes' )
+        {
+            if ( isset( $_GET['post_status'] ) && ( $_GET['post_status'] == 'trash' ) )
+            {
+                $message = '<h1>Access denied.</h1><br>';
+                $message .= 'Dear <b>';
+                $message .= get_user_ip() . ',<br>' . $_SERVER['HTTP_USER_AGENT'] . '</b> <br><br>' ;
+                $message .= 'You are trying to access a page that is not allowed.<br>' ;
+                $message .= 'Be very careful, because your activity may be misunderstood...<br>';
+                $message .= 'Each of your activities are recorded.';                
+                wp_die($message, 'Access denied.');
+            }
+        }
+    }
+}
+
+add_action( 'load-edit.php', 'db_load_trash_folder' );
