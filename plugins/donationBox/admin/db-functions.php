@@ -165,6 +165,7 @@ function db_print_user_error( $code , $message )
 
 
 
+
 /*
  * The following php function, will be executed upon request via AJAX for 
  * action "db_is_project_creator".
