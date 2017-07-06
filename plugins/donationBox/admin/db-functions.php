@@ -45,7 +45,7 @@ function get_user_ip()
  * Function that is targeted to delete the stylesheet file.
  * Deletes from a specific post, the stylesheet file, if it exists.
  * 
- * @post_id : The donation project for which to delete (if exist) the stylesheet
+ * @param post_id : The donation project for which to delete (if exist) the stylesheet
  * file.
  * 
  */
@@ -68,7 +68,7 @@ function db_delete_css_file( $post_id )
  * Function that is targeted to delete the video file.
  * Deletes from a specific post, the video file, if it exists.
  * 
- * @post_id : The donation project for which to delete (if exist) the video
+ * @param post_id : The donation project for which to delete (if exist) the video
  * file.
  * 
  */
@@ -91,7 +91,7 @@ function db_delete_video_file( $post_id )
  * Function that is targeted to delete the image file.
  * Deletes from a specific post, the image file, if it exists.
  * 
- * @post_id : The donation project for which to delete (if exist) the image
+ * @param post_id : The donation project for which to delete (if exist) the image
  * file.
  * 
  */
@@ -113,7 +113,7 @@ function db_delete_image_file( $post_id )
 /*
  * Function returning if the post is 'donationboxes' post type.
  * 
- * @post_id : The donation project id for which it will check if it is post type
+ * @param post_id : The donation project id for which it will check if it is post type
  * 'donationboxes'.
  * 
  * @return : True if it is, or false if its not.
@@ -132,7 +132,7 @@ function db_post_type_is_donationboxes( $post_id )
 /*
  * Function returning if the post status is 'draft' or no.
  * 
- * @post_id : The donation project id for which it will check if it is draft.
+ * @param post_id : The donation project id for which it will check if it is draft.
  * 
  * @return : True if it is, or false if its not.
  * 
@@ -161,4 +161,44 @@ function db_print_user_error( $code , $message )
 
     echo '<div class="'.$class.'"><p><b>Failed!</b> '.$message_title.'<br>'.$code.': '.$message.' </p></div>';
 }
+
+
+
+
+/*
+ * The following php function, will be executed upon request via AJAX for 
+ * action "db_is_project_creator".
+ * 
+ * Its purpose to check two things:
+ *      - If the user belongs to the category (has the role) "project_creator"
+ *      - If it is a page which has post_type "donationboxes".
+ * 
+ * @return : If it meets the above requirements, true or false if he doesn't.
+ * 
+ */
+
+function db_ajax_remove_trash_and_remove()
+{
+    $url = wp_get_referer();
+    $parts = parse_url($url);
+    parse_str($parts['query'], $query);
+
+    if ( current_user_can('project_creator') && $query['post_type'] == 'donationboxes' )
+    {
+        echo TRUE;
+    }
+    else
+    {
+        echo FALSE;
+    }
+
+    wp_die();
+}
+
+add_action('wp_ajax_db_is_project_creator', 'db_ajax_remove_trash_and_remove');
+add_action('wp_ajax_nopriv_db_is_project_creator', 'db_ajax_remove_trash_and_remove');
+
+
+
+
 
