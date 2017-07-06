@@ -224,6 +224,9 @@ function()
      * So it is not removed here, really the ability of the user to take these
      * actions. They just do not see these options.
      * But in PHP code, i blocked/remove completely these user features.
+     * Check the PHP Functions ( in db-validations.php ) : 
+     *      - db_delete_donationboxes_post_type()
+     *      - db_untrash_donationboxes_post_type()
      * 
      */
 
