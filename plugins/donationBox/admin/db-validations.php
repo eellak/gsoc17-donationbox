@@ -7,9 +7,8 @@
  * Verification & validation functions.
  */
 
-define('KB', 1024);
-define('MB', 1048576);
-define('GB', 1073741824);
+
+
 
 
 /*
@@ -47,7 +46,7 @@ function db_css_file_validations()
         switch ( $_FILES[$input_field]['error'] )
         {
             case UPLOAD_ERR_OK:
-                break;// No error, all good
+                break;
             case UPLOAD_ERR_NO_FILE:
                 $db_error['have'] = true;
                 $db_error['message_code'] = '101';
@@ -133,7 +132,7 @@ function db_video_file_validations()
         switch ( $_FILES[$input_field]['error'] )
         {
             case UPLOAD_ERR_OK:
-                break; // No error, all good
+                break;
             case UPLOAD_ERR_NO_FILE:
                 $db_error['have'] = true;
                 $db_error['message_code'] = '201';
@@ -210,11 +209,12 @@ function db_image_file_validations()
     $message .= 'Try uploading the file: "<b>' . $_FILES[$input_field]['name'] . '</b>"<br>' ;
     $message .= 'Be very careful, because your activity may be misunderstood...<br>';
     $message .= 'Each of your activities are recorded.';
-	
+
+
     if ( isset( $_POST['db_upload_image_file_meta_box_nonce'] )
             && ! empty( $_FILES[$input_field]['name'] ) 
             &&  wp_verify_nonce( $_POST['db_upload_image_file_meta_box_nonce'], 'db_save_image_file' ) 
-            &&  ! isset( $_POST['rm_image'] ) )
+            &&  ! isset( $_POST['rm_image'] ) ) // Αν ΔΕΝ έχει πατήσει να διαγράψει το αρχείο
     {
         if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
         {
@@ -297,9 +297,9 @@ function db_image_file_validations()
             wp_die( $message , "Sorry, your file is too large.");
         }
 
-        return true;
+        return true;    // Πέρασε επιτυχώς όλους του ελέγχους.
     }
-    return false;
+    return false;   // Δεν πάτησε κάν ώστε να προσθέσει ένα αρχείο σε αυτό το πεδίο.
 }
 
 
@@ -381,30 +381,166 @@ function db_target_amount_validations()
 
 
 /*
- * A function with which i find the user ip address.
- * @return : The user ip address.
+ * Function that checks whether a 'project_creator' user attempts to enter the page :
+ * http://localhost:8000/wp-admin/edit.php?post_status=trash&post_type=donationboxes
+ * 
+ * If he try to access this page, his request is rejected.
+ * This function is executed each time when the page "wp-admin/edit.php" is loaded.
+ * 
+ * Reference : https://codex.wordpress.org/Plugin_API/Action_Reference/load-(page)
+ * 
+ * 
+ *          ΠΡΕΠΕΙ ΝΑ ΤΟ ΕΝΗΜΕΡΩΣΩ ΕΔΏ!
  */
 
-function get_user_ip()
+function db_load_trash_folder()
 {
-    if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) )
+    if ( current_user_can('project_creator') )
     {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
+        if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'donationboxes' )
+        {
+            if ( isset( $_GET['post_status'] ) && ( $_GET['post_status'] == 'trash' ) )
+            {
+                $message = '<h1>Access denied.</h1><br>';
+                $message .= 'Dear <b>';
+                $message .= get_user_ip() . ',<br>' . $_SERVER['HTTP_USER_AGENT'] . '</b> <br><br>' ;
+                $message .= 'You are trying to access a page that is not allowed.<br>' ;
+                $message .= 'Be very careful, because your activity may be misunderstood...<br>';
+                $message .= 'Each of your activities are recorded.';                
+                wp_die($message, 'Access denied.');
+            }
+        }
     }
-    elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) 
+}
+
+add_action( 'load-edit.php', 'db_load_trash_folder' );
+
+
+
+
+
+/*
+ * Τι θα γίνεται όμως αν κάνει untrash ο administrator?
+ */
+
+function db_untrash_donationboxes_post_type( $post_id )
+{
+    global $db_error;
+    
+    // Αν ήμαστε στα donationboxes post _types
+    if ( db_post_type_is_donationboxes($post_id) )
     {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        if ( current_user_can('project_creator') )
+        {
+            $message = '<h1>Access denied.</h1><br>';
+            $message .= 'Dear <b>';
+            $message .= get_user_ip() . ',<br>' . $_SERVER['HTTP_USER_AGENT'] . '</b> <br><br>' ;
+            $message .= 'Trying to take an action where you do not have access to.<br>' ;
+            $message .= 'Be very careful, because your activity may be misunderstood...<br>';
+            $message .= 'Each of your activities are recorded.';                
+            wp_die($message, 'Access denied.');
+        }
+        else if ( is_super_admin() )
+        {
+//            echo '<script> alert("You are a super administrator!\n '. var_dump(get_post($post_id, ARRAY_A)).'"); </script>';
+//            echo '<br> -------------------------------------------------------------------- <br>';
+//            $temp = get_post($post_id, ARRAY_A);
+//            foreach ($temp as $value)
+//            {
+//                echo $value . '<br>';
+//            }
+            
+//            echo '<script> alert("LOOK this  '. wp_get_referer() .'"); </script>';
+
+        }
+
+//        wp_die('un trash');
     }
-    else
-    {
-        $ip = $_SERVER['REMOTE_ADDR'];
-    }
-    return $ip;
+    // Αν δεν ήμαστε σε donationboxes post_type δε μας νοιάζει.
+    
 }
 
 
+add_action('untrash_post' , 'db_untrash_donationboxes_post_type');
 
 
 
 
 
+/*
+http://localhost:8000/wp-admin/edit.php?
+
+s=&
+post_status=trash
+&post_type=donationboxes
+&_wpnonce=1cdd284fd6
+&_wp_http_referer=/wp-admin/edit.php?post_status=trash
+&post_type=donationboxes
+&action=untrash
+&m=0
+&paged=1
+&post[]=366
+&post[]=362
+&action2=-1
+
+-----------------------------------------------------------------
+
+http://localhost:8000/wp-admin/post.php?post=371&action=untrash&_wpnonce=7411961d75
+
+
+ */
+
+function db_delete_donationboxes_post_type( $post_id )
+{
+//    $trash_url = 'edit.php?post_status=trash&post_type=donationboxes&fail_remote_delete=461';
+
+    // Αν ήμαστε στα donationboxes post _types
+    if ( db_post_type_is_donationboxes($post_id) )
+    {
+        if ( current_user_can('project_creator') )
+        {
+            $message = '<h1>Access denied.</h1><br>';
+            $message .= 'Dear <b>';
+            $message .= get_user_ip() . ',<br>' . $_SERVER['HTTP_USER_AGENT'] . '</b> <br><br>' ;
+            $message .= 'Trying to take an action where you do not have access to.<br>' ;
+            $message .= 'Be very careful, because your activity may be misunderstood...<br>';
+            $message .= 'Each of your activities are recorded.';                
+            wp_die($message, 'Access denied.');
+        }
+        else if ( is_super_admin() )
+        {
+            echo '<script> alert("You are a super administrator!"); </script>';
+            // Delete from WordPress Database.
+    //        db_delete_css_file($post_id);
+    //        db_delete_video_file($post_id);
+    //        db_delete_image_file($post_id);
+        }
+    //    global $wp;
+    //    $current_url = home_url(add_query_arg(array(),$wp->request));
+    //    echo '<script> alert("Deleted all!"); </script>';
+
+        wp_die('Xesto - Delete!');
+    }
+    // Αν δεν ήμαστε σε donationboxes post_type δε μας νοιάζει.
+    
+}
+
+add_action('before_delete_post' , 'db_delete_donationboxes_post_type');
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * 
+ * Run actions when a post, page, or custom post type is about to be trashed.
+ * https://codex.wordpress.org/Plugin_API/Action_Reference/trash_post
+ * https://wordpress.stackexchange.com/a/100640/121651
+ * 
+ */
