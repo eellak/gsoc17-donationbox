@@ -305,36 +305,4 @@ require_once( plugin_dir_path(__FILE__) . 'db-rest-api-modifying-responses.php' 
 
 
 
-/*
- * Function that checks whether a 'project_creator' user attempts to enter the page :
- * http://localhost:8000/wp-admin/edit.php?post_status=trash&post_type=donationboxes
- * 
- * If he try to access this page, his request is rejected.
- * This function is executed each time when the page "wp-admin/edit.php" is loaded.
- * 
- * Reference : https://codex.wordpress.org/Plugin_API/Action_Reference/load-(page)
- * 
- */
 
-function db_load_trash_folder()
-{
-
-    if ( current_user_can('project_creator') )
-    {
-        if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'donationboxes' )
-        {
-            if ( isset( $_GET['post_status'] ) && ( $_GET['post_status'] == 'trash' ) )
-            {
-                $message = '<h1>Access denied.</h1><br>';
-                $message .= 'Dear <b>';
-                $message .= get_user_ip() . ',<br>' . $_SERVER['HTTP_USER_AGENT'] . '</b> <br><br>' ;
-                $message .= 'You are trying to access a page that is not allowed.<br>' ;
-                $message .= 'Be very careful, because your activity may be misunderstood...<br>';
-                $message .= 'Each of your activities are recorded.';                
-                wp_die($message, 'Access denied.');
-            }
-        }
-    }
-}
-
-add_action( 'load-edit.php', 'db_load_trash_folder' );
