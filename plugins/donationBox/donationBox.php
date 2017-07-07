@@ -42,6 +42,8 @@ define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
 
 require_once( plugin_dir_path(__FILE__) . 'admin/db-functions.php');
+require_once( plugin_dir_path(__FILE__) . 'admin/db-validations.php');
+
 
 
 /*
@@ -67,6 +69,7 @@ register_activation_hook( __FILE__, 'db_create_role_for_users');
 
 function db_create_role_for_users()
 {
+
     $capabilities = array(
         'read'                      => true,
         'edit_posts'                => true,
@@ -75,8 +78,9 @@ function db_create_role_for_users()
         'edit_published_posts'      => true,
         'delete_posts'              => true,
         'delete_others_posts'       => true,
-        'delete_published_posts'    => true,
+        'delete_published_posts'    => false,
         'publish_posts'             => true
+
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
@@ -123,8 +127,6 @@ add_action('plugins_loaded', 'db_create_plugin_menu');
  * @param array $request all options - arguments from the request.
  * @return string|null Post title for the latest,  * or null if none.
  * 
- * Αυτή είναι μια συνάρτηση που την κατασκευάζω να κάνει κάτι..
- * αυτή την συνάρτηση θα ορίσω παρακάτω σε ένα endpoint να την καλεί.. ;)
  */
 
 function db_create_endpoint_REST_API( $request ) 
@@ -151,7 +153,7 @@ function db_create_endpoint_REST_API( $request )
     for ( $i = 0; $i < count($posts); $i++ )
     {
         // Because post_modified is like "2017-06-20 13:50:08", that's very good! :)
-
+        
         $request_date = new DateTime( $date_param .' '.$time_param );
         $currnet_post_time = new DateTime($posts[$i]->post_modified);
         
@@ -166,9 +168,11 @@ function db_create_endpoint_REST_API( $request )
     {
         $data = null;
     }
+
     
     $response = new WP_REST_Response( $data );
 
+    // Add a custom status code
     $response->set_status( 201 );
     
     return $response ;
@@ -188,18 +192,13 @@ function db_create_endpoint_REST_API( $request )
  * for my example : 
  * http://localhost:8000/wp-json/myplugin/v1/author/1
  * 
- * Εδώ από ότι καταλαβαίνω κατασκευάζω - σχεδιάζω - θέτω την REST API διαδρομή.
- * Τι θα δέχετε ως όρισμα, 
- * τι επιτρεπόμενες μεθόδους καλέσματος έχει
- * και τέλος ποια συνάρτηση θα ανταποκρίνετε στο κάλεσμα αυτής της διαδρομής.
- * 
  */
 
 function db_custm_rest_route()
 {
     register_rest_route( 
-            'donationboxes/v1',          /* Namespace - Route. */
-            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',  /* Endpoint with parameters. */
+            'donationboxes/v1',
+            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',
             array(
                 'methods' => 'GET',
                 'callback' => 'db_create_endpoint_REST_API',
@@ -226,5 +225,36 @@ add_action( 'rest_api_init', 'db_custm_rest_route');
 
 
 
+
+// function my_post_updated_messages_filter($messages)
+//{
+////      $messages['trashed'][1] = 'Publish not allowed';
+//      return $messages . 'odsdsfsdfssssssssssssss';
+// }
+// 
+// add_filter('post_updated_messages', 'my_post_updated_messages_filter');
+
+
+
+
+
+function my_bulk_post_updated_messages_filter( $bulk_messages, $bulk_counts )
+{
+    $singular = 'donation project';
+    $plural = 'donation projects';
+    
+    $bulk_messages['donationboxes'] = array(
+        'updated'   => _n( '%s ' . $singular . ' updated.', '%s ' . $plural . ' updated.', $bulk_counts['updated'] ),
+        'locked'    => _n( '%s ' . $singular . ' not updated, somebody is editing it.', '%s ' . $plural . ' not updated, somebody is editing them.', $bulk_counts['locked'] ),
+        'deleted'   => _n( '%s ' . $singular . ' permanently deleted.', '%s ' . $plural . ' permanently deleted.', $bulk_counts['deleted'] ),
+        'trashed'   => _n( '%s ' . $singular . ' moved to the Trash.', '%s ' . $plural . ' moved to the Trash.', $bulk_counts['trashed'] ),
+        'untrashed' => _n( '%s ' . $singular . ' restored from the Trash.', '%s ' . $plural . ' restored from the Trash.', $bulk_counts['untrashed'] ),
+    );
+
+    return $bulk_messages;
+
+}
+
+add_filter( 'bulk_post_updated_messages', 'my_bulk_post_updated_messages_filter', 10, 2 );
 
 
