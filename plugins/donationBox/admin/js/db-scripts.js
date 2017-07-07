@@ -242,10 +242,21 @@ function()
             jQuery('ul.subsubsub li.trash').remove(); // Trash folder link.
             jQuery('span.untrash').remove();         // Restore link.
             jQuery('span.delete').remove();         // Delete Permanently link.
+            
+            // "Undo" link.
+            if ( jQuery('div#message p:contains(post moved to the Trash)').length )
+            { 
+                jQuery('div#message p a').remove();
+            }
         }
     });
+    
+    
+    
+    
+    
 
-
+    
 
 
 
