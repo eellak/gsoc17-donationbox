@@ -206,7 +206,7 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 {
     if (  ( ! db_post_status_is_draft ) || ( ! db_post_type_is_donationboxes($donation_project_id) ) )
     {
-        return; // No data is sent to the donation boxes database.
+        return; // Don't sent data to the donation boxes database.
     }
    
     $body = db_collect_all_data($donation_project_id);
@@ -245,7 +245,6 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 
 function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
-    // Ξεχωρίζω ΑΝ τυχών έχει δώσει πάνω από ένα projects για μεταφορά στον κάδο ανακύκλωσης.
     $ids = explode(",", $donation_projects_ids);
     
     foreach ($ids as &$id)

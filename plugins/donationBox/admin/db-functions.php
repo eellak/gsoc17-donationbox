@@ -202,4 +202,3 @@ add_action('wp_ajax_nopriv_db_is_project_creator', 'db_ajax_remove_trash_and_rem
 
 
 
-
