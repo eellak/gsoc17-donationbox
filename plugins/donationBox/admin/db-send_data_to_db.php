@@ -206,7 +206,7 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 {
     if (  ( ! db_post_status_is_draft ) || ( ! db_post_type_is_donationboxes($donation_project_id) ) )
     {
-        return; // Don't sent data to the donation boxes database.
+        return; // No data is sent to the donation boxes database.
     }
    
     $body = db_collect_all_data($donation_project_id);
@@ -245,9 +245,11 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 
 function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
+    $start_cron = FALSE;
+    
     $ids = explode(",", $donation_projects_ids);
     
-    foreach ($ids as &$id)
+    foreach ($ids as  & $id)
     {
         $body = array(
             'username'              => get_option( 'db_username_field' ),
@@ -270,7 +272,52 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 
         if ( ! db_check_and_print_response_message($response) )
         {
+            $start_cron = TRUE;
             break;
         }
     }
+    
+    if ( $start_cron )
+    {
+        foreach ($ids as  & $id)
+        {
+            $cron_name = 'db_cron_hook' . $id;
+            
+            add_action( $cron_name, 'db_cron_exec', 10 , $id );
+
+            if ( ! wp_next_scheduled( $cron_name ) )
+            {
+                wp_schedule_event( time(), 'hourly', $cron_name );
+            }
+        }
+        
+    }
+    else
+    {
+        foreach ($ids as  & $id)
+        {
+            $cron_name = 'db_cron_hook' . $id;
+
+            if ( wp_next_scheduled( $cron_name ) )
+            {
+                db_deactivate_cron($cron_name);
+            }
+        }
+    }
+    
 }
+
+
+function db_cron_exec( $id )
+{
+    db_delete_data_from_donationBox_database( $id );
+    
+}
+
+
+function db_deactivate_cron( $cron_name )
+{
+    $timestamp = wp_next_scheduled( $cron_name );
+    wp_unschedule_event( $timestamp, $cron_name );
+}
+
