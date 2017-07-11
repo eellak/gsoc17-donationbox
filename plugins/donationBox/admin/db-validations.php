@@ -419,13 +419,11 @@ add_action( 'load-edit.php', 'db_load_trash_folder' );
 
 
 
-/*
- * Τι θα γίνεται όμως αν κάνει untrash ο administrator?
- */
-
 function db_untrash_donationboxes_post_type( $post_id )
 {
     global $db_error;
+    global $untrashed_posts;
+
     
     // Αν ήμαστε στα donationboxes post _types
     if ( db_post_type_is_donationboxes($post_id) )
@@ -451,10 +449,12 @@ function db_untrash_donationboxes_post_type( $post_id )
 //            }
             
 //            echo '<script> alert("LOOK this  '. wp_get_referer() .'"); </script>';
+            var_dump($untrashed_posts);
 
+            
         }
 
-//        wp_die('un trash');
+        wp_die('skata - un trash');
     }
     // Αν δεν ήμαστε σε donationboxes post_type δε μας νοιάζει.
     
@@ -462,6 +462,29 @@ function db_untrash_donationboxes_post_type( $post_id )
 
 
 add_action('untrash_post' , 'db_untrash_donationboxes_post_type');
+
+
+
+global $untrashed_posts;
+$untrashed_posts = array();
+
+function wpse_handle_untrash($new_status, $old_status, $post)
+{
+    global $untrashed_posts;
+    
+    // if the post was in the trash, but now is notS
+    if( $old_status == 'trash' )
+    {
+        // if you want, you can do something only for a certain post type
+        if($post->post_type == 'donationboxes')
+        {
+            array_push($untrashed_posts, $post->ID );
+        }
+    }
+}
+
+add_action('transition_post_status', 'wpse_handle_untrash', 10, 3 );
+
 
 
 

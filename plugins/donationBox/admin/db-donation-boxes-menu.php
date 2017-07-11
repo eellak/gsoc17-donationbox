@@ -100,17 +100,17 @@ add_action( 'init' , 'db_register_organization_taxonomy' );
 
 
 
-/* For custom submenu. */
-function db_add_custom_submenu()
+/* For custom submenu - Donation Boxes Settings . */
+function db_add_custom_settings_submenu()
 {
     
     add_submenu_page(
-        'edit.php?post_type=donationboxes', // Parrent menu Slug.
-        'Donation Boxes Settings',          // Page title.
-        'General Settings',                 // The side bar Menu title.
-        'administrator',                    // Capability.
-        'db-settings-menu',                 // menu_slug.
-        'db_settings_page'                  // Callback Function.
+        'edit.php?post_type=donationboxes',
+        'Donation Boxes Settings',
+        'General Settings',
+        'administrator',
+        'db-settings-menu',
+        'db_settings_page'
         );  
 
 }
@@ -199,8 +199,35 @@ function display_password_form_element()
 }
 
 
-add_action("admin_menu", "db_add_custom_submenu");
+add_action("admin_menu", "db_add_custom_settings_submenu");
 add_action("admin_init", "display_options");
+
+
+
+
+/* For custom submenu - View non-uploaded donation projects . */
+function db_add_view_nonuploaded_projects_submenu()
+{
+    
+    add_submenu_page(
+        'edit.php?post_type=donationboxes',
+        'View non-uploaded Donation Projects',
+        'Non-uploaded Donation Projects',
+        'administrator',
+        'db-non-uploaded-projects-menu',
+        'db_non_uploaded_projects_page'
+        );
+
+}
+
+function db_non_uploaded_projects_page()
+{
+    require_once( plugin_dir_path(__FILE__) . 'db-submenu-view_non_uploaded-page.php' );
+}
+
+
+add_action("admin_menu", "db_add_view_nonuploaded_projects_submenu");
+
 
 
 /* Load metaboxes : */

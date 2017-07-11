@@ -460,12 +460,20 @@ add_action('save_post_donationboxes' , 'db_save_metaboxes_data');
 function db_redirect_post_location( $location, $post_id )
 {
     global $db_error;
+    global $untrashed_posts;
 
     if ( $db_error['have'] )
     {
         $location = add_query_arg( 'message', $db_error['message_code'], get_edit_post_link( $post_id, 'url' ) );
     }
-
+    
+    if ( $untrashed_posts ) // If i have untrashed posts.
+    {
+        $location = add_query_arg( 'ids', $untrashed_posts[0], $location );
+        var_dump($untrashed_posts);
+//        wp_die();
+    }
+    
     return $location;
 }
 
@@ -478,6 +486,9 @@ add_filter( 'redirect_post_location', 'db_redirect_post_location' , 10, 2 );
 // Create me own admin notice for fail save post!
 function db_admin_notices( $post_id )
 {
+
+    global $untrashed_posts;
+
 
     switch ( $_GET['message'] )
     {
@@ -526,18 +537,21 @@ function db_admin_notices( $post_id )
     
     if ( isset( $_GET['untrashed'] ) ) // If he sends donation projects in the trash.
     {
+        var_dump($untrashed_posts);
 //        if ( $_GET['ids'] == 'untrash' )
 //        {
 //            db_delete_data_from_donationBox_database( $_GET['ids'] );
 //        }
-        db_print_user_error( '303', 'Untrashed problem' );
-//        echo '<script> alert(" eeee !!?!'. var_dump($_GET) .'"); </script>';
+        if ( isset( $_GET['ids'] ) )
+        {
+            db_print_user_error( 'Untrashed posts is : ', $_GET['ids'] );
+        }
 //        wp_die();
     }
         
 }
 
-add_action( 'admin_notices', 'db_admin_notices' );
+add_action( 'admin_notices', 'db_admin_notices' )
 
 
 
