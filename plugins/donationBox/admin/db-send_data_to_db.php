@@ -245,9 +245,7 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 
 function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
-    $start_cron = FALSE;
-    
-    $ids = explode(",", $donation_projects_ids);
+    $ids = explode(",", strval( $donation_projects_ids ) );
     
     foreach ($ids as  & $id)
     {
@@ -269,55 +267,43 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
         );
 
         $response = wp_remote_post( get_option( 'database_url_field '), $args );
+        
+        $cron_name = 'db_cron_job_' . $id;
+        add_action( $cron_name, 'db_cron_exec', 10, 1 );
 
-        if ( ! db_check_and_print_response_message($response) )
+        if ( ! db_check_and_print_response_message($response) ) // no
         {
-            $start_cron = TRUE;
-            break;
-        }
-    }
-    
-    if ( $start_cron )
-    {
-        foreach ($ids as  & $id)
-        {
-            $cron_name = 'db_cron_hook' . $id;
-            
-            add_action( $cron_name, 'db_cron_exec', 10 , $id );
-
             if ( ! wp_next_scheduled( $cron_name ) )
             {
-                wp_schedule_event( time(), 'hourly', $cron_name );
-            }
+//                           curren_time ,   next_time,   custom_action,     arg
+                wp_schedule_event( time(), 'five_seconds', $cron_name, array( $id ) );
+            }            
         }
-        
-    }
-    else
-    {
-        foreach ($ids as  & $id)
+        else
         {
-            $cron_name = 'db_cron_hook' . $id;
-
-            if ( wp_next_scheduled( $cron_name ) )
-            {
-                db_deactivate_cron($cron_name);
-            }
+            db_deactivate_cron($cron_name , $id );
         }
     }
-    
 }
 
 
 function db_cron_exec( $id )
 {
-    db_delete_data_from_donationBox_database( $id );
-    
+    db_delete_data_from_donationBox_database( $id[0] );
 }
 
 
-function db_deactivate_cron( $cron_name )
+
+function db_deactivate_cron( $cron_name, $id )
 {
-    $timestamp = wp_next_scheduled( $cron_name );
-    wp_unschedule_event( $timestamp, $cron_name );
+//    if ( wp_next_scheduled( $cron_name ) )
+//    {
+//        $timestamp = wp_next_scheduled( $cron_name );
+//        wp_unschedule_event( $timestamp, $cron_name );
+//    }
+    wp_clear_scheduled_hook($cron_name , array($id) );
 }
+
+
+
 

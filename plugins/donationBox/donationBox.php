@@ -258,3 +258,18 @@ function my_bulk_post_updated_messages_filter( $bulk_messages, $bulk_counts )
 add_filter( 'bulk_post_updated_messages', 'my_bulk_post_updated_messages_filter', 10, 2 );
 
 
+
+
+
+function db_add_cron_interval( $schedules )
+{
+    $schedules['five_seconds'] = array(
+        'interval' => 5,
+        'display'  => esc_html__( 'Every Five Seconds' ),
+    );
+ 
+    return $schedules;
+}
+
+add_filter( 'cron_schedules', 'db_add_cron_interval' );
+
