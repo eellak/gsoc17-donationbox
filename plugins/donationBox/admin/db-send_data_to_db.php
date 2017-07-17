@@ -19,13 +19,15 @@
  * 
  * @$response : What response we received when sending data to the database.
  * 
+ * @view : If true, it displays the message.
+ * 
  * @retuern :
  *      - True : If there were *no* problems.
  *      - False : If there were problems.
  * 
  */
 
-function db_check_and_print_response_message( $response )
+function db_check_and_print_response_message( $response, $view = true )
 {
     $flag = TRUE;
     $current_url  = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -96,7 +98,11 @@ function db_check_and_print_response_message( $response )
     
     $script .= "}); </script>";
     
-    echo $script;
+    if ( $view )
+    {
+        echo $script;
+    }
+    
     return $flag;
 }
 
@@ -206,7 +212,7 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 {
     if (  ( ! db_post_status_is_draft ) || ( ! db_post_type_is_donationboxes($donation_project_id) ) )
     {
-        return; // No data is sent to the donation boxes database.
+        return; // Don't sent data to the donation boxes database.
     }
    
     $body = db_collect_all_data($donation_project_id);
@@ -243,67 +249,49 @@ function db_send_data_to_donationBox_database( $donation_project_id )
  * 
  */
 
-function db_delete_data_from_donationBox_database( $donation_projects_ids )
+function db_delete_data_from_donationBox_database( $donation_projects_ids , $time = null )
 {
     $ids = explode(",", strval( $donation_projects_ids ) );
     
+	$view = TRUE;
     foreach ($ids as  & $id)
     {
         $body = array(
-            'username'              => get_option( 'db_username_field' ),
-            'password'              => get_option( 'db_password_field' ),
-            'id'                    => $id,
-            'delete'                => 1,
+            'username'  => get_option( 'db_username_field' ),
+            'password'  => get_option( 'db_password_field' ),
+            'id'        => $id,
+            'delete'    => 1,
         );
 
         $args = array(
-            'body' => $body,
-            'timeout' => '5',
-            'redirection' => '5',
-            'httpversion' => '1.0',
-            'blocking' => true,
-            'headers' => array(),
-            'cookies' => array()
+            'body'          => $body,
+            'timeout'       => '5',
+            'redirection'   => '5',
+            'httpversion'   => '1.0',
+            'blocking'      => true,
+            'headers'       => array(),
+            'cookies'       => array()
         );
 
         $response = wp_remote_post( get_option( 'database_url_field '), $args );
-        
-        $cron_name = 'db_cron_job_' . $id;
-        add_action( $cron_name, 'db_cron_exec', 10, 1 );
 
-        if ( ! db_check_and_print_response_message($response) ) // no
+        if ( ! db_check_and_print_response_message($response , $view) )
         {
-            if ( ! wp_next_scheduled( $cron_name ) )
+            if ( ! wp_next_scheduled( 'db_cron_hook' ) )
             {
-//                           curren_time ,   next_time,   custom_action,     arg
-                wp_schedule_event( time(), 'five_seconds', $cron_name, array( $id ) );
-            }            
+                $next_time = time() + ( 1 * 60 * 60); // Just one hour - http://php.net/manual/en/function.time.php
+                $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
+                wp_schedule_single_event( $next_time, 'db_cron_hook', array( $id, $next_time_string ) );
+            }
+            
+            $view = FALSE;
         }
-        else
-        {
-            db_deactivate_cron($cron_name , $id );
-        }
+
+        
     }
 }
 
-
-function db_cron_exec( $id )
-{
-    db_delete_data_from_donationBox_database( $id[0] );
-}
-
-
-
-function db_deactivate_cron( $cron_name, $id )
-{
-//    if ( wp_next_scheduled( $cron_name ) )
-//    {
-//        $timestamp = wp_next_scheduled( $cron_name );
-//        wp_unschedule_event( $timestamp, $cron_name );
-//    }
-    wp_clear_scheduled_hook($cron_name , array($id) );
-}
-
+add_action( 'db_cron_hook', 'db_delete_data_from_donationBox_database', 10, 2 );
 
 
 
