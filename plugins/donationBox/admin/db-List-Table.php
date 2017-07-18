@@ -22,7 +22,7 @@ class db_List_Table extends WP_List_Table
 
         foreach ($args as $cron_job) 
         {
-            if ( $cron_job['db_cron_hook'] )
+            if ( $cron_job['db_cron_hook_insert_update'] || $cron_job['db_cron_hook_delete'])
             {
                 foreach ($cron_job as $value)
                 {
