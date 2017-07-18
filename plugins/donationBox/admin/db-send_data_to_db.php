@@ -229,8 +229,18 @@ function db_send_data_to_donationBox_database( $donation_project_id )
 
     $response = wp_remote_post( get_option( 'database_url_field '), $args );
     
-    db_check_and_print_response_message($response);
+    if ( ! db_check_and_print_response_message($response) ) 
+    {
+        $next_time = time() + ( 60 ) ;
+
+        $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
+        wp_schedule_single_event( $next_time, 'db_cron_hook_insert_update', array( $donation_project_id, TRUE, $next_time_string ) );
+    }
+    
+    
 }
+
+add_action( 'db_cron_hook_insert_update', 'db_send_data_to_donationBox_database', 10, 3 );
 
 
 
@@ -249,11 +259,11 @@ function db_send_data_to_donationBox_database( $donation_project_id )
  * 
  */
 
-function db_delete_data_from_donationBox_database( $donation_projects_ids , $time = null )
+function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
     $ids = explode(",", strval( $donation_projects_ids ) );
-    
-	$view = TRUE;
+
+    $view = TRUE;
     foreach ($ids as  & $id)
     {
         $body = array(
@@ -275,14 +285,17 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids , $tim
 
         $response = wp_remote_post( get_option( 'database_url_field '), $args );
 
-        if ( ! db_check_and_print_response_message($response , $view) )
+        if ( ! db_check_and_print_response_message($response , $view) )  // if we haven't send it to database... start a cron job
         {
-            if ( ! wp_next_scheduled( 'db_cron_hook' ) )
-            {
-                $next_time = time() + ( 1 * 60 * 60); // Just one hour - http://php.net/manual/en/function.time.php
+//            if ( ! wp_next_scheduled( 'db_cron_hook' ) )
+//            {
+//                $next_time = time() + ( 1 * 60 * 60); // Just one hour - http://php.net/manual/en/function.time.php
+//                $next_time = time() + ( 60 * 60 ) ; // one hour again
+                $next_time = time() + ( 60 ) ;
+                
                 $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
-                wp_schedule_single_event( $next_time, 'db_cron_hook', array( $id, $next_time_string ) );
-            }
+                wp_schedule_single_event( $next_time, 'db_cron_hook_delete', array( $id, FALSE, $next_time_string ) );
+//            }
             
             $view = FALSE;
         }
@@ -291,7 +304,9 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids , $tim
     }
 }
 
-add_action( 'db_cron_hook', 'db_delete_data_from_donationBox_database', 10, 2 );
+add_action( 'db_cron_hook_delete', 'db_delete_data_from_donationBox_database', 10, 3 );
+
+
 
 
 
