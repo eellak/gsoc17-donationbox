@@ -202,3 +202,101 @@ add_action('wp_ajax_nopriv_db_is_project_creator', 'db_ajax_remove_trash_and_rem
 
 
 
+
+
+/*
+ * 
+ */
+
+function db_cron_exists( $id )
+{
+    $all_cron_jobs = _get_cron_array();
+
+    foreach ($all_cron_jobs as $cron_job) 
+    {
+        if ( $cron_job['db_cron_hook_insert_update'] || $cron_job['db_cron_hook_delete'])
+        {
+            foreach ($cron_job as $value)
+            {
+                foreach ($value as $temp )
+                {
+                    if ( $temp['args'][0] == $id ) 
+                    {
+                        return TRUE;
+                    }
+                }
+            }
+        }
+    }
+    return FALSE;    
+}
+
+
+
+
+
+
+function db_delete_cron_job( $id )
+{
+    $delete = FALSE;
+    
+    $all_cron_jobs = _get_cron_array();
+    var_dump($all_cron_jobs);
+    echo '<br> ------------------- <br>';
+
+    foreach ($all_cron_jobs as $cron_job) 
+    {
+        if ( $cron_job['db_cron_hook_insert_update'] || $cron_job['db_cron_hook_delete'])
+        {
+            foreach ($cron_job as $value)
+            {               
+                foreach ($value as $temp )
+                {
+                    if ( $temp['args'][0] == $id ) 
+                    {
+                        $delete = TRUE;
+                    }
+                }
+                
+                if ( $delete )
+                {
+                    var_dump( $cron_job );
+                    echo '<br>';
+                    var_dump( key($cron_job) );
+                    echo '<br> --> ' . $all_cron_jobs[ key($cron_job) ] ;
+                    echo '<br>';
+                    var_dump($value);
+                    echo '<br>'.$all_cron_jobs[ key($cron_job) ][ key($value) ] .'<br>';
+                    unset( $all_cron_jobs[ key($value)] );
+                    return;
+                }
+                
+            }
+        }
+    }
+    
+    _set_cron_array($all_cron_jobs);
+    
+    
+//    $crons = _get_cron_array();
+//    foreach ($crons as $key=>$job)
+//    {
+//        echo $crons[$key] ;
+//        
+//        if ( $job['args'][0] == $id )
+//        {
+//            unset( $crons[$key] );
+//        }
+//    }
+//    
+//    _set_cron_array($crons);
+    
+}
+
+
+
+
+
+
+
+
