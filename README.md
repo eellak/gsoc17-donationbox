@@ -13,11 +13,11 @@ Doing the **modern** donation box, actually.
 
 * May 20 - 21 [ Installation of infrastructure & start design Wordrees Plugin. ]
 
-* ##### June 1-30 [ Implementation of Wordpress Plugin ]
+* June 1-30 [ Implementation of Wordpress Plugin ]
 
 * July 1 - 12 [ Implementation of API for sending data ]
 
-* July 13 - 24 [ Implementation of API for receiving data ]
+* ##### July 13 - 24 [ Implementation of API for receiving data ]
 
 * July 25 - 28 August [ Implementation of website ]
 
