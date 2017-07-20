@@ -1,5 +1,8 @@
 <?php
 
+require_once( plugin_dir_path(__FILE__) . 'db-functions.php');
+
+
 /* Create new submenu to add new Donation project - with register post type */
 function db_register_new_post_type()
 {
@@ -105,12 +108,12 @@ function db_add_custom_settings_submenu()
 {
     
     add_submenu_page(
-        'edit.php?post_type=donationboxes',
-        'Donation Boxes Settings',
-        'General Settings',
-        'administrator',
-        'db-settings-menu',
-        'db_settings_page'
+        'edit.php?post_type=donationboxes', // Parrent menu Slug.
+        'Donation Boxes Settings',          // Page title.
+        'General Settings',                 // The side bar Menu title.
+        'administrator',                    // Capability.
+        'db-settings-menu',                 // menu_slug.
+        'db_settings_page'                  // Callback Function.
         );  
 
 }
@@ -125,8 +128,8 @@ function db_settings_page()
 /* Add settings using WordPress Settings API. */
 function display_options()
 {
-    
     // For "General" submenu :
+
     add_settings_section(
         "general_section",                   /* The unique name of section. */
         "General Settings",                  /* The display name of section. */
@@ -185,6 +188,7 @@ function display_user_form_element()
     $db_username = get_option( 'db_username_field' );
     ?>
         <input type="text" name="db_username_field" id="db_username_field" value="<?php echo $db_username ?>" required="required" aria-describedby="tagline-description" />
+        <span id="check_username">Checking..</span>
         <p id="tagline-description" class="description">This user has privileges to send data to the machine where the database is located.</p>
     <?php
 }
@@ -195,6 +199,7 @@ function display_password_form_element()
     $db_password = get_option( 'db_password_field' );
     ?>
         <input type="password" name="db_password_field" id="db_password_field" value="<?php echo $db_password ?>" required="required" aria-describedby="tagline-description" />
+        <span id="check_password">Checking..</span>
     <?php
 }
 
@@ -230,10 +235,15 @@ add_action("admin_menu", "db_add_view_nonuploaded_projects_submenu");
 
 
 
+
+
 /* Load metaboxes : */
 require_once( plugin_dir_path(__FILE__) . 'db-metaboxes.php' );
 
 
+
+
+// Add more data to "All donation projects" table-list.
 
 
 
@@ -254,9 +264,10 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns['status'] = 'Status';
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
-    
+
     return $newColumns;
 }
+
 
 
 function db_donation_projects_custom_collum( $column , $post_id )
@@ -303,6 +314,9 @@ function my_custom_post_type_rest_support()
         $wp_post_types[$post_type_name]->rest_controller_class = 'WP_REST_Posts_Controller';
     }
 }
+
+
+
 
 
 /*

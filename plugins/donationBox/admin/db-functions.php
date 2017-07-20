@@ -212,6 +212,48 @@ add_action('wp_ajax_nopriv_db_is_project_creator', 'db_ajax_remove_trash_and_rem
 
 
 /**
+ * The following php function, will be executed upon request via AJAX for 
+ * action "db_check_credentials_request".
+ * Send the user credentials to the machine where the database of donation boxes
+ * is located and returns the response he receives. * 
+ * 
+ * Note: Because it uses the WordPress capability to execute code from WordPress
+ * AJAX actions, probably this way isn't the most efficient way because checks
+ * every time on which page it is.
+ * 
+ */
+
+function db_check_credentials()
+{
+    $body = array(
+        'username'  => get_option( 'db_username_field' ),
+        'password'  => get_option( 'db_password_field' ),
+        'check'    => 1,
+    );
+
+    $args = array(
+        'body'          => $body,
+        'timeout'       => '5',
+        'redirection'   => '5',
+        'httpversion'   => '1.0',
+        'blocking'      => true,
+        'headers'       => array(),
+        'cookies'       => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+    echo trim( $response['body'] );
+    wp_die();
+}
+
+add_action('wp_ajax_db_check_credentials_request', 'db_check_credentials');
+add_action('wp_ajax_nopriv_db_check_credentials_request', 'db_check_credentials');
+
+
+
+
+
+/**
  * Function which searches if there is a WordPress cron job for a specific
  * donation project.
  * 
@@ -284,7 +326,6 @@ function db_delete_cron_job( $id )
 
     foreach ( $crons as $key => $job )
     {
-
         if ( ( key($job) != 'db_cron_hook_insert_update' ) && ( key($job) != 'db_cron_hook_delete' ) )
         {
             continue;
@@ -303,7 +344,6 @@ function db_delete_cron_job( $id )
     _set_cron_array($crons);
     
 }
-
 
 
 

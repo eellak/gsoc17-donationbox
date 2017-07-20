@@ -255,6 +255,48 @@ function()
     
     
     
+    /**
+     * Code which first of all, check if the user is on the page
+     * "Donation Boxes Settings" ('/wp-admin/edit.php?post_type=donationboxes&page=db-settings-menu')
+     * and then uses the ability of WordPress, to execute PHP code via AJAX Wordpress actions.
+     * 
+     * It call the action 'db_check_credentials_request', which in turn calls the
+     * PHP function 'db_check_credentials' and returns if the user has given it correctly
+     * credentials or not.
+     * 
+     * It shows the user in a very nice and discreet way if he has given the correct
+     * credentials or not for the donation box database.
+     * 
+     * Note: Because it uses the WordPress capability to execute code from WordPress
+     * AJAX actions, probably this way isn't the most efficient way because checks
+     * every time on which page it is.
+     * 
+     */
+    
+    var url = window.location.href.replace( document.location.origin, '' );
+    
+    if ( url === '/wp-admin/edit.php?post_type=donationboxes&page=db-settings-menu')
+    {
+        var action_check_credential = 
+        {
+            action: 'db_check_credentials_request'
+        };
+
+        jQuery.post(ajaxurl, action_check_credential, function(response)
+        {
+            if ( response === '1')
+            {
+                jQuery('#check_username').html('<span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true"> </span>').fadeIn(70000);
+                jQuery('#check_password').html('<span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true"> </span>').fadeIn(70000);
+            }
+            else
+            {
+                jQuery('#check_username').html('<span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true"> </span>').fadeIn(70000);
+                jQuery('#check_password').html('<span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true"> </span>').fadeIn(70000);
+            }
+        });
+    
+    }
 
     
 
