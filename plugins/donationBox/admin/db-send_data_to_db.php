@@ -1,14 +1,15 @@
 <?php
 
-/* 
+/**
  * This source file contains all the necessary functions that are responsible
  * for sending the data to the donation boxes database.
+ * 
  */
 
 
 
 
-/*
+/**
  * Function that informs the user if they can successfully communicate
  * with the database.
  * 
@@ -17,9 +18,16 @@
  * whether the communication was done properly with the donation box database.
  * For this reason it returns true or false.
  * 
- * @$response : What response we received when sending data to the database.
+ * @param Array $response : What response we received when sending data to the database.
  * 
- * @view : If true, it displays the message.
+ * @param boolean $view : If true, it displays the message.
+ * Because from now on, if he fails to communicate with the database for a
+ * donation project we continue with the rest (if any) projects, and if any
+ * of them fail to communicate, just simply a WordPress cron job is created.
+ * That's way, we do not need to display an error message for each donation project.
+ * If there is even a project that failed to communicate then, and only then,
+ * just only one message will be displayed.
+ * For this reason therefore, why need this parameter.
  * 
  * @retuern :
  *      - True : If there were *no* problems.
@@ -41,8 +49,8 @@ function db_check_and_print_response_message( $response, $view = true )
     $warning_message .= 'But do not worry, you are very good boy. <br>';
     $warning_message .= 'Report this error to the system administrator to resolve it. <br>';
     $warning_message .= 'When this problem resolved, <u>the system will automatically resend</u> the donation project to the donation box database.';
-    $warning_message .= '<br> So, be happy. ' .  convert_smilies(':)') . ' <i> (If you want, ';
-    $warning_message .= '<a id="try_again" href="http://'.$current_url.'">try once again to send the request to the donation box database.</a>)</i>' ;
+    $warning_message .= '<br> So, be happy. ' .  convert_smilies(':)' . ' ' );
+//    $warning_message .= ' <i> (If you want, <a id="try_again" href="http://'.$current_url.'">try once again to send the request to the donation box database.</a>)</i>' ;
     $warning_message .= "</p></div>');";
     
     if ( is_wp_error($response) )
@@ -110,7 +118,7 @@ function db_check_and_print_response_message( $response, $view = true )
 
 
 
-/*
+/**
  * This function are responsible to collect all project data.
  * 
  * Attention :
@@ -121,10 +129,11 @@ function db_check_and_print_response_message( $response, $view = true )
  * project is never taken from the WordPress database.
  * 
  * 
- * @project_id : The donation project id for which all data will be collected
- *               from WordPress database.
+ * @paran string $project_id : The donation project id for which all data will
+ * be collected from WordPress database.
  * 
- * @return : A array with all data of current project.
+ * @return Array $data : A array with all data of current project.
+ * 
  */
 
 function db_collect_all_data( $project_id )
@@ -190,7 +199,7 @@ function db_collect_all_data( $project_id )
 
 
 
-/*
+/**
  * This function called when data is saved in the WordpPress database.
  * Every successful update of a donation project, the donation box database
  * should be updated.
@@ -205,6 +214,15 @@ function db_collect_all_data( $project_id )
  * 
  * 2) They are not sent to the donation projects database, projects that are
  * not to be published in the WordPress database.
+ * 
+ * @paran string $donation_project_id : The donation project id for which it 
+ * will gather the stored data, and will send them all together to the database.
+ * 
+ * Attention! : If a project fails to be sent to the database, a WordPress cron
+ * job is created in order, whenever it can, send the data automatically.
+ * 
+ * Note : If there is already a WordPress cron job for this donation project
+ * action, deleted and the position he takes on a new. 
  * 
  */
 
@@ -231,9 +249,15 @@ function db_send_data_to_donationBox_database( $donation_project_id )
     
     if ( ! db_check_and_print_response_message($response) ) 
     {
-        $next_time = time() + ( 60 ) ;
+        $next_time = time() + ( 60 ) ; // Just one hour.
 
         $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
+        
+        if ( db_cron_exists($donation_project_id) )
+        {
+            db_delete_cron_job($donation_project_id);
+        }
+        
         wp_schedule_single_event( $next_time, 'db_cron_hook_insert_update', array( $donation_project_id, TRUE, $next_time_string ) );
     }
     
@@ -246,13 +270,13 @@ add_action( 'db_cron_hook_insert_update', 'db_send_data_to_donationBox_database'
 
 
 
-/*
+/**
  * This function called when a donation project must be deleted from the 
  * donation box database. It is called when a donation project from
  * Wordpress it was successfully transferred to the recycle bin ( Trash ).
  * 
- * $donation_projects_ids : The donation projects ids for which a delete request
- * will be sent to the database.
+ * @param string $donation_projects_ids : The donation projects id(s) for
+ * which a delete request will be sent to the database.
  * 
  * Note : They may be given together, more than one project for deletion.
  * (for example: ids=349,332,330 )
@@ -261,6 +285,7 @@ add_action( 'db_cron_hook_insert_update', 'db_send_data_to_donationBox_database'
 
 function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
+    // Ξεχωρίζω ΑΝ τυχών έχει δώσει πάνω από ένα projects για μεταφορά στον κάδο ανακύκλωσης.
     $ids = explode(",", strval( $donation_projects_ids ) );
 
     $view = TRUE;
@@ -287,16 +312,17 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 
         if ( ! db_check_and_print_response_message($response , $view) )  // if we haven't send it to database... start a cron job
         {
-//            if ( ! wp_next_scheduled( 'db_cron_hook' ) )
-//            {
-//                $next_time = time() + ( 1 * 60 * 60); // Just one hour - http://php.net/manual/en/function.time.php
-//                $next_time = time() + ( 60 * 60 ) ; // one hour again
-                $next_time = time() + ( 60 ) ;
-                
-                $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
-                wp_schedule_single_event( $next_time, 'db_cron_hook_delete', array( $id, FALSE, $next_time_string ) );
-//            }
-            
+            $next_time = time() + ( 60 ) ;
+
+            $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
+
+            if ( db_cron_exists($id) )
+            {
+                db_delete_cron_job($id);
+            }
+
+            wp_schedule_single_event( $next_time, 'db_cron_hook_delete', array( $id, FALSE, $next_time_string ) );
+
             $view = FALSE;
         }
 
@@ -305,8 +331,5 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 }
 
 add_action( 'db_cron_hook_delete', 'db_delete_data_from_donationBox_database', 10, 3 );
-
-
-
 
 

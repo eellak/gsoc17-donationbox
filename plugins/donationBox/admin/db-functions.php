@@ -1,7 +1,8 @@
 <?php
 
-/* 
- * Useful functions used by the plugin-in.
+/**
+ * Useful functions used from the plugin-in.
+ * 
  */
 
 
@@ -13,21 +14,21 @@ define('GB', 1024 * 1024 * 1024);
 
 
 
-/*
+/**
  * Function which return the user's IP address..
+ * 
  * @return : The user ip address.
+ * 
  */
 
 function get_user_ip()
 {
     if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) )
     {
-        //check ip from share internet
         $ip = $_SERVER['HTTP_CLIENT_IP'];
     }
     elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) 
     {
-        //to check ip is pass from proxy
         $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
     }
     else
@@ -41,7 +42,7 @@ function get_user_ip()
 
 
 
-/*
+/**
  * Function that is targeted to delete the stylesheet file.
  * Deletes from a specific post, the stylesheet file, if it exists.
  * 
@@ -64,7 +65,7 @@ function db_delete_css_file( $post_id )
 
 
 
-/*
+/**
  * Function that is targeted to delete the video file.
  * Deletes from a specific post, the video file, if it exists.
  * 
@@ -87,7 +88,7 @@ function db_delete_video_file( $post_id )
 
 
 
-/*
+/**
  * Function that is targeted to delete the image file.
  * Deletes from a specific post, the image file, if it exists.
  * 
@@ -110,13 +111,13 @@ function db_delete_image_file( $post_id )
 
 
 
-/*
+/**
  * Function returning if the post is 'donationboxes' post type.
  * 
- * @param post_id : The donation project id for which it will check if it is post type
- * 'donationboxes'.
+ * @param string $post_id : The donation project id for which it will check if
+ * it is post type 'donationboxes'.
  * 
- * @return : True if it is, or false if its not.
+ * @return boolean : TRUE if it is, or FALSE if its not.
  * 
  */
 
@@ -129,12 +130,12 @@ function db_post_type_is_donationboxes( $post_id )
 
 
 
-/*
- * Function returning if the post status is 'draft' or no.
+/**
+ * Function returning if the post status is 'draft' or not.
  * 
- * @param post_id : The donation project id for which it will check if it is draft.
+ * @param string $post_id : The donation project id for which it will check if it is draft.
  * 
- * @return : True if it is, or false if its not.
+ * @return boolean : TRUE if it is, or FALSE if its not.
  * 
  */
 
@@ -147,11 +148,18 @@ function db_post_status_is_draft( $post_id )
 
 
 
-/*
+/**
  * Function that is responsible for displaying the error code ($code)
  * and the error message to the user in the right area.
  * 
+ * @param string $code : The message code.
+ * @param string $message : The message.
+ * 
+ * @return string : Displays in the appropriate way the code and the message
+ * to the user as a WordPress notice.
+ * 
  * Reference : https://codex.wordpress.org/Plugin_API/Action_Reference/admin_notices
+ * 
  */
 
 function db_print_user_error( $code , $message )
@@ -166,7 +174,7 @@ function db_print_user_error( $code , $message )
 
 
 
-/*
+/**
  * The following php function, will be executed upon request via AJAX for 
  * action "db_is_project_creator".
  * 
@@ -203,8 +211,23 @@ add_action('wp_ajax_nopriv_db_is_project_creator', 'db_ajax_remove_trash_and_rem
 
 
 
-
-/*
+/**
+ * Function which searches if there is a WordPress cron job for a specific
+ * donation project.
+ * 
+ * Attention : In my implementation, happens to create processes ( WordPress
+ * cron jobs ) with only two specific names 'db_cron_hook_insert_update'
+ * and 'db_cron_hook_delete'. So, then, the way to distinguish them is from seeing
+ * for what donation project ( from $id ) they are working on.
+ * I acknowledge the donation project from the id.
+ * Also, each process have three parameters, one of them, is the donation project
+ * id for which they work. Because of this parameter, i distinguish the processes
+ * between them.
+ * 
+ * @param string $id : The donation project id.
+ * 
+ * @return boolean : TRUE if it find process with the parameter id, otherwise
+ * it returns FALSE.
  * 
  */
 
@@ -212,7 +235,7 @@ function db_cron_exists( $id )
 {
     $all_cron_jobs = _get_cron_array();
 
-    foreach ($all_cron_jobs as $cron_job) 
+    foreach ($all_cron_jobs as $cron_job)
     {
         if ( $cron_job['db_cron_hook_insert_update'] || $cron_job['db_cron_hook_delete'])
         {
@@ -220,7 +243,7 @@ function db_cron_exists( $id )
             {
                 foreach ($value as $temp )
                 {
-                    if ( $temp['args'][0] == $id ) 
+                    if ( $temp['args'][0] == $id )
                     {
                         return TRUE;
                     }
@@ -228,73 +251,58 @@ function db_cron_exists( $id )
             }
         }
     }
-    return FALSE;    
+    return FALSE;
 }
 
 
 
 
 
+/**
+ * Function where delete the WordPress cron job if it finds it.
+ * 
+ * Attention : In my implementation, happens to create processes ( WordPress
+ * cron jobs ) with only two specific names 'db_cron_hook_insert_update'
+ * and 'db_cron_hook_delete'. So, then, the way to distinguish them is from seeing
+ * for what donation project ( from $id ) they are working on.
+ * I acknowledge the donation project from the id.
+ * Also, each process have three parameters, one of them, is the donation project
+ * id for which they work. Because of this parameter, i distinguish the processes
+ * between them.
+ * 
+ * @param string $id : The donation project id for which he will look for what
+ * WordPress cron job he have it.
+ * 
+ * @return Array : The WordPress built-in array with all cron jobs with out the
+ * WordPress cron job who found it (if find) with the id that receives as parameter.
+ * 
+ */
 
 function db_delete_cron_job( $id )
 {
-    $delete = FALSE;
-    
-    $all_cron_jobs = _get_cron_array();
-    var_dump($all_cron_jobs);
-    echo '<br> ------------------- <br>';
+    $crons = _get_cron_array();
 
-    foreach ($all_cron_jobs as $cron_job) 
+    foreach ( $crons as $key => $job )
     {
-        if ( $cron_job['db_cron_hook_insert_update'] || $cron_job['db_cron_hook_delete'])
+
+        if ( ( key($job) != 'db_cron_hook_insert_update' ) && ( key($job) != 'db_cron_hook_delete' ) )
         {
-            foreach ($cron_job as $value)
-            {               
-                foreach ($value as $temp )
-                {
-                    if ( $temp['args'][0] == $id ) 
-                    {
-                        $delete = TRUE;
-                    }
-                }
-                
-                if ( $delete )
-                {
-                    var_dump( $cron_job );
-                    echo '<br>';
-                    var_dump( key($cron_job) );
-                    echo '<br> --> ' . $all_cron_jobs[ key($cron_job) ] ;
-                    echo '<br>';
-                    var_dump($value);
-                    echo '<br>'.$all_cron_jobs[ key($cron_job) ][ key($value) ] .'<br>';
-                    unset( $all_cron_jobs[ key($value)] );
-                    return;
-                }
-                
+            continue;
+        }
+
+        foreach ($job as $sub_key => $cron_job )
+        {
+            if ( $cron_job[key($cron_job)]['args'][0] == $id )
+            {
+                unset( $crons[$key][$sub_key] );
             }
+            
         }
     }
     
-    _set_cron_array($all_cron_jobs);
-    
-    
-//    $crons = _get_cron_array();
-//    foreach ($crons as $key=>$job)
-//    {
-//        echo $crons[$key] ;
-//        
-//        if ( $job['args'][0] == $id )
-//        {
-//            unset( $crons[$key] );
-//        }
-//    }
-//    
-//    _set_cron_array($crons);
+    _set_cron_array($crons);
     
 }
-
-
-
 
 
 
