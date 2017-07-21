@@ -336,14 +336,89 @@ function db_delete_cron_job( $id )
             if ( $cron_job[key($cron_job)]['args'][0] == $id )
             {
                 unset( $crons[$key][$sub_key] );
-            }
-            
+            }   
         }
     }
     
     _set_cron_array($crons);
     
 }
+
+
+
+
+/**
+ * This function adds another nice way to recognize how many WordPress cron jobs
+ * are running for donation projects that need to update their information in 
+ * the database.
+ * Displays in the submenu 'Non-uploaded Donation Projects', a small notification
+ * bubble with the number of WordPress cron jobs.
+ * 
+ */
+
+function db_add_user_menu_bubble_notification() 
+{
+    function draw_bubble()
+    {
+        if ( current_user_can('administrator') )
+        {
+            $total = db_how_many_crons_i_have();
+            
+            if ( $total )
+            {
+                ?>
+                    <script type="text/javascript">
+                        jQuery(document).ready(
+                        function()
+                        {
+                            var notifi = ' <span class="update-plugins count-$pending_count"><span class="plugin-count">' + <?= $total; ?> + '</span></span>';
+                            jQuery( 'a:contains("Non-uploaded Donation Projects")' ).append(notifi);
+                        });
+                    </script>
+                <?php
+            }   
+        }
+    }    
+    add_action('admin_print_scripts', 'draw_bubble', 20);
+    
+}
+
+add_action( 'admin_menu', 'db_add_user_menu_bubble_notification' );
+
+
+
+
+
+/**
+ * Function that counts, how many WordPress cron jobs for donation projects are
+ * active.
+ * 
+ * @return int : The number of active WordPress cron jobs for the donation projects.
+ * 
+ */
+
+function db_how_many_crons_i_have()
+{
+    $counter = 0;
+    
+    $all_cron_jobs = _get_cron_array();
+    
+    foreach ($all_cron_jobs as $cron_job) 
+    {
+        if ( $cron_job['db_cron_hook_insert_update'] || $cron_job['db_cron_hook_delete'])
+        {
+            foreach ($cron_job as $value)
+            {
+                foreach ($value as $temp )
+                {
+                    $counter++;
+                }
+            }
+        }
+    }
+    return $counter;
+}
+
 
 
 

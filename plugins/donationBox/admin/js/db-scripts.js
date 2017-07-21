@@ -286,11 +286,17 @@ function()
         {
             if ( response === '1')
             {
+                jQuery('#db_username_field').css("border-color", "#46b450");
+                jQuery('#db_password_field').css("border-color", "#46b450");
+
                 jQuery('#check_username').html('<span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true"> </span>').fadeIn(70000);
                 jQuery('#check_password').html('<span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true"> </span>').fadeIn(70000);
             }
             else
             {
+                jQuery('#db_username_field').css( {"border" : "2px solid #dc3232", "background-color" : "#fbeaea" } );
+                jQuery('#db_password_field').css( {"border" : "2px solid #dc3232", "background-color" : "#fbeaea" } );
+                
                 jQuery('#check_username').html('<span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true"> </span>').fadeIn(70000);
                 jQuery('#check_password').html('<span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true"> </span>').fadeIn(70000);
             }
