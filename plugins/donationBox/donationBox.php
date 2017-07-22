@@ -273,3 +273,103 @@ function db_add_cron_interval( $schedules )
 
 add_filter( 'cron_schedules', 'db_add_cron_interval' );
 
+
+
+
+
+/**
+ * Function that removes from the list of Bulk actions the ability to restore
+ * or permanently delete donation projects in the "Trash" folder.
+ * The above features are removed if a user other than the administrator can
+ * get into the "Trash" folder. 
+ * 
+ * Obviously a long time ago, forbidden/blocked the access to this page to all users
+ * except the system administrator.
+ * But in this function, we offer an additional level of security!
+ * 
+ * @param Array $actions : The WordPress Bulk actions that the user can do.
+ * 
+ * @return Array : 
+ *              1) If the user is the system administrator :
+ *                  All the WordPress Bulk actions that the user can do.
+ *              2) If the user is not the system administrator :
+ *                  Τhe WordPress Bulk actions that the user can do, except 
+ *                  for restoring and permanent deletion!
+ * 
+ */
+
+function db_remove_dropdown_list_bulk_actions($actions)
+{
+    if ( ! current_user_can('administrator') ) // Only administrator can access to actions!
+    {
+        unset( $actions['untrash'] );   // Restore
+        unset( $actions['delete'] );    // Delete Permanently
+    }
+    
+    return $actions;
+}
+
+add_filter('bulk_actions-edit-donationboxes','db_remove_dropdown_list_bulk_actions');
+
+
+
+
+
+/**
+ * A function that removes from the "subsubsub" menu, τhe menu (link) to enter
+ * the trash folder.
+ * 
+ * Attention! : It does not forbid access! It just does not show this menu to the user.
+ * Obviously a long time ago, forbidden/blocked the access to this page to all users
+ * except the system administrator.
+ * But in this function, we offer an additional level of security!
+ * 
+ * @param Array $views : All the "subsubsub" menu.
+ * 
+ * @return Array : 
+ *              1) If the user is the system administrator :
+ *                  All the WordPress "subsubsub" menu.
+ *              2) If the user is not the system administrator :
+ *                  All the WordPress "subsubsub" menu, except the 
+ *                  "Trash" link!
+ * 
+ */
+
+function db_remove_from_subsubmenu( $views )
+{
+    if ( ! current_user_can('administrator') ) // Only administrator can access to this menu!
+    {
+        unset($views['trash']);
+    }
+
+    return $views;
+}
+
+add_filter('views_edit-donationboxes','db_remove_from_subsubmenu');
+
+
+
+
+
+function db_remove_actions_from_row( $actions, $post )
+{
+    if ( $post->post_type == "donationboxes" )
+    {
+        unset( $actions['inline hide-if-no-js'] ); //   Quick edit
+        
+        // In Trash folder.
+        if ( ! current_user_can('administrator') ) // Only administrator can access to these actions!
+        {
+            unset( $actions['untrash'] ); //   Restore
+            unset( $actions['delete'] ); //    Delete Permanently
+        }
+    }
+    
+    return $actions;
+}
+
+add_filter('post_row_actions','db_remove_actions_from_row', 10, 2 );
+
+
+
+
