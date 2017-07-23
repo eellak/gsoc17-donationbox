@@ -261,17 +261,51 @@ add_filter( 'bulk_post_updated_messages', 'my_bulk_post_updated_messages_filter'
 
 
 
+/**
+ * Function - WordPress Filter where it adds a new timer for the WordPress cron
+ * jobs.
+ * 
+ * @param Array $schedules : Array where containing the current possible timers.
+ * 
+ * @return Array : The array he received as an argument adding another one timer to him.
+ * 
+ */
+ 
 function db_add_cron_interval( $schedules )
 {
-    $schedules['five_seconds'] = array(
-        'interval' => 5,
-        'display'  => esc_html__( 'Every Five Seconds' ),
-    );
- 
+    if ( !isset( $schedules['30min'] ) )
+    {
+        $schedules['30min'] = array(
+            'interval' => 60, //30 * 60 , // 30min * 60sec
+            'display'  => esc_html__( 'Once, every half hour.' ),
+        );
+    }
+    
     return $schedules;
 }
 
 add_filter( 'cron_schedules', 'db_add_cron_interval' );
+
+
+
+
+/**
+ * Maintenance function of the update WordPress Cron Job
+ * 
+ * 
+ */
+
+function db_creat_cron_job()
+{
+    
+    if ( ! wp_next_scheduled ( 'db_update_local_db_event') )
+    {
+	wp_schedule_event(time(), '30min', 'db_update_local_db_event');
+    }
+    
+}
+
+add_action('db_update_local_db_event', 'db_update_local_current_amount');
 
 
 

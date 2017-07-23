@@ -423,3 +423,38 @@ function db_get_current_amount_from_db( $donation_projects_id )
 }
 
 
+
+
+
+/**
+ * Function which updates the local WordPress database from remote donation boxes database.
+ * 
+ * @global type $wpdb
+ */
+
+function db_update_local_current_amount()
+{
+//      SELECT ID FROM wordpress.wp_posts where post_type = 'donationboxes' and post_status = 'publish';
+        global $wpdb;
+        
+        $querystr = "
+        SELECT ID
+        FROM  $wpdb->posts
+        WHERE $wpdb->posts.post_type = 'donationboxes' 
+        AND   $wpdb->posts.post_status = 'publish' 
+        ";
+
+        $pageposts = $wpdb->get_results( $querystr, OBJECT );
+
+        foreach ( $pageposts as $post )
+        {
+            // Get current amount from remote donation box database.
+            $current_amount_value = db_get_current_amount_from_db( $post->ID );
+            
+            // Update WordPress local database.
+            update_post_meta( $post->ID, '_db_project_current_amount', $current_amount_value );
+        }
+        
+}
+
+
