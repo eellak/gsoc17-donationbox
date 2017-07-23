@@ -280,6 +280,7 @@ function db_donation_projects_custom_collum( $column , $post_id )
             $target_amount_value  = get_post_meta($post_id, '_db_project_target_amount' , true);
             
             $percent = intval( ($current_amount_value/$target_amount_value) * 100 );
+            $percent = $percent < 1 ? 1 : $percent; // To show something if it is less than 1%.
             
             echo '<span id="current_amount">';
             echo $current_amount_value ; //!= null ? $current_amount_value : '<i class="fa fa-spinner fa-spin"></i>';

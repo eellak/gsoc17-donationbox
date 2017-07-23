@@ -427,9 +427,13 @@ function db_get_current_amount_from_db( $donation_projects_id )
 
 
 /**
- * Function which updates the local WordPress database from remote donation boxes database.
+ * Function which updates the local WordPress database from remote donation boxes
+ * database. Updating from the remote database the current amount of all "publish".
+ * "donationboxes" posts ( actually the donation project ).
  * 
- * @global type $wpdb
+ * @global type $wpdb : The WordPress object with which i can execute queries in
+ * the WordPress database.
+ * 
  */
 
 function db_update_local_current_amount()
@@ -456,5 +460,6 @@ function db_update_local_current_amount()
         }
         
 }
+
 
 

@@ -43,6 +43,8 @@ define('WP_DEBUG_DISPLAY', true);
 
 require_once( plugin_dir_path(__FILE__) . 'admin/db-functions.php');
 require_once( plugin_dir_path(__FILE__) . 'admin/db-validations.php');
+require_once( plugin_dir_path(__FILE__) . 'admin/db-send_data_to_db.php');
+
 
 
 
@@ -64,10 +66,10 @@ $db_error = array(
  * What to do when the plugin activated.
  */
 
-register_activation_hook( __FILE__, 'db_create_role_for_users');
+register_activation_hook( __FILE__, 'db_plugin_activation');
 
 
-function db_create_role_for_users()
+function db_plugin_activation()
 {
 
     $capabilities = array(
@@ -84,6 +86,9 @@ function db_create_role_for_users()
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
+    
+    // My WordPress Cron Job to update the donation projects.
+    db_creat_cron_job();
 }
 
 
@@ -262,7 +267,7 @@ add_filter( 'bulk_post_updated_messages', 'my_bulk_post_updated_messages_filter'
 
 
 /**
- * Function - WordPress Filter where it adds a new timer for the WordPress cron
+ * Function - WordPress Filter where it adding a new timer for the WordPress cron
  * jobs.
  * 
  * @param Array $schedules : Array where containing the current possible timers.
@@ -276,7 +281,7 @@ function db_add_cron_interval( $schedules )
     if ( !isset( $schedules['30min'] ) )
     {
         $schedules['30min'] = array(
-            'interval' => 60, //30 * 60 , // 30min * 60sec
+            'interval' => 30 * 60 , // 30min * 60sec
             'display'  => esc_html__( 'Once, every half hour.' ),
         );
     }
@@ -289,9 +294,10 @@ add_filter( 'cron_schedules', 'db_add_cron_interval' );
 
 
 
+
 /**
- * Maintenance function of the update WordPress Cron Job
- * 
+ * Function where it creating the WordPress Cron Job where it will update the
+ * local database from the remote, every half hour. * 
  * 
  */
 
