@@ -276,9 +276,27 @@ function db_donation_projects_custom_collum( $column , $post_id )
     switch( $column )
     {
         case 'amount' :
-            $c_amount_value = get_post_meta($post_id, '_db_project_current_amount', true);
-            $t_amount_value = get_post_meta($post_id, '_db_project_target_amount' , true);
-            echo $c_amount_value . '<b>/</b>' . $t_amount_value;
+            $current_amount_value = db_get_current_amount_from_db( $post_id );
+            $target_amount_value = get_post_meta($post_id, '_db_project_target_amount' , true);
+            
+            $percent = intval( ($current_amount_value/$target_amount_value) * 100 );
+            
+            echo '<span id="current_amount">';
+            echo $current_amount_value != null ? $current_amount_value : '<i class="fa fa-spinner fa-spin"></i>';
+            echo '</span> <b> / </b> ' . '<span id="target_amount">' . $target_amount_value . '</span> <br>' ;
+            echo '<div class="progress">';
+            
+            if ( $current_amount_value != null )
+            {
+                update_post_meta( $post_id, '_db_project_current_amount', $current_amount_value ); // Update WordPress local database.
+                echo '<div class="progress-bar" role="progressbar" style="width: '.$percent.'%;" aria-valuenow="'.$percent.'" aria-valuemin="0" aria-valuemax="100">'.$percent.'%</div>';
+            }
+            else
+            {
+                
+                echo '<div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>';
+            }
+            echo '</div>';
             break;
         case 'status':
             $status_value = get_post_meta($post_id, '_db_project_status',true);

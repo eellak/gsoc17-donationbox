@@ -373,3 +373,53 @@ function db_check_credentials()
 
 add_action('wp_ajax_db_check_credentials_request', 'db_check_credentials');
 add_action('wp_ajax_nopriv_db_check_credentials_request', 'db_check_credentials');
+
+
+
+
+
+/**
+ * Function that asks from donation boxe database, for a donation project the
+ * current amount collected.
+ * 
+ * @param string $donation_projects_id : Τhe id of donation project for which
+ * the current amount is requested.
+ * 
+ * @return string : The current amount from the donation box database,
+ * for the requested donation project.
+ * 
+ */
+
+function db_get_current_amount_from_db( $donation_projects_id )
+{
+    $body = array(
+        'username'          => get_option( 'db_username_field' ),
+        'password'          => get_option( 'db_password_field' ),
+        'id'                => $donation_projects_id,
+        'current_amount'    => 1,
+    );
+
+    $args = array(
+        'body'          => $body,
+        'timeout'       => '5',
+        'redirection'   => '5',
+        'httpversion'   => '1.0',
+        'blocking'      => true,
+        'headers'       => array(),
+        'cookies'       => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+
+    if ( ! is_wp_error($response) &&  intval( trim( $response['body'] ) ) )
+    {
+        return trim( $response['body'] );       
+    }
+    else
+    {
+        return '';
+    }
+
+}
+
+
