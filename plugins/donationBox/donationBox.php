@@ -351,6 +351,34 @@ add_filter('views_edit-donationboxes','db_remove_from_subsubmenu');
 
 
 
+/**
+ * A function that subtracts from the "row" actions of post list, the ability
+ * to quickly edit and in the trash folder or if the user is not the administrator
+ * and is in the "Trash" folder, the menu link to restore or permanently delete
+ * donation project.
+ * 
+ * Attention! : It does not forbid access! It just does not show this menu to the user.
+ * In this function, we offer an additional level of security!
+ * 
+ * @param Array $actions : The WordPress "row" actions that the user can do.
+ * 
+ * @param Array $post : The global WordPress variable "$post.
+ * 
+ * @return Array : 
+ *              1)  Τhe WordPress "row" actions that the user can do, except the
+ *                  "Quick edit".
+ * 
+ *              2a) If the user is the system administrator and is located
+ *                  inside the "Tras" folder:
+ *                  Τhe WordPress "row" actions that the user can do, except the
+ *                  "Quick edit" menu link.
+ *              2b) If the user is not the system administrator and is located
+ *                  inside the "Tras" folder:
+ *                  Τhe WordPress "row" actions that the user can do, except the
+ *                  "Quick edit", "Restore", and "Permanent Delete" row menu links.
+ * 
+ */
+
 function db_remove_actions_from_row( $actions, $post )
 {
     if ( $post->post_type == "donationboxes" )
@@ -369,7 +397,4 @@ function db_remove_actions_from_row( $actions, $post )
 }
 
 add_filter('post_row_actions','db_remove_actions_from_row', 10, 2 );
-
-
-
 

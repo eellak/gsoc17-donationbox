@@ -331,5 +331,45 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 }
 
 add_action( 'db_cron_hook_delete', 'db_delete_data_from_donationBox_database', 10, 3 );
+s
 
 
+
+
+/**
+ * The following php function, will be executed upon request via AJAX for 
+ * action "db_check_credentials_request".
+ * Send the user credentials to the machine where the database of donation boxes
+ * is located and returns the response he receives. * 
+ * 
+ * Note: Because it uses the WordPress capability to execute code from WordPress
+ * AJAX actions, probably this way isn't the most efficient way because checks
+ * every time on which page it is.
+ * 
+ */
+
+function db_check_credentials()
+{
+    $body = array(
+        'username'  => get_option( 'db_username_field' ),
+        'password'  => get_option( 'db_password_field' ),
+        'check'    => 1,
+    );
+
+    $args = array(
+        'body'          => $body,
+        'timeout'       => '5',
+        'redirection'   => '5',
+        'httpversion'   => '1.0',
+        'blocking'      => true,
+        'headers'       => array(),
+        'cookies'       => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+    echo trim( $response['body'] );
+    wp_die();
+}
+
+add_action('wp_ajax_db_check_credentials_request', 'db_check_credentials');
+add_action('wp_ajax_nopriv_db_check_credentials_request', 'db_check_credentials');
