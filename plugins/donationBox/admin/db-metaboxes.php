@@ -73,7 +73,7 @@ function db_target_amount_callback( $post )
     </div>
     <div class="form-field form-required" >
         <label for="db_project_target_amount_field">Target amount </label>
-        <input type="number" name="db_project_target_amount_field" id="db_project_target_amount_field" value="<?php echo esc_attr($target_amount_value) ?>"  aria-required="true" required="required" /> <br>
+        <input type="number" name="db_project_target_amount_field" id="db_project_target_amount_field" value="<?php echo esc_attr($target_amount_value) ?>"  aria-required="true" required="required" min="1" /> <br>
     </div>
     <?php
     
