@@ -1,0 +1,25 @@
+.projectImage
+{
+    color: #EABB5E;
+}
+
+
+.projectImage:hover
+{
+    color: #FFCE00;
+    cursor: help;
+}
+
+
+.projectCss:hover
+{
+    color: #0089FF;
+    cursor: help;
+}
+
+
+.projectVideo:hover
+{
+    color: #DC110C;
+    cursor: help;
+}

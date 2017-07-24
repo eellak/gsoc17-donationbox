@@ -260,8 +260,9 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns["title"] = 'Title';
     $newColumns["author"] = 'Author';
     $newColumns["taxonomy-organization"] = 'Organization';
-    $newColumns['amount'] = 'Current<b>/</b>Target Amount';
+    $newColumns['amount'] = 'Current <b> / </b> Target Amount';
     $newColumns['status'] = 'Status';
+    $newColumns['files'] = 'Files';
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
 
@@ -283,7 +284,7 @@ function db_donation_projects_custom_collum( $column , $post_id )
             $percent = $percent < 1 ? 1 : $percent; // To show something if it is less than 1%.
             
             echo '<span id="current_amount">';
-            echo $current_amount_value ; //!= null ? $current_amount_value : '<i class="fa fa-spinner fa-spin"></i>';
+            echo $current_amount_value ;
             echo '</span> <b> / </b> ' . '<span id="target_amount">' . $target_amount_value . '</span> <br>' ;
             echo '<div class="progress">';
             echo '<div class="progress-bar" role="progressbar" style="width: '.$percent.'%;" aria-valuenow="'.$percent.'" aria-valuemin="0" aria-valuemax="100">'.$percent.'%</div>';
@@ -293,6 +294,39 @@ function db_donation_projects_custom_collum( $column , $post_id )
         case 'status':
             $status_value = get_post_meta($post_id, '_db_project_status',true);
             echo $status_value == 1 ? 'Activate' : 'Deactivate';
+            break;
+        case 'files':
+            $cssFile   = get_post_meta( $post_id , '_db_project_stylesheet_file', true );
+            $imageFile = get_post_meta( $post_id , '_db_project_image_file', true );            
+            $videoFile = get_post_meta( $post_id , '_db_project_video_file', true );
+            
+            if ( count($cssFile) > 0  &&  is_array($cssFile)  )
+            {
+                echo '<span data-toggle="tooltip" data-placement="top" title="'.basename($cssFile[0]['url']).'" class="dashicons dashicons-media-text text-primary projectCss"></span>';
+            }
+            else
+            {
+                echo '<span class="dashicons dashicons-media-text"></span> ';
+            }
+            
+            if ( count($imageFile) > 0  &&  is_array($imageFile)  )
+            {
+                echo '<span data-toggle="tooltip" data-placement="top" title="'.basename($imageFile[0]['url']).'" class="dashicons dashicons-format-image projectImage"></span>';
+            }
+            else
+            {
+                echo '<span class="dashicons dashicons-format-image"></span> ';
+            }
+            
+            if ( count($videoFile) > 0  &&  is_array($videoFile)  )
+            {
+                echo '<span data-toggle="tooltip" data-placement="top" title="'.basename($videoFile[0]['url']).'" class="dashicons dashicons-editor-video text-danger projectVideo"></span>';
+            }
+            else
+            {
+                echo '<span class="dashicons dashicons-editor-video"></span>';
+            }
+
             break;
     }
     

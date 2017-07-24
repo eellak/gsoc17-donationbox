@@ -455,11 +455,16 @@ function db_update_local_current_amount()
             // Get current amount from remote donation box database.
             $current_amount_value = db_get_current_amount_from_db( $post->ID );
             
-            // Update WordPress local database.
-            update_post_meta( $post->ID, '_db_project_current_amount', $current_amount_value );
+            if ( intval($current_amount_value) )
+            {
+                // Update WordPress local database.
+                update_post_meta( $post->ID, '_db_project_current_amount', $current_amount_value );
+            }
         }
         
 }
+
+
 
 
 
