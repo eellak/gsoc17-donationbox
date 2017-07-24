@@ -86,7 +86,7 @@ function db_css_file_validations()
         }
 
         // Max limit for css file is 150 KB ( bootstrap css file has 146 KB ).
-        if ($_FILES[$input_field]["size"] > 150 * KB )
+        if ($_FILES[$input_field]["size"] > 150 * kB )
         {
             wp_die( $message , "Sorry, your file is too large.");
         }
