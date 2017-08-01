@@ -11,3 +11,85 @@ img.wp-smiley, img.emoji
 	padding: 0 !important;
 }
 
+
+.qtranxs_flag_en
+{
+	background-image: url(http://donationbox3/wp-content/plugins/qtranslate-x/flags/gb.png);
+	background-repeat: no-repeat;
+}
+
+
+.qtranxs_flag_el
+{
+	background-image: url(http://donationbox3/wp-content/plugins/qtranslate-x/flags/gr.png);
+	background-repeat: no-repeat;
+}
+
+
+.recentcomments a
+{
+	display:inline !important;
+	padding:0 !important;
+	margin:0 !important;
+}
+
+
+body.custom-background
+{
+	background-image: url('http://donationbox3/wp-content/themes/influence/images/background.png');
+	background-repeat: repeat;
+	background-position: top left;
+	background-attachment: scroll;
+}
+
+
+#footer-widgets aside
+{
+	width : 100%;
+}
+
+
+@media print
+{
+	#wpadminbar
+	{
+		display:none;
+	}
+}
+
+
+
+@media screen
+{
+	html
+	{
+		margin-top: 32px !important;
+	}
+	
+	* html body
+	{
+		margin-top: 32px !important;
+	}
+	
+	
+}
+
+
+
+@media screen and ( max-width: 782px )
+{
+	html
+	{
+		margin-top: 46px !important;
+	}
+	
+	* html body
+	{
+		margin-top: 46px !important;
+	}
+}
+
+
+
+
+

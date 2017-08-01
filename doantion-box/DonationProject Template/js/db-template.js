@@ -10,8 +10,17 @@ var home_url = "http://donationbox3/project-2";
 var timeout = 500;//120; //timeout in seconds
 var str_href_project_id = "project";
 var wait_for_print_timeout = 500;//11000; //timeout for pop up when printing receipt
+/* <![CDATA[ */
+var post_grid_ajax =	{
+							"post_grid_ajaxurl":"http:\/\/donationbox3\/wp-admin\/admin-ajax.php"
+						};
+/* ]]> */
 
-function startTimer(duration, display) {
+
+
+
+function startTimer(duration, display) 
+{
     var start = Date.now(),
         diff,
         minutes,
@@ -37,7 +46,12 @@ function startTimer(duration, display) {
     setInterval(timer, 1000);
 }
 
-window.onload = function () {
+
+
+
+
+window.onload = function () 
+{
   href = window.location.href;
   //If we are on a project page, set timer to return to home page
   if ((href.includes(str_href_project_id)) && (ShowTimer)) {
@@ -54,9 +68,15 @@ window.onload = function () {
   {
     $( ".item:eq("+i+")" ).css("opacity","0.4");
   }
+  
 };
 
-$(document).ready(function(){
+
+
+
+
+$(document).ready(function()
+{
     /*Show loading gif when Language Image is clicked*/
     $(".qtranxs_image").click(function(){
         $('#loading).show();
@@ -89,33 +109,54 @@ $(document).ready(function(){
     });
 });
 
-  function SetTimer() {
-        var oldDateObj = new Date();
-        var newDateObj = new Date(oldDateObj.getTime() + 3*60000);
-        $('#defaultCountdown').countdown({until: newDateObj, layout: '{mn} {snn}', expiryUrl: '/'});
-  }
-  function ResetTimer() {
-        var oldDateObj = new Date();
-        var newDateObj = new Date(oldDateObj.getTime() + 3*60000);
-        $('#defaultCountdown').countdown('option',{until: newDateObj, layout: '{mn} {snn}', expiryUrl: '/'});
-  }
 
 
-$(function() {
 
+
+function SetTimer()
+{
+    var oldDateObj = new Date();
+    var newDateObj = new Date(oldDateObj.getTime() + 3*60000);
+    $('#defaultCountdown').countdown({until: newDateObj, layout: '{mn} {snn}', expiryUrl: '/'});
+}
+
+
+
+
+
+function ResetTimer()
+{
+    var oldDateObj = new Date();
+    var newDateObj = new Date(oldDateObj.getTime() + 3*60000);
+    $('#defaultCountdown').countdown('option',{until: newDateObj, layout: '{mn} {snn}', expiryUrl: '/'});
+}
+
+
+
+
+
+$(function()
+{
         SetTimer();
 
         var ws;
         var donationdata;
+        
         //Set progressbar
-        var SetProgressBar = function() {
+        var SetProgressBar = function() 
+        {
             sum = parseFloat($('#totalamount').html());
             goal = parseFloat($('#goal').html());
-            if (sum == 0) {
+            
+            if (sum == 0)
+            {
                 percent = 0;
-            } else {
+            }
+            else
+            {
                 percent = (sum/goal)*100;
             }
+            
             if (document.getElementById('probar') != null)
             {
                 document.getElementById('probar').setAttribute("data-pro-bar-percent", String(percent));
@@ -125,27 +166,35 @@ $(function() {
             $('#percentvalue').html(parseFloat(percent).toFixed(2)+"%");
         }
 
-        var logger = function(msg){
-          var now = new Date();
-          var sec = now.getSeconds();
-          var min = now.getMinutes();
-          var hr = now.getHours();
-          $("#logger").html($("#logger").html() + "<br>" + hr + ":" + min + ":" + sec + " ___ " +  msg);
-          $('#logger').scrollTop($('#logger')[0].scrollHeight);
+        
+        var logger = function(msg)
+        {
+			var now = new Date();
+			var sec = now.getSeconds();
+			var min = now.getMinutes();
+			var hr = now.getHours();
+			$("#logger").html($("#logger").html() + "<br>" + hr + ":" + min + ":" + sec + " ___ " +  msg);
+			$('#logger').scrollTop($('#logger')[0].scrollHeight);
         }
 
-        var sender = function() {
-          var msg = $("#msg").val();
-          if (msg.length > 0)
-            ws.send(msg);
-          $("#msg").val(msg);
+        var sender = function()
+        {
+			var msg = $("#msg").val();
+			if (msg.length > 0)
+				ws.send(msg);
+			$("#msg").val(msg);
         }
-        var keyboard = function() {
+
+		   
+        var keyboard = function()
+        {
           //ws.send('KEYBOARD');
         }
 
-        var donate = function() {
-            donationdata = $('#donationvalue_side').html();//+$('#currency_side').html();
+
+        var donate = function()
+        {
+            donationdata = $('#donationvalue_side').html(); //+$('#currency_side').html();
             //Send Donation Data to WebSocket Server
             //NAME|EMAIL|PUBLIC|PROJECT NAME|PROJECT ID|DONATION
             url = window.location.href
@@ -154,22 +203,31 @@ $(function() {
             //alert(projectdetails);
             //check for project id
             pid = projectdetails[projectdetails.length-1]
-            if (isNaN(pid)) {
+
+            if (isNaN(pid))
+            {
                 //Split donation among available projects
                 var donation = donationdata / projects;
-                for (i = 1; i <= projects; i++) {
+                for (i = 1; i <= projects; i++)
+                {
                     //alert('DONATION|||0|COOPBOX|'+i+'|'+donation+'EUR');
                     ws.send('DONATION|||0|COOPBOX|'+i+'|'+donation+'EUR');
                 }
-            } else {
-                if ( (GameActive) && (playgame) ) {
+            }
+            else
+            {
+                if ( (GameActive) && (playgame) )
+                {
                     //ws.send('PLAY|||0|MSF|1|'+donationdata)
                     ws.send('PLAY|||0|COOPBOX|'+pid+'|'+donationdata+'EUR')
-                } else {
+                }
+                else
+                {
                     //ws.send('DONATION|||0|MSF|1|'+donationdata)
                     ws.send('DONATION|||0|COOPBOX|'+pid+'|'+donationdata+'EUR')
                 }
             }
+            
             //MSF-DONATION
             //ws.send('DONATION|'+donationdata)
             //Add to total amount
@@ -188,33 +246,51 @@ $(function() {
             }
             */
 
-            if (ProBar) {
-              SetProgressBar();
+            if (ProBar)
+            {
+				SetProgressBar();
             }
         }
+        
+        
         /*
-        var registration = function() {
-		//Validate Email & Name
-            if (document.getElementById('name') == null) {
+        var registration = function()
+        {
+			//Validate Email & Name
+            if (document.getElementById('name') == null)
+            {
                 name = '';
-            } else {
+            }
+            else
+            {
                 name = document.getElementById('name').value;
             }
-            if (document.getElementById('email') == null) {
+            
+            if (document.getElementById('email') == null)
+            {
                 email = '';
-            } else {
+            }
+            else
+            {
                 email = document.getElementById('email').value;
             }
+            
             var re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a€-zA-Z0-9-]+)*$/;
-            if ((email =='') || (re.test(email) == false)){
+            
+            if ( (email =='') || (re.test(email) == false) )
+            {
                 //$('#email').css("background","#FF9999");
                 //alert('Please enter a valid e-mail address.');
-                if (ShowPopUps) {
-                    $('#registration_error_pop_up').bPopup({
+                if (ShowPopUps)
+                {
+                    $('#registration_error_pop_up').bPopup(
+                    {
                         autoClose: 2000
                     });
                 }
-            } else {
+            }
+            else
+            {
                 //Send Registration Data to WebSocket Server
                 //NAME|EMAILeasy responsive tabs
                 ws.send('NEWSLETTER|'+name+"|"+email)
@@ -222,41 +298,55 @@ $(function() {
                 document.getElementById('email').value = '';
                 //document.getElementById('name').value = '';
 
-                if (ShowPopUps) {
-                    $('#registration_success_pop_up').bPopup({
+                if (ShowPopUps)
+                {
+                    $('#registration_success_pop_up').bPopup(
+                    {
                         autoClose: 2000
                     });
                 }
             }
         }
-        /**/
+        */
 
         ws = new WebSocket("ws://donationbox3:8888/ws");
-        ws.onmessage = function(evt) {
+        
+        ws.onmessage = function(evt) 
+        {
             //alert(evt.data);
             //logger(evt.data);
-            if (evt.data == 'SUCCESS') {
+            if (evt.data == 'SUCCESS')
+            {
               /*if (ShowPopUps) {
                 $('#success_to_pop_up').bPopup();
               }  */
-            } else if (String(evt.data).indexOf('|TOTAL|') > -1) {
+            }
+            else if (String(evt.data).indexOf('|TOTAL|') > -1)
+            {
                 values = String(evt.data).split('|')
                 //check PID
                 $('#totalamount').html(parseFloat(values[3]).toFixed(2));
-                if (ProBar) {
+                if (ProBar)
+                {
                   SetProgressBar();
                 }
-            } else if (evt.data == 'ERROR') {
+            }
+            else if (evt.data == 'ERROR')
+            {
               /*if (ShowPopUps) {
                 $('#error_to_pop_up').bPopup();
               } */
-            } else if (String(evt.data).indexOf('COINS|') > -1){
+            }
+            else if (String(evt.data).indexOf('COINS|') > -1)
+            {
                 values = String(evt.data).split('|');
                 donationdata = values[1];
                 currency = values[2];
                 url = window.location.href;
+                
                 //Single Project
-                if ((donationdata != "") && (donationdata != 0)){
+                if ((donationdata != "") && (donationdata != 0))
+                {
                 //Multi projects
                 //if ((donationdata != "") && (url.indexOf('/project/') >= 0)) {
                     amount = parseFloat(donationdata);
@@ -266,17 +356,22 @@ $(function() {
                         amount += parseFloat($('#donationvalue_side').html())
                         $('#donationvalue_side').css("font-weight", "Bold");
                     }
+
                     $('#donationvalue_side').html(parseFloat(amount).toFixed(2));
                     //$('#currency_side').html(currency);
                     /**/
                     //Donation Pop Up
-                    if (DonationPopUp) {
+                    if (DonationPopUp)
+                    {
                         //alert('Show donation');
                         sum = parseFloat($('#totalamount').html());
-                        $('#donation_pop_up').bPopup({
+                        
+                        $('#donation_pop_up').bPopup(
+                        {
                             //autoClose: 10000,
                             position: (['auto','auto'])
                         });
+                        
                         $('#donationvalue_pop').html(parseFloat(amount).toFixed(2));
                     }
                     //$('#donationbutton').removeAttr("disabled");
@@ -286,15 +381,27 @@ $(function() {
                     }
 */
                     //$('#currency_pop').html(currency)
-                }/* else {
+                }
+                /*
+                else
+                {
                     $('#donationvalue_pop').html('You have inserted ' + parseFloat(donationdata).toFixed(2) + '<br> but you must first select a project to donate that amount to...');
                     $('#donationbutton').attr("disabled", "disabled");
-                }*/
-            } else {
+                }
+                */
+            }
+            else
+            {
                 //Unknown Message received
             }
-        };
-        ws.onclose = function(evt) {
+		};
+        
+        
+        
+        
+        
+        ws.onclose = function(evt)
+        {
           $("#logger").text("Connection was closed...");
           //Disable Donation Button and make it red
           //$('#donationbutton').attr("disabled", "disabled");
@@ -305,10 +412,17 @@ $(function() {
           */
           //$('#donationbutton').css("color", "#CC2E2E");
         };
-        ws.onopen = function(evt) {
+		
+		
+		
+		
+				
+        ws.onopen = function(evt)
+        {
            $("#logger").text("Opening socket...");
             //Send Request project total
             url = window.location.href
+            
             if (url.includes(str_href_project_id))
             {
                 pid = url.split('-');
@@ -322,32 +436,62 @@ $(function() {
                //$('#playbutton').css("color", "#FFF");
            }*/
         };
+		
+		
+		
+		
+		
+        $("#msg").keypress(function(event)
+        {
+			if (event.which == 13)
+			{
+				sender();
+			}
+        });
+        
+        
+        
+        
+        $("#donationbutton").click(function()
+        {
+			donate();
 
-        $("#msg").keypress(function(event) {
-          if (event.which == 13) {
-             sender();
-           }
+			if (ShowPopUps)
+			{
+    	        $('#thankyou_pop_up').bPopup(
+    	        {
+					autoClose: 2000
+            	});
+				//setTimeout(function(){ document.location.href="/"; }, 3000)
+			}
         });
-        $("#donationbutton").click(function(){
-          donate();
-          if (ShowPopUps) {
-            $('#thankyou_pop_up').bPopup({
-                autoClose: 2000
-            });
-            //setTimeout(function(){ document.location.href="/"; }, 3000)
-          }
-        });
-        if (GameActive) {
+		
+		
+		
+		
+		
+		
+        if (GameActive)
+        {
             playgame = true;
             /*
             $("#playbutton").click(function(){
             donate(); });
             */
         }
-
-        $("#newsletterbutton").click(function(){
+		
+		
+		
+		
+		
+        $("#newsletterbutton").click(function()
+        {
           registration();
         });
+        
+        
+        
+        
         /*$("#thebutton").click(function(){
           sender();
         });
@@ -357,16 +501,27 @@ $(function() {
         $('#formEmail').click(function(){
           keyboard();
         }); */
+		
+		
+		
+		
+		
+		
+		$(document).scroll( function()
+		{
+			var oldDateObj = new Date();
+			var newDateObj = new Date(oldDateObj.getTime() + 3*60000);
+			$('#defaultCountdown').countdown('option',{until: newDateObj, layout: '{mn} {snn}', expiryUrl: '/'});
+		});
 
-      $(document).scroll( function(){
-        var oldDateObj = new Date();
-        var newDateObj = new Date(oldDateObj.getTime() + 3*60000);
-        $('#defaultCountdown').countdown('option',{until: newDateObj, layout: '{mn} {snn}', expiryUrl: '/'});
-      });
+		if (ProBar)
+		{
+			//SetProgressBar();
+		}
 
-      if (ProBar) {
-        //SetProgressBar();
-      }
+      
+      
+      
       /*
       $(document).on("pagecreate",".single-post",function(){
         $(document).on("scrollstart",function(){
@@ -375,12 +530,18 @@ $(function() {
       });
       /**/
 
+
+
+
          // DOM Ready
-    $(document).keydown(function(e) {
+    $(document).keydown(function(e)
+    {
     url = window.location.href;
-    switch(e.which) {
+    switch(e.which)
+    {
         case 13: //enter
-        if (parseFloat($('#donationvalue_side').html()) > 0) {
+        if (parseFloat($('#donationvalue_side').html()) > 0)
+        {
           e.preventDefault();
           $('#donation_pop_up').css("display","none");
           $('.b-modal').css("display","none");
@@ -395,7 +556,7 @@ $(function() {
           });
           */
           $('#loading').show();
-          setTimeout(function(){ location.reload(); }, wait_for_print_timeout)
+          setTimeout( function(){ location.reload(); }, wait_for_print_timeout )
         }
             //Close donation pop up and sent donation
             //alert("button pressed");
@@ -416,13 +577,16 @@ $(function() {
 
         case 37: // left
         if ( ($('#donation_pop_up').css('display') == 'none') &&
-             ($('#printing_pop_up').css('display') == 'none') ) {
-          if (url.includes("project-1"))
-          {
-              window.location.href = "/project-2"
-          } else {
-              window.location.href = "/project-1"
-          }
+             ($('#printing_pop_up').css('display') == 'none') )
+		{
+			if (url.includes("project-1"))
+			{
+				window.location.href = "/project-2"
+			}
+			else
+			{
+				window.location.href = "/project-1"
+			}
         }
           /*
           sel_project--;
@@ -456,14 +620,17 @@ $(function() {
 
         case 39: // right
         if ( ($('#donation_pop_up').css('display') == 'none') &&
-               ($('#printing_pop_up').css('display') == 'none') ) {
-          if (url.includes("project-1"))
-          {
-              window.location.href = "/project-2"
-          } else {
-              window.location.href = "/project-1"
-          }
-        }
+             ($('#printing_pop_up').css('display') == 'none') )
+		{
+			if (url.includes("project-1"))
+			{
+				window.location.href = "/project-2"
+			}
+			else
+			{
+				window.location.href = "/project-1"
+			}
+		}
         /*
         sel_project++;
           if (sel_project >= projects)
@@ -494,15 +661,45 @@ $(function() {
         default: return; // exit this handler for other keys
     }
     //e.PreventDefault(); // prevent the default action (scroll / move caret)
+	});
+	
+	
+	
+	
+	$(function()
+	{
+		// Binding a click event
+		// From jQuery v.1.7.0 use .on() instead of .bind()
+		$('#my-button').on('click', function(e)
+		{
+			// Prevents the default action to be triggered.
+			e.preventDefault();
+			// Triggering bPopup when click event is fired
+			$('#element_to_pop_up').bPopup();
+		});
+		
+	});
+	
 });
-        $(function() {
-            // Binding a click event
-            // From jQuery v.1.7.0 use .on() instead of .bind()
-            $('#my-button').on('click', function(e) {
-                // Prevents the default action to be triggered.
-                e.preventDefault();
-                // Triggering bPopup when click event is fired
-                $('#element_to_pop_up').bPopup();
-            });
-        });
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/donationbox3\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.6"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+
+
+
+
