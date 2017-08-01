@@ -17,9 +17,9 @@ Doing the **modern** donation box, actually.
 
 * July 1 - 12 [ Implementation of API for sending data ]
 
-* ##### July 13 - 24 [ Implementation of API for receiving data ]
+* July 13 - 24 [ Implementation of API for receiving data ]
 
-* July 25 - 28 August [ Implementation of website ]
+* ##### July 25 - 28 August [ Implementation of website ]
 
 * August 29 [ Finish ] 
 

@@ -20,11 +20,11 @@ _Last update: 19 - 05 - 2017_
 
 * July 13 - 14 [ Analysis & design API for receiving data ]
 * July 15 - 22 [ Implementation of API for receiving data ]
-* ##### July 23 - 24 [ Documentation for receiving data API ]
+* July 23 - 24 [ Documentation for receiving data API ]
 
 * July 25 [ Implementation of website ]
 * July 25 - 5 [ Implementation of administration page ]
-* August 5 - 25 [ View data on the main page ]
+* ##### August 5 - 25 [ View data on the main page ]
 * August 26 - 28 [Documentation for website ]
 
 * August 29 [ Finish ] 
