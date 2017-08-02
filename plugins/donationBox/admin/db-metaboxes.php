@@ -16,7 +16,15 @@ require_once('db-functions.php');
 
 
 
-/* Project status meta box. */
+
+
+/**
+ * Project status meta box.
+ * This functions creates the panel it contains the fields concerning the status
+ * of the donation project.
+ * 
+ */
+
 function db_project_status_callback( $post )
 {
     wp_nonce_field( 'db_save_project_status', 'db_status_meta_box_nonce');    
@@ -31,6 +39,7 @@ function db_project_status_callback( $post )
     <?php
 }
 
+
 function db_project_status_metabox()
 {
     add_meta_box(
@@ -42,13 +51,18 @@ function db_project_status_metabox()
             );
 }
 
-add_action('add_meta_boxes' , 'db_project_status_metabox' , 1 );
+add_action('add_meta_boxes', 'db_project_status_metabox' , 1 );
 
 
 
 
 
-/* Target amount meta box. */
+/**
+ * Target amount meta box.
+ * This functions creates the panel it contains the fields concerning the target
+ * amount of the donation project.
+ * 
+ */
 
 function db_target_amount_callback( $post )
 {
@@ -62,9 +76,9 @@ function db_target_amount_callback( $post )
             'db_target_amount_meta_box_nonce'
             );
     $target_amount_value = get_post_meta(
-                                $post->ID,
-                                '_db_project_target_amount',
-                                true);
+                                $post->ID,                      // post id
+                                '_db_project_target_amount',    // unique id for database -- NEED to start with "_" -- 
+                                true);                          // single value
     
     ?>
     <div class="form-field form-required" >
@@ -79,32 +93,38 @@ function db_target_amount_callback( $post )
     
 }
 
+
 function db_project_target_amount_metabox()
 {
     add_meta_box(
-            'db_amount_metabox',            // Unique id of metabox.
+            'db_amount_metabox',    		// Unique id of metabox.
             'Donation money',               // Displayed metabox title.
             'db_target_amount_callback',    // Callback function.
             'donationboxes',                // On which page it will appear.
             'side',                         // In which position.
             'high'                          // Priority.
-
             );
 }
 
-add_action('add_meta_boxes' , 'db_project_target_amount_metabox', 1 );
+
+add_action('add_meta_boxes', 'db_project_target_amount_metabox', 1 );
 
 
 
 
+
+/**
+ * Preview Button meta box.
+ * This functions create the panel it contain the preview button with which the
+ * user can preview the current donation project just as it will appear in the
+ * donation box.
+ * 
+ */
 
 function db_preview_callback( $post )
 {
     $preview_page = '/wp-content/plugins/donationBox/templates/template-portrait_mode.php';
     $preview_page .= '?db_preview_id=' . get_the_ID();
-
-    $category_detail = get_the_category( get_the_ID() ); 
-    
     
     ?>
     <p>
@@ -115,25 +135,33 @@ function db_preview_callback( $post )
     <?php
 }
 
+
 function db_project_preview_metabox()
 {
     add_meta_box(
-            'db_preview_metabox',   // Unique id of metabox.
-            'Project Preview',      // Displayed metabox title. 
-            'db_preview_callback',  // Callback function.
-            'donationboxes',        // On which page it will appear.
-            'side',                 // In which position.
-            'high'                  // Priority.
+            'db_preview_metabox',
+            'Project Preview',
+            'db_preview_callback',
+            'donationboxes',
+            'side',
+            'high'
             );
 }
 
-add_action('add_meta_boxes' , 'db_project_preview_metabox' , 1 );
+
+add_action('add_meta_boxes', 'db_project_preview_metabox' , 1 );
 
 
 
 
 
-/* Upload style sheet file metaboxe. */
+/**
+ * Upload style sheet file metaboxe.
+ * This functions creates the panel it contain the css upload file field with
+ * which the user can upload a stylesheet (.css) file.
+ * 
+ */
+
 function db_style_callback( $post )
 {
     wp_nonce_field( 'db_save_stylesheet_file', 'db_upload_stylesheet_file_meta_box_nonce');
@@ -161,26 +189,35 @@ function db_style_callback( $post )
 
 }
 
+
 function db_project_style_metabox()
 {
     if ( current_user_can('upload_files') ) // Only for users who can upload files - Essentially only the administrator -
     {
         add_meta_box(
-                'db_style_metabox',     // Unique id of metabox.
-                'Project Style',        // Displayed metabox title. 
-                'db_style_callback',    // Callback function.
-                'donationboxes',        // On which page it will appear.
-                'normal',               // In which position.
-                'high'                  // Priority.
+                'db_style_metabox',
+                'Project Style',
+                'db_style_callback',
+                'donationboxes',
+                'normal',
+                'high'
                 );
     }
 }
 
-add_action('add_meta_boxes' , 'db_project_style_metabox' , 1 );
+
+add_action('add_meta_boxes', 'db_project_style_metabox' , 1 );
 
 
 
 
+
+/**
+ * Upload video file metaboxe.
+ * This functions creates the panel it contain the video upload file field with
+ * which the user can upload a video (.mp4) file.
+ * 
+ */
 
 function db_video_callback( $post )
 {
@@ -208,24 +245,33 @@ function db_video_callback( $post )
     echo '</p>';
 }
 
+
 function db_project_video()
 {
     add_meta_box(
-        'db_video_metabox',     // Unique id of metabox.
-        'Project Video',        // Displayed metabox title. 
-        'db_video_callback',    // Callback function.
-        'donationboxes',        // On which page it will appear.
-        'normal',               // In which position.
-        'high'                  // Priority.
-        );
+            'db_video_metabox',
+            'Project Video',
+            'db_video_callback',
+            'donationboxes',
+            'normal',
+            'high'
+            );
 
 }
+
 
 add_action('add_meta_boxes', 'db_project_video');
 
 
 
 
+
+/**
+ * Upload image file metaboxe.
+ * This functions creates the panel it contain the image upload file field with
+ * which the user can upload a image (.jpg or .png) file.
+ * 
+ */
 
 function db_image_callback( $post )
 {
@@ -253,18 +299,20 @@ function db_image_callback( $post )
     echo '</p>';
 }
 
+
 function db_project_image()
 {
     add_meta_box(
-        'db_image_metabox',     // Unique id of metabox.
-        'Project Image',        // Displayed metabox title. 
-        'db_image_callback',    // Callback function.
-        'donationboxes',        // On which page it will appear.
-        'normal',               // In which position.
-        'high'                  // Priority.
-        );
+            'db_image_metabox',
+            'Project Image',
+            'db_image_callback',
+            'donationboxes',
+            'normal',
+            'high'
+            );
 
 }
+
 
 add_action('add_meta_boxes', 'db_project_image');
 
@@ -272,7 +320,13 @@ add_action('add_meta_boxes', 'db_project_image');
 
 
 
-// update_edit_form  : Very important function for uploading a file.
+
+/**
+ * update_edit_form
+ * Very important function for uploading a file.
+ * 
+ */
+
 add_action('post_edit_form_tag', 'update_edit_form');
 
 function update_edit_form()
@@ -281,21 +335,31 @@ function update_edit_form()
 }
 
 
-// Save meta boxes data.
+
+
+/**
+ * Save meta boxes data.
+ * This function is responsible for storing all data assigned to the custom
+ * metaboxes. Executed when it Publish/Update a post.
+ * 
+ */
 
 function db_save_metaboxes_data( $post_id )
 {
     // Validations for stylesheet file.
     if ( db_css_file_validations() )
     {
-
+        // Upload css file :
+        // Make sure the file array isn't empty  
         if( ! empty( $_FILES['db_project_css_file_field']['name'] ) )
         {
+            // Get the file type of the upload  
             $flag = 0;
 
             if( !empty($_FILES['db_project_css_file_field']['name']) )
             {
                 $flag = 1;
+                // Use the WordPress API to upload the multiple files
                 $upload[] = wp_upload_bits(
                                             $_FILES['db_project_css_file_field']['name'],
                                             null,
@@ -431,51 +495,48 @@ function db_save_metaboxes_data( $post_id )
 
 }
 
-add_action('save_post_donationboxes' , 'db_save_metaboxes_data');
+
+add_action('save_post_donationboxes', 'db_save_metaboxes_data');
 
 
 
 
 
-
-
-
-/*
+/**
+ * Redirect function when there are errors.
+ * 
+ * @global Array $db_error : If I have an error, $db_error['have'] == True
+ * and $db_error['message_code'] == 'a message code'.
+ * 
+ * @global Array $untrashed_posts : testing mode...
+ * 
+ * @param string $location : The current-destination URL location.
+ * @param integer $post_id : The post ID.
+ * 
+ * @return string $location : The destination URL.
  * 
  */
-
-//function db_move_to_trash( $post_id )
-//{
-//    echo '<script> alert("Op op op!"); </script>';
-//    echo '<script> confirm("Press a button!"); </scirpt>';
-//    die();
-//}
-//
-//add_action('wp_trash_post', 'db_move_to_trash');
-
-
-
-
 
 function db_redirect_post_location( $location, $post_id )
 {
     global $db_error;
-    global $untrashed_posts;
+//    global $untrashed_posts;
 
     if ( $db_error['have'] )
     {
         $location = add_query_arg( 'message', $db_error['message_code'], get_edit_post_link( $post_id, 'url' ) );
     }
     
-    if ( $untrashed_posts ) // If i have untrashed posts.
-    {
-        $location = add_query_arg( 'ids', $untrashed_posts[0], $location );
-        var_dump($untrashed_posts);
+//    if ( $untrashed_posts ) // If i have untrashed posts.
+//    {
+//        $location = add_query_arg( 'ids', $untrashed_posts[0], $location );
+//        var_dump($untrashed_posts);
 //        wp_die();
-    }
+//    }
     
     return $location;
 }
+
 
 add_filter( 'redirect_post_location', 'db_redirect_post_location' , 10, 2 );
 
@@ -483,12 +544,18 @@ add_filter( 'redirect_post_location', 'db_redirect_post_location' , 10, 2 );
 
 
 
-// Create me own admin notice for fail save post!
+/**
+ * My own admin notices for fail save post!
+ * This function detects for any error ( URL ) message codes and displays the
+ * appropriate admin notices.
+ * Also, after specific actions when detected from the URL message codes
+ * οther background actions are executed.
+ * 
+ */
+
 function db_admin_notices( $post_id )
 {
-
     global $untrashed_posts;
-
 
     switch ( $_GET['message'] )
     {
@@ -551,7 +618,7 @@ function db_admin_notices( $post_id )
         
 }
 
-add_action( 'admin_notices', 'db_admin_notices' )
+add_action( 'admin_notices', 'db_admin_notices' );
 
 
 
