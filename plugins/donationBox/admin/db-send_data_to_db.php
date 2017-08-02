@@ -189,7 +189,8 @@ function db_collect_all_data( $project_id )
         'stylesheet_file_url'   => $css,
         'status'                => $status,
         'organization'          => get_the_terms( $project_id, 'organization' )[0]->name,
-        'target_amount'         => get_post_meta( $project_id, '_db_project_target_amount', true), 
+        'target_amount'         => get_post_meta( $project_id, '_db_project_target_amount', true),
+        'last_modified'         => get_the_modified_date( 'Y-m-d H:i:s' , $project_id ),
     );
     
     return $data;
