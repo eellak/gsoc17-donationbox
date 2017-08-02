@@ -25,7 +25,9 @@ function startTimer(duration, display)
         diff,
         minutes,
         seconds;
-    function timer() {
+
+    function timer()
+    {
         // get the number of seconds that have elapsed since
         //startTimer() was called
         diff = duration - (((Date.now() - start) / 1000) | 0);
@@ -35,7 +37,8 @@ function startTimer(duration, display)
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = minutes + ":" + seconds;
-        if (diff <= 0) {
+        if (diff <= 0)
+        {
             // add one second so that the count down starts at the full duration
             // example 05:00 not 04:59
             start = Date.now() + 1000;
@@ -52,23 +55,24 @@ function startTimer(duration, display)
 
 window.onload = function () 
 {
-  href = window.location.href;
-  //If we are on a project page, set timer to return to home page
-  if ((href.includes(str_href_project_id)) && (ShowTimer)) {
-    display = document.querySelector('#time');
-    startTimer(timeout, display);
-    setTimeout(function(){ document.location.href=home_url; }, timeout*1000)
-  }
+    href = window.location.href;
+    //If we are on a project page, set timer to return to home page
+    if ( (href.includes(str_href_project_id)) && (ShowTimer) )
+    {
+      display = document.querySelector('#time');
+      startTimer(timeout, display);
+      setTimeout( function() { document.location.href=home_url; }, timeout*1000 )
+    }
 
-  $( ".item:eq(0)" ).find( "a" ).focus();
-  $( ".item:eq(0)" ).css("border-radius","10px");
-  $( ".item:eq(0)" ).css("border","8px solid red");
+    $( ".item:eq(0)" ).find( "a" ).focus();
+    $( ".item:eq(0)" ).css("border-radius","10px");
+    $( ".item:eq(0)" ).css("border","8px solid red");
+    
+    for(i = 1; i <= projects; i++)
+    {
+      $( ".item:eq("+i+")" ).css("opacity","0.4");
+    }
 
-  for (i=1; i <= projects; i++)
-  {
-    $( ".item:eq("+i+")" ).css("opacity","0.4");
-  }
-  
 };
 
 
@@ -78,30 +82,34 @@ window.onload = function ()
 $(document).ready(function()
 {
     /*Show loading gif when Language Image is clicked*/
-    $(".qtranxs_image").click(function(){
-        $('#loading).show();
+    $(".qtranxs_image").click( function()
+    {
+        $('#loading').show();
     });
-    $('.osc-res-tab a').click(function() {
+    
+    
+    $('.osc-res-tab a').click( function()
+    {
         $(this) === this;
         var activetab = $(this).attr('href');
-        if (activetab == '#ert_pane1-0') {
         var player0 = document.getElementById('videoplayer0');
         var player1 = document.getElementById('videoplayer1');
         var player2 = document.getElementById('videoplayer2');
+        
+        if (activetab == '#ert_pane1-0')
+        {
             player0.play();
             player1.pause();
             player2.pause();
-        } else if (activetab == '#ert_pane1-1') {
-        var player0 = document.getElementById('videoplayer0');
-        var player1 = document.getElementById('videoplayer1');
-        var player2 = document.getElementById('videoplayer2');
+        }
+        else if (activetab == '#ert_pane1-1')
+        {
             player0.pause();
             player1.play();
             player2.pause();
-        } else if (activetab == '#ert_pane1-2') {
-        var player0 = document.getElementById('videoplayer0');
-        var player1 = document.getElementById('videoplayer1');
-        var player2 = document.getElementById('videoplayer2');
+        }
+        else if (activetab == '#ert_pane1-2')
+        {
             player0.pause();
             player1.pause();
             player2.play();
