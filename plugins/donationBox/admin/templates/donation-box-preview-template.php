@@ -8,7 +8,7 @@
  * Template Name: Portrait Mode -Preview-
  */
 
-    require('../../../../../wp-load.php');
+    require_once('../../../../../wp-load.php');
     
     $current_post_id = $_GET['db_preview_id'];
 
@@ -21,9 +21,6 @@
     
     $organizations          = get_the_terms( $current_post_id, 'organization' );
 
-//    get_header();
-
-    
     if ( count($project_image) > 0  &&  is_array($project_image) )
     {
         $project_image = $project_image[0]['url'];
@@ -56,8 +53,7 @@
         <script type="text/javascript"  src="js/jquery.bpopup.min.js">      </script>
         <script type="text/javascript"  src="js/jquery.plugin.js">          </script>
         <script type="text/javascript"  src="js/jquery.countdown.min.js">   </script>
-        <script type="text/javascript"  src="js/db-template.js">            </script>
-        <script type="text/javascript"  src="js/db-preview.js">             </script>
+        <!--<script type="text/javascript"  src="js/db-template.js">            </script>-->
 
         <!-- ???? o.0
         <script src="/video.js"> </script>
@@ -66,7 +62,17 @@
 
         <link href="css/pro-bars.min.css"   rel="stylesheet"    type="text/css" media="all" />
         <link href="css/db-template.css"    rel="stylesheet"    type="text/css" media="all" />
-<!--        <link href="css/style.css"          rel="stylesheet"    type="text/css" media="all" />-->
+        
+        <?php
+            if ( count($project_css) > 0  &&  is_array($project_css) )
+            {
+                echo '<link href="'. $project_css[0]['url'] .'" rel="stylesheet" type="text/css" media="all" />' ;
+            }
+            else
+            {
+                echo '<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />';
+            }
+        ?>
 
         <meta charset="UTF-8" />
         <!-- <meta name="generator"	content="WordPress 4.6" /> -->
@@ -89,18 +95,6 @@
     </head>
 
     <body class="page page-id-86 page-template page-template-templates page-template-template-portrait_mode page-template-templatestemplate-portrait_mode-php logged-in admin-bar no-customize-support custom-background responsive has-main-sidebar">
-        
-        <?php
-            if ( count($project_css) > 0  &&  is_array($project_css) )
-            {
-                echo '<input type="hidden" id="custom_stlye" name="custom_stlye" value="'. $project_css[0]['url'] .'"/>';
-            }
-            else
-            {
-                echo '<input type="hidden" id="custom_stlye" name="custom_stlye" value="css/style.css"/>';
-            }
-        ?>
-        
         <div class="site-header has-shadow site-header-sentinel">
             <div class="container">
                 <div class="hgroup">
@@ -221,9 +215,14 @@
 
                         <div class="entry-content">
                             <p>
-                                <video id="projectvideo" poster="CF-Video-still.png" autoplay="autoplay" loop="loop" muted="" width="100%" height="150">
-                                    <source src="wp-content/uploads/2017/08/sampleVideo.mp4" type="video/mp4" />
-                                </video>
+                                <?php
+                                    if ( $project_video )
+                                    {
+                                        echo '<video id="projectvideo" poster="CF-Video-still.png" autoplay="autoplay" loop="loop" muted="" width="100%" height="150">';
+                                            echo '<source src=" ' . $project_video . ' " type="video/mp4" />';
+                                        echo '</video>';
+                                    }
+                                ?>
                             </p>
 
                             <h2 style="padding: 10px; text-align: center;"> ΒΑΛΕ ΚΕΡΜΑ ΚΑΙ ΕΝΙΣΧΥΣΕ ΤΟ COOPBOX NETWORK </h2>
