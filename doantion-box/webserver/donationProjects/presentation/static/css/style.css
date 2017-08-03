@@ -1114,7 +1114,7 @@ article.sticky {
   font-style: normal;
 }
 #comments .commentlist article .comment-meta {
-  font-size: 0.875em;widgets
+  font-size: 0.875em;
   color: #999;
   line-height: 1em;
   margin-bottom: 10px;
@@ -1434,7 +1434,7 @@ article.entry .entry-meta .taxonomy > div {
   margin-right: 2em;
 }
 article.entry .entry-meta .taxonomy > div > span[class^="influence-icon-"] {
-  display: block;/usr/bin/python /home/commonslab/donation-box/Serial2DB.py 2>&1 test.txt &
+  display: block;
   float: left;
   font-size: 18px;
   margin-right: 0.5em;

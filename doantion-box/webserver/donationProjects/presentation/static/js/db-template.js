@@ -11,9 +11,9 @@ var timeout = 500;//120; //timeout in seconds
 var str_href_project_id = "project";
 var wait_for_print_timeout = 500;//11000; //timeout for pop up when printing receipt
 /* <![CDATA[ */
-var post_grid_ajax =	{
-							"post_grid_ajaxurl":"http:\/\/donationbox3\/wp-admin\/admin-ajax.php"
-						};
+var post_grid_ajax =    {
+                        "post_grid_ajaxurl":"http:\/\/donationbox3\/wp-admin\/admin-ajax.php"
+                        };
 /* ]]> */
 
 
