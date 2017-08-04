@@ -1,28 +1,12 @@
-<head>
+{% extends "presentation/includes/head.html" %}
 
-    <meta charset="UTF-8" />
-    <meta name="generator"	content="qTranslate-X 3.4.6.8" />
-    <meta name="viewport"	content="width=device-width, initial-scale=1, user-scalable=no" />
+{% block stylesheet %}
 
     {% load static %}
 
-    <script type="text/javascript"  src="js/config.js">                 </script>
-    <script type="text/javascript"  src="js/jquery.min.js">             </script>
-    <script type="text/javascript"  src="js/jquery.bpopup.min.js">      </script>
-    <script type="text/javascript"  src="js/jquery.plugin.js">          </script>
-    <script type="text/javascript"  src="js/jquery.countdown.min.js">   </script>
-    <!--<script type="text/javascript"  src="js/db-template.js">            </script>-->
-
-    <!-- ???? o.0
-    <script src="/video.js"> </script>
-    <link href="/video-js.css"  rel="stylesheet"    type="text/css" />
-    -->
-
-    <link href="css/pro-bars.min.css"   rel="stylesheet"    type="text/css" media="all" />
-    <link href="css/db-template.css"    rel="stylesheet"    type="text/css" media="all" />
-
-
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+    {% if True %}
+        <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
 
         <!--if ( count($project_css) > 0  &&  is_array($project_css) )-->
         <!--{-->
@@ -33,17 +17,4 @@
             <!--echo '<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />';-->
         <!--}-->
 
-
-
-
-    <!-- <link rel='dns-prefetch' href='//donationbox3'> -->
-    <link rel='dns-prefetch' href='//s.w.org'>
-
-
-    <title>COOP BOX NETWORK | Donation Box</title>
-
-</head>
-
-
-
-
+{% endblock %}
