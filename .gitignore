@@ -158,3 +158,8 @@ fabric.properties
 # Generated files
 # *.pyc
 
+# Video files
+*.mp4
+
+
+

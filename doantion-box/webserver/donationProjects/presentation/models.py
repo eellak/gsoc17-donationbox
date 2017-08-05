@@ -14,11 +14,6 @@ class Donation_Project( models.Model ):
     end_date                = models.DateField()
     last_updated_datetime   = models.DateTimeField( auto_now = True )
 
-    # Κάθε φορά που ενημερώνετε κάποιο πεδίο μιας εγγραφής της βάσης δεδομένων το πεδίο last_updated_datetime,
-    # θα αποκτά αυτόματα την τρέχουσα timestamp ( date & time ). :) Useful ε ?
-    # Το αγαπητό Django δημιουργεί *αυτόματα* & ένα ακόμη πεδίο ονοματι "id", έτσι γιατί με αγαπά & με διευκολύνει!
-    # Προσοχή! Τα πεδία : "video_URL", "image_URL" και "stylesheet_URL", μπορεί να είναι κενά, αλλά δε μπορεί να είναι άδεια!
-    # Δηλαδή, αν είναι null (κενά), πάει να πει πως δεν έχουν καν τιμή και όχι πως μπορεί να έχουν μηδενική τιμη ( "" ).
 
 
     def __str__(self):

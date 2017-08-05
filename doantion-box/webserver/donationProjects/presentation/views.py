@@ -2,18 +2,28 @@ from django.shortcuts import render
 
 from .models import Donation_Project
 from .util import get_first_donation_project
+from .util import next_project_id
+from .util import previous_project_id
 
 # Create your views here.
 
 
 def index(request):
+    """
+    Presents the data of the first donation project.
+
+    :param request:
+    :return: Presents the data of the first donation project or raise an Http404 exception if there doesn't exist
+    donation projects.
+    """
+
     # Queries
-    specific_project = get_first_donation_project
-    last_project_id = Donation_Project.objects.all().last().id
+    current_project = get_first_donation_project()
 
     # Pass results to a dictionary
-    context = { 'specific_project': specific_project,
-                'last_project_id': last_project_id }
+    context = { 'current_project': current_project,
+                'next_project_id': next_project_id( current_project.id ),
+                'previous_project_id': previous_project_id( current_project.id ) }
 
     return render( request, 'presentation/index.html', context )
 
@@ -22,34 +32,32 @@ def index(request):
 
 def project(request, project_id ):
     """
-    Επιστρέφει για ένα συγκεκριμένο donation project όλες τις εγγραφές του στη βάση δεδομένων.
+    Returns for the given project_id ( donation project ) all his records in the database.
 
-    Το συγκεκριμένο view ενεργοποιείται όταν εκτλεστεί το URL pattern "http://127.0.0.1:8000/project/x", που σημαίνει
-    πως ζητήται το donation project με id "x".
-    Έτσι χάρης αυτό το view επιστρέφουμαι για το αιτούμενο donation project όλες τις εγγραφές που έχουμε στη βάση
-    δεδομένων για αυτό.
+    This view is enabled when it is executed the URL pattern "http://127.0.0.1:8000/current_project/x", which means
+    that requested the donation project with id "x".
 
-    Προσοχή! : Αν γίνει αίτημα για ένα project_id το οποίο δεν υπάρχει τότε επιστρέφονται οι πληροφορίες για το πρώτο
-    doantion project ( project_id = 1 ).
-    Αν και πάλι βρισκόμαστε στην απίθατη περίπτωση, όπου η τοπική sqlite3 βάση δεδομένων μας, δεν έχει κανένα έργο
-    δωρεάς μέχρι στιγμής, τότε επιστρέφει σφάλμα Http404, με ένα επρεπεί μήνυμα. :)
+    Attention! : If a request is made for an project_id that does not exist then returned information for the first
+    donation project ( project_id = 1 ).
+    Though again we are in the unlikely event, where the local sqlite3 database it has no donation project so far,
+    then it returns an Http404 error, with a decent message. :)
 
     :param request:
-    :param project_id:
+    :param project_id: The id for the requested donation project.
     :return:
     """
 
     # Queries
     try:
-        specific_project = Donation_Project.objects.get( id = project_id )
+        current_project = Donation_Project.objects.get( id = project_id )
     except Donation_Project.DoesNotExist:
-        specific_project = get_first_donation_project
-
-
-    last_project_id = Donation_Project.objects.all().last().id
+        current_project = get_first_donation_project()
 
     # Pass results to a dictionary
-    context = { 'specific_project': specific_project,
-                'last_project_id': last_project_id }
+    context = { 'current_project': current_project,
+                'next_project_id': next_project_id( current_project.id ),
+                'previous_project_id': previous_project_id( current_project.id ) }
 
     return render( request, 'presentation/index.html', context )
+
+

@@ -67,7 +67,6 @@
 
     <!--{% endif %}-->
 
-    The last project id is : {{last_project_id}}
 
 {% endblock %}
 
@@ -76,8 +75,8 @@
 
 {% block total_amount %}
 
-    {% if specific_project %}
-        {{ specific_project.current_amount }}
+    {% if current_project %}
+        {{ current_project.current_amount }}
     {% endif %}
 
 {% endblock %}
@@ -92,10 +91,12 @@
 
 
 
+{% block hidden_fields %}
 
+    <input type="hidden" id="next_donation_project_id" name="next_donation_project_id" value="{{next_project_id}}">
+    <input type="hidden" id="previous_donation_project_id" name="previous_donation_project_id" value="{{previous_project_id}}">
 
-
-
+{% endblock %}
 
 
 
