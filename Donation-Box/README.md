@@ -13,7 +13,7 @@ The final donation box will consist of the following main parts :
 * SQLite Database : For storing local data.
 * OpenVPN Client : To synchronize the data safely.
 
-#### Python Django App.
+#### [Python Django App](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp).
 Essentially this is a page designed with emphasis and responsibility in presenting donation projects. Using the language Python and Django web application framework we've created the page that will be displayed to the user from the donation box screen, the donation projects and will be able to navigate between them. Also, once a donation is given is responsible for displaying it to the user.
 We chose the Python and Django web application framework, due to its flexibility and very good performance in conjunction with its minimum requirements and burdens on the system.
 
@@ -21,7 +21,12 @@ We chose the Python and Django web application framework, due to its flexibility
 #### SQLite Database.
 It is the local database that will be stored all the informations for each one of donation projects. For each donation project we will keep his information locally. The local database will be synchronized at regular intervals ( if this is feasible ) with the remote database where all the donation project data is kept and additional information. The local database is only a small subset of the remote database where it contains only the basic information for each donation project.
 
+| ![Donation-Box database schema](https://i.imgur.com/RjlFgo5.png) |
+|:--:|
+| * The schema of local database in Donation-Box * |
+
+
 #### OpenVPN Client.
 To have a high level of security, we decided that the communication of the modernized system of donation boxes to be done through an encrypted and fully secure virtual private network ( VPN ). This network will be created on the server where the remote database is located and each donation box will be given a specific access account to that network. For this reason, it should be constantly ( since its inception ) the donation box connected to this network.
 If the box is not connected to virtual private network it will not be able to communicate with the remote database and hence he will not be able to update his local database.
-
+For the OpenVPN client, must be done specific settings that are necessary for proper functioning.
