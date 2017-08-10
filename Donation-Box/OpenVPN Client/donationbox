@@ -1,49 +1,90 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          mytest
-# Required-Start:    $all
-# Required-Stop:     $all
+# Provides:          donationbox
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Should-Start:      openvpn
+# Should-Stop:       openvpn
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start daemon at boot time
-# Description:       Enable OpenVPN client service to conect the donation box with the Donation-box VPN.
+# Short-Description: Donation-box startup service.
+# Description:       This script will check in a first stage the availability of
+#                    networking and informs the user.
 ### END INIT INFO
 
-set -e 
-#public_ip=$(curl -s https://ipinfo.io/ip)
+
+set -e
+
+
+check_connection()
+{
+        printf "\n"
+
+        interfaces=$(ls /sys/class/net)
+        internet_activated=false
+        vpn_activated=false
+
+        for inter in $interfaces
+        do
+                inet=$(ifconfig "$inter" | grep -c "inet" )
+                if [ $inter != 'lo' ] && [ $inet ]
+                then
+                        ip=$(ip addr show "$inter" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+
+                        if [ $ip ]
+                        then
+                                printf " * IP address for %s:%+15s\n" "$inter" "$ip" > /dev/console
+                                internet_activated=true
+                        fi
+
+                        if [ $inter = 'tun0' ]
+                        then
+                                vpn_activated=true
+                        fi
+
+                fi
+        done
+
+        if [ $internet_activated = true ]
+        then
+                public_ip=$(curl -s https://ipinfo.io/ip)
+
+                echo -n "\n * Public IP " > /dev/console
+                echo "[ \033[1m\033[32m$public_ip\033[0m ]" > /dev/console
+
+                if [ $vpn_activated = true ]
+                then
+                        echo -n "\n[  \033[32mOK\033[0m  ] " > /dev/console
+                        echo "The OpenVPN client started succesfully." > /dev/console
+                else
+                        echo '\n[\033[31mFAILED\033[0m] \033[31mFailed to start OpenVPN connection.\033[0m' > /dev/console
+                        echo '\033[31m ** \033[0m \033[91mFailed to start OpenVPN connection.\033[0m \033[31m ** \033[0m' > /dev/console
+                fi
+	else
+		echo "*\033[31m * \033[0m* \033[31mNo internet connection.\033[0m *\033[31m * \033[0m*" > /dev/console
+
+        fi
+
+
+}
+
+
+
 
 case "$1" in
   start)
-	public_ip=$(curl -s https://ipinfo.io/ip)
-#    log_success_msg "______________KALIMERA__________________ 1 "
-#    log_failure_msg "______________KALIMERA__________________ 2 "
-#    log_warning_msg "______________KALIMERA__________________ 3 "
-    echo "_______________foo______________ [1]" > /dev/console
-	echo -n "[  \033[32mOK\033[0m  ] " > /dev/console
-	echo "The OpenVPN client started succesfully." > /dev/console
 
-	echo "Your public ip is : ---------- " > /dev/console
-    echo "_______________foo______________ [1.1]" > /dev/console
-    sleep 200
+    check_connection
+
     ;;
   stop)
-    echo "-----------> Stopping Service !!!!!!!!!!!!!!!!!!!!!!!!" > /dev/console
-    echo "_______________foo______________ [2]___________" > /dev/console
-    sleep 20
     ;;
   *)
     echo "Usage: /etc/init.d/test {start|stop}"
-    sleep 20
     exit 1
     ;;
 esac
 
-# Green succesfull message.
-#echo -e "\e[1m\e[32m$public_ip\e[0m"
 
 exit 0
-
-
-
-

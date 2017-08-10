@@ -18,43 +18,62 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#    
+#
 #    This software was created under the Google Summer of Code 2017 program
-#    for the Donation-Box project : 
+#    for the Donation-Box project :
 #    https://summerofcode.withgoogle.com/projects/#5171214440988672
 
 
 set -e
 
+printf "\n"
+
 interfaces=$(ls /sys/class/net)
+vpn_activated=false
+public_ip=""
 
 for inter in $interfaces
 do
         inet=$(ifconfig "$inter" | grep -c "inet" )
+
         if [ $inter != 'lo' ] && [ $inet ]
         then
                 ip=$(ip addr show "$inter" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-                echo "IP address for $inter\t: $ip"
+
+                if [ $ip ]
+                then
+                        printf " * IP address for %s:%+15s\n" "$inter" "$ip"
+
+                        if ! [ $public_ip ]
+                        then
+                                public_ip=$(curl -s https://ipinfo.io/ip)
+                        fi
+                fi
+
+                if [ $inter = 'tun0' ]
+                then
+                        vpn_activated=true
+                fi
+
         fi
 done
 
-public_ip=$(curl -s https://ipinfo.io/ip)
-echo -n "\nPublic IP "
-echo "[ \033[1m\033[32m$public_ip\033[0m ]"
-
-
-
-vpn_activated=$(echo $interfaces | grep -c "tun")
-
-if [ ! $vpn_activated ]
+if [ $public_ip ]
 then
-        echo '\033[31m ** \033[0m \033[91mFailed to start OpenVPN connection.\033[0m \033[31m ** \033[0m'
+        echo -n "\n * Public IP "
+        echo "[ \033[1m\033[32m$public_ip\033[0m ]"
+
+        if [ $vpn_activated = false ]
+        then
+                echo '\n\033[31m ** \033[0m \033[91mFailed to start OpenVPN connection.\033[0m \033[31m ** \033[0m'
+        fi
+
+else
+        echo "*\033[31m * \033[0m* \033[31mYou don't internet connection.\033[0m *\033[31m * \033[0m*"
 fi
+
 
 
 printf "\n"
 
-
-
-
-
+exit 0
