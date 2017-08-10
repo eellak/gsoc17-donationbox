@@ -38,7 +38,7 @@ do
 
         if [ $inter != 'lo' ] && [ $inet ]
         then
-                ip=$(ip addr show "$inter" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+                ip=$(ip addr show "$inter" | awk '/inet /{print $2}' | cut -d/ -f1) # By Diomidis Spinellis
 
                 if [ $ip ]
                 then
