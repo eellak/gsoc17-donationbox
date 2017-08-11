@@ -2,15 +2,17 @@
 
 This directory contains all necessary settings and instructios for OpenVPN client.
 
-Έχουμε επιλέξει για λόγους secure, reliable, and scalable communication services, κάθε ένα από τα κουτιά δωρεάς να βρίσκεται πάντα, εντός ενός virtual private network ( VPN ) και μέσω αυτό θα μπορεί να συνδέετε στην απομακρυσμένη βάση δεδομένων.
+We have chosen for *secure, reliable, and scalable communication services* reasons, each of the donation boxes is always within the virtual private network ( *VPN* ) and therefore can be connected to the remote database.
 
-Note: Βεβαίως είναι φυσικό και επόμενο ορισμένες φορές το κουτί δωρεάς να είναι offline, να μην έχει πρόσβαση στο διαδίκτυο και κατ' επέκταση να μην μπορεί να συνδεθεί στο virtual private network. Για αυτό ακριβώς το λόγο άλλωστε διατηρούμε και την τοπική βάση δεδομένων. ;)
-Όμως αυτό το λαμβάνουμε υπόψιν μας και φροντίζουμε έτσι ώστε, στην περίπτωση που δε καταφέρει να συνδεθεί με το virtual private network να προσπαθεί επαναλαμβανόμενα ανά τακτά χρονικά διαστήματα να συνδεθεί.
+Note: Of course it is expected that the donation box sometimes is offline, not have access to the internet and therefore cannot connect to the virtual private network.
+For this reason, we also maintain the local database. ;)
+That's why we take care of that, In case you can not connect to the virtual private network to try repeatedly to connect at regular intervals.
 
-Για να μπορέσουμε να συνδεθούμε λοιπόν στο δίκτυο αυτό, θα πρέπει να έχουμε ένα πρόγραμμα πελάτη το οποίο να φροντίζει για αυτή τη σύνδεση. Εμείς για την υλοποίηση του virtual private network χρησιμοποιούμε ( από μεριάς server ) το [OpenVPN](https://openvpn.net/index.php/open-source.html). Οπότε θα χρησιμοποιήσουμε και τον αντίστοιχο client για αυτό.
+To be able to connection to the VPN, we need to have a client program (daemon) to take care of this connection. Us to implement the virtual private network
+we use ( on the part of the server ) the [OpenVPN](https://openvpn.net/index.php/open-source.html). So we will also use the corresponding client for this.
 
-##Εγκατάσταση OpenVPN client.
-Αν χρησιμοποιούμε GNU/Linux λειτουργικό σύστημα η εγκατάσταση του OpenVPN client είναι πού απλή. Εφόσον αποκτήσουμε δικαιώματα διαχειριστή συστήματος, εκτελούμε την εντολή εγκατάστασης του OpenVPN. Δίνονται παρακάτω μερικά παράδειγμα από τις πιο γνωστές διανομές GNU/Linux.
+##Install OpenVPN client.
+If we use a GNU/Linux operating system the installation of the OpenVPN client is simple. Get system administrator permissions and execute its installation command of the OpenVPN. Below are some examples of the most known GNU/Linux distributions.
 
 - Debian/Ubuntu:
 `apt-get install openvpn`
@@ -19,27 +21,24 @@ Note: Βεβαίως είναι φυσικό και επόμενο ορισμέ�
 `yum install openvpn`
 
 
-Εφόσον τελειώσει η εγκατάσταση, πλέον ήμαστε σχεδόν έτοιμοι να χρησιμοποιήσουμε το πρόγραμμα πελάτη OpenVPN.
-Ήμαστε σχεδόν έτοιμοι και όχι πλήρως, διότι για να μπορέσει να λειτουργήσει το πρόγραμμα πελάτη και να μας συνδέσει σε κάποιο virtual private network χρειάζεται ένα αρχείο ρυθμίσεων και πιστοποιητικά - διαπιστευτήρια. Αυτά τα αρχεία είναι υπεύθυνος να μας τα δώσει ο διαχειριστής του OpenVPN server. Επομένως από μεριά μας δε χρειάζεται να ανησυχούμε για αυτά.
-Κατα κανόνα είναι τα παρακάτω τέσσερα αρχεία :
+Once the installation is over, we are almost ready to use the OpenVPN client.
+We are almost ready and not fully, because in order for the client program to work and connect us to the virtual private network χit needs a configuration file and certificates - credentials. These files are responsible to give us the administrator of the OpenVPN server. Therefore, we do not have to worry about that.
+However, the following four files are needed:
 - client.crt
 - client.key
 - ca.crt
 - client.conf
 
-Εμείς λοιπόν, αρκεί να μεταφέρουμε αυτά τα τέσσερα αρχεία στον κατάλογο `/etc/openvpn/`.
 
+So we just need to transfer these four files to the `/etc/openvpn/` directory.
+This way every time our system starts, will also attempt to connect to the VPN οr if lost the connection to with the VPN, it will again automatically try to raise it.
 
-`/usr/sbin/openvpn --config client.conf`
+If for some reason we want to terminate our connection, it is enough to run:
 
-Μόλις λάβουμε το μύνημα : `Initialization Sequence Completed` ήμαστε πλέον συνδεδεμένοι με το virtual private network.
+`sudo service openvpn stop`
 
+and to start the client that tries to make the connection with the OpenVPN server :
 
-για να τερματίσεις τη σύνδεση ( απλά σταματάς το πρόγραμμα πελάτη ) εκτελείς :
+`sudo service openvpn start`
 
-`sudo killall openvpn`
-
-
-`chmod +x installation.sh`
-
-`./installation.sh`
+( If he does not succeed immediately, then he will try until he succeeds )

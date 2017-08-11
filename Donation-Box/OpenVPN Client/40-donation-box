@@ -36,7 +36,7 @@ for inter in $interfaces
 do
         inet=$(ifconfig "$inter" | grep -c "inet" )
 
-        if [ $inter != 'lo' ] && [ $inet ]
+        if [ $inter != 'lo' ] && [ "$inet" ]
         then
                 ip=$(ip addr show "$inter" | awk '/inet /{print $2}' | cut -d/ -f1) # By Diomidis Spinellis
 
