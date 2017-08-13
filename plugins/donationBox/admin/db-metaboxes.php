@@ -121,27 +121,33 @@ add_action('add_meta_boxes', 'db_project_target_amount_metabox', 1 );
  * 
  */
 
-function db_preview_callback( $post )
+function db_about_callback( $post )
 {
     $preview_page = '/wp-content/plugins/donationBox/templates/template-portrait_mode.php';
     $preview_page .= '?db_preview_id=' . get_the_ID();
     
     ?>
     <p>
-        <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
-            <span class="glyphicon glyphicon-eye-open"></span> Donation Box Preview
-        </button>
+        Start date : <input type="date" id="start_datepicker" name="example[datepicker]" value="" class="datepicker" />
+        End date : <input type="date" id="end_datepicker" name="example[datepicker]" value="" class="datepicker" />
+
+        <center>
+            <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
+                <span class="glyphicon glyphicon-eye-open"></span> Donation Box Preview
+            </button>
+        </center>
     </p>
     <?php
+
 }
 
 
-function db_project_preview_metabox()
+function db_project_about_metabox()
 {
     add_meta_box(
-            'db_preview_metabox',
-            'Project Preview',
-            'db_preview_callback',
+            'db_about_metabox',
+            'About project',
+            'db_about_callback',
             'donationboxes',
             'side',
             'high'
@@ -149,7 +155,7 @@ function db_project_preview_metabox()
 }
 
 
-add_action('add_meta_boxes', 'db_project_preview_metabox' , 1 );
+add_action('add_meta_boxes', 'db_project_about_metabox' , 1 );
 
 
 
