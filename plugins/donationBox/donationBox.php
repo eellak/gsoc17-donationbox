@@ -8,7 +8,7 @@ Plugin URI: https://github.com/eellak/gsoc17-donationbox/
 Description: Πρόκειται για ένα αρχικό testing plugin..
 Version: 0.1
 Author: Tas-sos
-Author URI: https://github.com/eellak/gsoc17-donationbox/
+Author URI: https://github.com/Tas-sos
 License: GPLv2
 Text Domain: donationBox
 */
@@ -47,7 +47,6 @@ require_once( plugin_dir_path(__FILE__) . 'admin/db-send_data_to_db.php');
 
 
 
-
 /*
  * Definition of Global Variables for handling errors.
  */
@@ -71,7 +70,6 @@ register_activation_hook( __FILE__, 'db_plugin_activation');
 
 function db_plugin_activation()
 {
-
     $capabilities = array(
         'read'                      => true,
         'edit_posts'                => true,
@@ -82,6 +80,8 @@ function db_plugin_activation()
         'delete_others_posts'       => true,
         'delete_published_posts'    => false,
         'publish_posts'             => true
+//        'upload_files'              => true, // να μην μπορεί να ανεβάζει stylesheet files.
+//        'manage_categories'         => true, // να μην μπορεί να αλλάζει την κατηγορία των donation projects 
 
     );
     
@@ -89,6 +89,7 @@ function db_plugin_activation()
     
     // My WordPress Cron Job to update the donation projects.
     db_creat_cron_job();
+    
 }
 
 
@@ -125,7 +126,8 @@ add_action('plugins_loaded', 'db_create_plugin_menu');
 
 
 
-//Add my custom endpoints to the REST WordPress API.
+// Add my custom endpoints to the REST WordPress API.
+
 /**
  * Grab latest post title by an author!
  *
@@ -174,7 +176,6 @@ function db_create_endpoint_REST_API( $request )
         $data = null;
     }
 
-    
     $response = new WP_REST_Response( $data );
 
     // Add a custom status code
@@ -202,8 +203,8 @@ function db_create_endpoint_REST_API( $request )
 function db_custm_rest_route()
 {
     register_rest_route( 
-            'donationboxes/v1',
-            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',
+            'wp/v2/donationboxes',          /* Namespace - Route. */
+            '/updated/(?P<date>([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])))/(?P<time>(([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))',  /* Endpoint with parameters. */
             array(
                 'methods' => 'GET',
                 'callback' => 'db_create_endpoint_REST_API',
@@ -231,24 +232,13 @@ add_action( 'rest_api_init', 'db_custm_rest_route');
 
 
 
-// function my_post_updated_messages_filter($messages)
-//{
-////      $messages['trashed'][1] = 'Publish not allowed';
-//      return $messages . 'odsdsfsdfssssssssssssss';
-// }
-// 
-// add_filter('post_updated_messages', 'my_post_updated_messages_filter');
-
-
-
-
-
 function my_bulk_post_updated_messages_filter( $bulk_messages, $bulk_counts )
 {
     $singular = 'donation project';
     $plural = 'donation projects';
     
     $bulk_messages['donationboxes'] = array(
+        'published' => _n( '%s ' . $singular . ' published.', '%s ' . $plural . ' published.', $bulk_counts['published'] ),
         'updated'   => _n( '%s ' . $singular . ' updated.', '%s ' . $plural . ' updated.', $bulk_counts['updated'] ),
         'locked'    => _n( '%s ' . $singular . ' not updated, somebody is editing it.', '%s ' . $plural . ' not updated, somebody is editing them.', $bulk_counts['locked'] ),
         'deleted'   => _n( '%s ' . $singular . ' permanently deleted.', '%s ' . $plural . ' permanently deleted.', $bulk_counts['deleted'] ),
@@ -281,7 +271,7 @@ function db_add_cron_interval( $schedules )
     if ( !isset( $schedules['30min'] ) )
     {
         $schedules['30min'] = array(
-            'interval' => 30 * 60 , // 30min * 60sec
+            'interval' => 30 * 60 , // 30min * 60sec = 30 minutes.
             'display'  => esc_html__( 'Once, every half hour.' ),
         );
     }
@@ -297,7 +287,7 @@ add_filter( 'cron_schedules', 'db_add_cron_interval' );
 
 /**
  * Function where it creating the WordPress Cron Job where it will update the
- * local database from the remote, every half hour. * 
+ * local database from the remote, every half hour.
  * 
  */
 
@@ -306,7 +296,7 @@ function db_creat_cron_job()
     
     if ( ! wp_next_scheduled ( 'db_update_local_db_event') )
     {
-	wp_schedule_event(time(), '30min', 'db_update_local_db_event');
+		wp_schedule_event(time(), '30min', 'db_update_local_db_event');
     }
     
 }
@@ -329,10 +319,7 @@ add_action('db_update_local_db_event', 'db_update_local_current_amount');
  * 
  * @param Array $actions : The WordPress Bulk actions that the user can do.
  * 
- * @return Array : 
- *              1) If the user is the system administrator :
- *                  All the WordPress Bulk actions that the user can do.
- *              2) If the user is not the system administrator :
+ * @return Array : If the user is the system administrator or not :
  *                  Τhe WordPress Bulk actions that the user can do, except 
  *                  for restoring and permanent deletion!
  * 
@@ -340,12 +327,9 @@ add_action('db_update_local_db_event', 'db_update_local_current_amount');
 
 function db_remove_dropdown_list_bulk_actions($actions)
 {
-    if ( ! current_user_can('administrator') ) // Only administrator can access to actions!
-    {
-        unset( $actions['untrash'] );   // Restore
-        unset( $actions['delete'] );    // Delete Permanently
-    }
-    
+    unset( $actions['untrash'] );   // Restore
+	unset( $actions['delete'] );    // Delete Permanently
+
     return $actions;
 }
 
@@ -356,7 +340,7 @@ add_filter('bulk_actions-edit-donationboxes','db_remove_dropdown_list_bulk_actio
 
 
 /**
- * A function that removes from the "subsubsub" menu, τhe menu (link) to enter
+ * A function that removes from the "subsubsub" menu, the menu (link) to enter
  * the trash folder.
  * 
  * Attention! : It does not forbid access! It just does not show this menu to the user.
@@ -423,12 +407,12 @@ function db_remove_actions_from_row( $actions, $post )
 {
     if ( $post->post_type == "donationboxes" )
     {
-        unset( $actions['inline hide-if-no-js'] ); //   Quick edit
+        unset( $actions['inline hide-if-no-js'] );  //   Quick edit
+        unset( $actions['untrash'] );               //   Restore
         
         // In Trash folder.
         if ( ! current_user_can('administrator') ) // Only administrator can access to these actions!
         {
-            unset( $actions['untrash'] ); //   Restore
             unset( $actions['delete'] ); //    Delete Permanently
         }
     }
@@ -437,4 +421,6 @@ function db_remove_actions_from_row( $actions, $post )
 }
 
 add_filter('post_row_actions','db_remove_actions_from_row', 10, 2 );
+
+
 
