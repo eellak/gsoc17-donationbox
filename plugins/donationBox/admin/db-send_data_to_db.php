@@ -35,7 +35,7 @@
  * 
  */
 
-function db_check_and_print_response_message( $response, $view = true )
+function db_check_and_print_response_message( $response, $view = TRUE )
 {
     $flag = TRUE;
     $current_url  = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -89,7 +89,7 @@ function db_check_and_print_response_message( $response, $view = true )
     {
         $script .= "pageTitle.after('<div class=\"updated notice notice-success is-dismissible \"><p>";
         $script .= "The donation project was <b>deleted</b> successfully from donation box database.<br>";
-        $script .= 'Donation boxes database : ' . trim($response['body']) ;
+        $script .= 'Donation boxes database : ' . trim($response['body'] ) ;
         $script .= "</p></div>');";
     }
     else // != 200 , != 455 , != 460 , Some other error...
@@ -138,7 +138,7 @@ function db_check_and_print_response_message( $response, $view = true )
 
 function db_collect_all_data( $project_id )
 {
-    $image = get_post_meta( $project_id, '_db_project_image_file', true);
+    $image = get_post_meta( $project_id, '_db_project_image_file', TRUE);
     if ( count($image) > 0  &&  is_array($image) )
     {
         $image = $image[0]['url'];
@@ -148,7 +148,7 @@ function db_collect_all_data( $project_id )
         $image = null;
     }
     
-    $video = get_post_meta( $project_id, '_db_project_video_file', true);
+    $video = get_post_meta( $project_id, '_db_project_video_file', TRUE);
     if ( count($video) > 0  &&  is_array($video) )
     {
         $video = $video[0]['url'];
@@ -158,7 +158,7 @@ function db_collect_all_data( $project_id )
         $video = null;
     }
     
-    $css = get_post_meta( $project_id, '_db_project_stylesheet_file', true);
+    $css = get_post_meta( $project_id, '_db_project_stylesheet_file', TRUE);
     if ( count($css) > 0  &&  is_array($css) )
     {
         $css = $css[0]['url'];
@@ -168,7 +168,7 @@ function db_collect_all_data( $project_id )
         $css = null;
     }
     
-    $status = get_post_meta( $project_id, '_db_project_status', true );
+    $status = get_post_meta( $project_id, '_db_project_status', TRUE);
     if ( $status == 1 )
     {
         $status = 'Activate';
@@ -189,7 +189,9 @@ function db_collect_all_data( $project_id )
         'stylesheet_file_url'   => $css,
         'status'                => $status,
         'organization'          => get_the_terms( $project_id, 'organization' )[0]->name,
-        'target_amount'         => get_post_meta( $project_id, '_db_project_target_amount', true),
+        'target_amount'         => get_post_meta( $project_id, '_db_project_target_amount', TRUE),
+        'start_date'            => get_post_meta( $project_id, '_db_project_start_date', TRUE),
+        'end_date'              => get_post_meta( $project_id, '_db_project_end_date', TRUE),
         'last_modified'         => get_the_modified_date( 'Y-m-d H:i:s' , $project_id ),
     );
     
@@ -241,14 +243,14 @@ function db_send_data_to_donationBox_database( $donation_project_id )
         'timeout' => '5',
         'redirection' => '5',
         'httpversion' => '1.0',
-        'blocking' => true,
+        'blocking' => TRUE,
         'headers' => array(),
         'cookies' => array()
     );
 
     $response = wp_remote_post( get_option( 'database_url_field '), $args );
     
-    if ( ! db_check_and_print_response_message($response) ) 
+    if ( ! db_check_and_print_response_message($response) )
     {
         $next_time = time() + ( 60 ) ; // Just one hour.
 
@@ -261,7 +263,6 @@ function db_send_data_to_donationBox_database( $donation_project_id )
         
         wp_schedule_single_event( $next_time, 'db_cron_hook_insert_update', array( $donation_project_id, TRUE, $next_time_string ) );
     }
-    
     
 }
 
@@ -286,7 +287,6 @@ add_action( 'db_cron_hook_insert_update', 'db_send_data_to_donationBox_database'
 
 function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
-    // Ξεχωρίζω ΑΝ τυχών έχει δώσει πάνω από ένα projects για μεταφορά στον κάδο ανακύκλωσης.
     $ids = explode(",", strval( $donation_projects_ids ) );
 
     $view = TRUE;
@@ -313,7 +313,7 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 
         if ( ! db_check_and_print_response_message($response , $view) )  // if we haven't send it to database... start a cron job
         {
-            $next_time = time() + ( 60 ) ;
+            $next_time = time() + ( 1 * 60 * 60); // Just one hour - http://php.net/manual/en/function.time.php
 
             $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
 
@@ -332,7 +332,7 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 }
 
 add_action( 'db_cron_hook_delete', 'db_delete_data_from_donationBox_database', 10, 3 );
-s
+
 
 
 
@@ -439,7 +439,6 @@ function db_get_current_amount_from_db( $donation_projects_id )
 
 function db_update_local_current_amount()
 {
-//      SELECT ID FROM wordpress.wp_posts where post_type = 'donationboxes' and post_status = 'publish';
         global $wpdb;
         
         $querystr = "
@@ -461,11 +460,7 @@ function db_update_local_current_amount()
                 // Update WordPress local database.
                 update_post_meta( $post->ID, '_db_project_current_amount', $current_amount_value );
             }
+            
         }
         
 }
-
-
-
-
-
