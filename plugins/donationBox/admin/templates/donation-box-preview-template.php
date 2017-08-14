@@ -18,8 +18,12 @@
     $project_image          = get_post_meta( $current_post_id, '_db_project_image_file', true);
     $project_video          = get_post_meta( $current_post_id, '_db_project_video_file', true);
     $project_css            = get_post_meta( $current_post_id, '_db_project_stylesheet_file', true );
-    
     $organizations          = get_the_terms( $current_post_id, 'organization' );
+    $start_date             = new DateTime( get_post_meta( $current_post_id, '_db_project_start_date', true ) );
+    $end_date               = new DateTime( get_post_meta( $current_post_id, '_db_project_end_date', true ) ) ;
+
+    $days_left = $end_date->diff( $start_date )->format("%a");
+
 
     if ( count($project_image) > 0  &&  is_array($project_image) )
     {
@@ -301,7 +305,7 @@
                         <div id="daysleftwidget" class="info-widget">
                             ΗΜΕΡΕΣ ΠΟΥ ΑΠΟΜΕΝΟΥΝ
                             <div id="daysleft">
-                                30
+                                <?= $days_left ?>
                             </div>
                         </div>	<!--daysleft-->
 
