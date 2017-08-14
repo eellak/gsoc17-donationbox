@@ -168,10 +168,10 @@ function()
     {
         var post_id = jQuery('#db_preview_button').attr('name');
 
-        var url = '/wp-content/themes/influence-child/templates/template-portrait_mode.php?db_preview_id=';
+        var url = '/wp-content/plugins/donationBox/admin/templates/donation-box-preview-template.php?db_preview_id=';
         url += post_id;
         
-         
+        
         if ( jQuery('#save-post').length ) // If "Save Draft" button exists!
         {
             if ( organizations_check() )
@@ -182,7 +182,7 @@ function()
         
         window.open( url ,
                     'popUpWindow',
-                    'height=900,width=1600,left=10,top=10,,scrollbars=yes,menubar=no');
+                    'height=1600,width=900,left=10,top=10,,scrollbars=yes,menubar=no');
 
 
         event.preventDefault();
@@ -308,12 +308,19 @@ function()
     
     
     
-	jQuery('.datepicker').datepicker(
+    /**
+     * Enable field as datepicker.
+     * 
+     * Enables the date picker in the field and also gives the form of the date
+     * he wants to return ( optional ).
+     * 
+     */
+    
+    jQuery('.datepicker').datepicker(
     {
-    	dateFormat: 'dd-mm-yy'
+                dateFormat: 'yy-mm-dd'
     });
 
-    
 
 
 

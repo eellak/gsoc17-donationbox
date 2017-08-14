@@ -10,9 +10,14 @@ wp_enqueue_style('bootstrap-css', plugins_url( '/css/bootstrap.min.css' , __FILE
 wp_enqueue_script('bootstrap-js', plugins_url( '/js/bootstrap.min.js', __FILE__ ) , 11 );
 wp_enqueue_script('myScripts-js', plugins_url( '/js/db-scripts.js', __FILE__ ) , 11 );
 
+wp_enqueue_script('jquery-ui-core');
+wp_enqueue_script('jquery-ui-datepicker');
+wp_enqueue_style('jquery-ui-css', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+
 require_once('db-validations.php');
 require_once('db-send_data_to_db.php');
 require_once('db-functions.php');
+
 
 
 
@@ -76,9 +81,9 @@ function db_target_amount_callback( $post )
             'db_target_amount_meta_box_nonce'
             );
     $target_amount_value = get_post_meta(
-                                $post->ID,                      // post id
-                                '_db_project_target_amount',    // unique id for database -- NEED to start with "_" -- 
-                                true);                          // single value
+                                $post->ID,
+                                '_db_project_target_amount',
+                                true);
     
     ?>
     <div class="form-field form-required" >
@@ -97,12 +102,12 @@ function db_target_amount_callback( $post )
 function db_project_target_amount_metabox()
 {
     add_meta_box(
-            'db_amount_metabox',    		// Unique id of metabox.
-            'Donation money',               // Displayed metabox title.
-            'db_target_amount_callback',    // Callback function.
-            'donationboxes',                // On which page it will appear.
-            'side',                         // In which position.
-            'high'                          // Priority.
+            'db_amount_metabox',
+            'Donation money',
+            'db_target_amount_callback',
+            'donationboxes',
+            'side',
+            'high'
             );
 }
 
@@ -114,22 +119,32 @@ add_action('add_meta_boxes', 'db_project_target_amount_metabox', 1 );
 
 
 /**
- * Preview Button meta box.
- * This functions create the panel it contain the preview button with which the
- * user can preview the current donation project just as it will appear in the
- * donation box.
+ * About Project meta box.
+ * This functions create the panel it contains the start & end project datepicker
+ * fields, and the preview button with which the user can preview the current
+ * donation project just as it will appear in the donation box.
  * 
  */
 
 function db_about_callback( $post )
 {
+    wp_nonce_field( 'db_save_start_project_date', 'db_start_date_meta_box_nonce');
+    $start_date_value = get_post_meta( $post->ID , '_db_project_start_date', true);
+    
+    wp_nonce_field( 'db_save_end_project_date', 'db_end_date_meta_box_nonce');
+    $end_date_value = get_post_meta( $post->ID , '_db_project_end_date', true);
+    
+    
     $preview_page = '/wp-content/plugins/donationBox/templates/template-portrait_mode.php';
     $preview_page .= '?db_preview_id=' . get_the_ID();
     
     ?>
     <p>
-        Start date : <input type="date" id="start_datepicker" name="example[datepicker]" value="" class="datepicker" />
-        End date : <input type="date" id="end_datepicker" name="example[datepicker]" value="" class="datepicker" />
+        <label for="db_start_datepicker_field">Start date :</label>
+        <input type="date" id="db_start_datepicker_field" name="db_start_datepicker_field" value="<?php echo !empty($start_date_value) ? esc_attr($start_date_value) : '' ?>" class="datepicker" required="required" />
+        
+        <label for="db_end_datepicker_field">End date:</label>
+        <input type="date" id="db_end_datepicker_field" name="db_end_datepicker_field" value="<?php echo !empty($end_date_value) ? esc_attr($end_date_value) : '' ?>" class="datepicker" required="required" />
 
         <center>
             <button type="submit" class="btn btn-primary" id="db_preview_button" name="<?php echo get_the_ID() ?> ">
@@ -146,7 +161,7 @@ function db_project_about_metabox()
 {
     add_meta_box(
             'db_about_metabox',
-            'About project',
+            'About Project',
             'db_about_callback',
             'donationboxes',
             'side',
@@ -156,6 +171,7 @@ function db_project_about_metabox()
 
 
 add_action('add_meta_boxes', 'db_project_about_metabox' , 1 );
+
 
 
 
@@ -355,17 +371,13 @@ function db_save_metaboxes_data( $post_id )
     // Validations for stylesheet file.
     if ( db_css_file_validations() )
     {
-        // Upload css file :
-        // Make sure the file array isn't empty  
         if( ! empty( $_FILES['db_project_css_file_field']['name'] ) )
         {
-            // Get the file type of the upload  
             $flag = 0;
 
             if( !empty($_FILES['db_project_css_file_field']['name']) )
             {
                 $flag = 1;
-                // Use the WordPress API to upload the multiple files
                 $upload[] = wp_upload_bits(
                                             $_FILES['db_project_css_file_field']['name'],
                                             null,
@@ -382,7 +394,6 @@ function db_save_metaboxes_data( $post_id )
     }
     
     
-    // For delete css file. Maybe it's necessary to canmore validations here..
     if (  isset( $_POST['remove_css'] ) )
     {
         db_delete_css_file($post_id);
@@ -490,12 +501,34 @@ function db_save_metaboxes_data( $post_id )
         if ( isset( $_POST['db_project_target_amount_field'] ) )
         {
             $target_amount_data = esc_attr( sanitize_text_field( $_POST['db_project_target_amount_field'] ) ) ;
-            settype($target_amount_data, 'integer'); // For more more more secure!!!
+            settype($target_amount_data, 'integer');
             update_post_meta(
                     $post_id,
                     '_db_project_target_amount',
                     $target_amount_data
                     );
+        }
+    }
+    
+    
+    // Validations for start project date :
+    if ( db_start_project_date_validations() )
+    {
+        if ( isset( $_POST['db_start_datepicker_field'] ) )
+        {
+            $start_date_data = esc_attr(sanitize_text_field( $_POST['db_start_datepicker_field'] ) );
+            update_post_meta($post_id, '_db_project_start_date', $start_date_data);            
+        }
+    }
+    
+    
+    // Validations for end project date :
+    if ( db_end_project_date_validations() )
+    {
+        if ( isset( $_POST['db_end_datepicker_field'] ) )
+        {
+            $end_date_data = esc_attr(sanitize_text_field( $_POST['db_end_datepicker_field'] ) );
+            update_post_meta($post_id, '_db_project_end_date', $end_date_data);            
         }
     }
 
@@ -526,19 +559,19 @@ add_action('save_post_donationboxes', 'db_save_metaboxes_data');
 function db_redirect_post_location( $location, $post_id )
 {
     global $db_error;
-//    global $untrashed_posts;
+    global $untrashed_posts;
 
     if ( $db_error['have'] )
     {
         $location = add_query_arg( 'message', $db_error['message_code'], get_edit_post_link( $post_id, 'url' ) );
     }
     
-//    if ( $untrashed_posts ) // If i have untrashed posts.
-//    {
-//        $location = add_query_arg( 'ids', $untrashed_posts[0], $location );
-//        var_dump($untrashed_posts);
+    if ( $untrashed_posts ) // If i have untrashed posts.
+    {
+        $location = add_query_arg( 'ids', $untrashed_posts[0], $location );
+        var_dump($untrashed_posts);
 //        wp_die();
-//    }
+    }
     
     return $location;
 }
@@ -598,6 +631,12 @@ function db_admin_notices( $post_id )
         case 303 : 
             db_print_user_error( '303', 'Problem with image file [Something went wrong].' );
             break;
+        case 401 :
+            db_print_user_error( '401', 'Problem with start project date.');
+            break;
+        case 501 :
+            db_print_user_error( '501', 'Problem with end project date.');
+            break;
     }
 
     if ( isset( $_GET['trashed'] ) ) // If he sends donation projects in the trash.
@@ -611,21 +650,14 @@ function db_admin_notices( $post_id )
     if ( isset( $_GET['untrashed'] ) ) // If he sends donation projects in the trash.
     {
         var_dump($untrashed_posts);
-//        if ( $_GET['ids'] == 'untrash' )
-//        {
-//            db_delete_data_from_donationBox_database( $_GET['ids'] );
-//        }
+
         if ( isset( $_GET['ids'] ) )
         {
             db_print_user_error( 'Untrashed posts is : ', $_GET['ids'] );
         }
-//        wp_die();
     }
         
 }
 
 add_action( 'admin_notices', 'db_admin_notices' );
-
-
-
 
