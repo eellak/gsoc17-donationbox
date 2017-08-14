@@ -284,6 +284,7 @@ function db_delete_cron_job( $id )
 
     foreach ( $crons as $key => $job )
     {
+
         if ( ( key($job) != 'db_cron_hook_insert_update' ) && ( key($job) != 'db_cron_hook_delete' ) )
         {
             continue;
@@ -294,13 +295,14 @@ function db_delete_cron_job( $id )
             if ( $cron_job[key($cron_job)]['args'][0] == $id )
             {
                 unset( $crons[$key][$sub_key] );
-            }   
+            }
         }
     }
     
     _set_cron_array($crons);
     
 }
+
 
 
 
@@ -380,4 +382,21 @@ function db_how_many_crons_i_have()
 
 
 
+
+/**
+ * Function that validates a date.
+ * 
+ * This function is called when we want to validate a date with specific format.
+ * 
+ * @param string $date : The date we want to validate.
+ * @param string $format : The format we want to have the date.
+ * @return boolean : TRUE If the date is in the form we want
+ *                   otherwise return FALSE.
+ */
+
+function validateDate($date, $format = 'Y-m-d')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+}
 
