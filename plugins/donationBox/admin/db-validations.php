@@ -48,18 +48,18 @@ function db_css_file_validations()
             case UPLOAD_ERR_OK:
                 break;
             case UPLOAD_ERR_NO_FILE:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '101';
-                return false;
+                return FALSE;
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '102';
-                return false;
+                return FALSE;
             default:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '103';
-                return false;
+                return FALSE;
         }
 
         if ( $extension != 'css')
@@ -91,9 +91,9 @@ function db_css_file_validations()
             wp_die( $message , "Sorry, your file is too large.");
         }
 
-        return true;
+        return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
 
@@ -134,18 +134,18 @@ function db_video_file_validations()
             case UPLOAD_ERR_OK:
                 break;
             case UPLOAD_ERR_NO_FILE:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '201';
-                return false;
+                return FALSE;
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '202';
-                return false;
+                return FALSE;
             default:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '203';
-                return false;
+                return FALSE;
         }
 
         $uploaded_temp_file = $_FILES[$input_field]['name'];
@@ -174,15 +174,15 @@ function db_video_file_validations()
             wp_die( $message , "Security issue!");
         }
 
-        // Max limit for video is 10 MB.
+        // Max limit for video is 200 MB.
         if ($_FILES[$input_field]["size"] > 200 * MB )
         {
             wp_die( $message , "Sorry, your file is too large.");
         }
 
-        return true;
+        return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
 
@@ -214,30 +214,31 @@ function db_image_file_validations()
     if ( isset( $_POST['db_upload_image_file_meta_box_nonce'] )
             && ! empty( $_FILES[$input_field]['name'] ) 
             &&  wp_verify_nonce( $_POST['db_upload_image_file_meta_box_nonce'], 'db_save_image_file' ) 
-            &&  ! isset( $_POST['rm_image'] ) ) // Αν ΔΕΝ έχει πατήσει να διαγράψει το αρχείο
+            &&  ! isset( $_POST['rm_image'] ) )
     {
         if ( ! isset( $_FILES[$input_field]['error'] ) || is_array( $_FILES[$input_field]['error'] ) )
         {
             wp_die( $message , "Security issue!");
         }
 
+
         switch ( $_FILES[$input_field]['error'] )
         {
             case UPLOAD_ERR_OK:
                 break; // No error, all good
             case UPLOAD_ERR_NO_FILE:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '301';
-                return false;
+                return FALSE;
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '302';
-                return false;
+                return FALSE;
             default:
-                $db_error['have'] = true;
+                $db_error['have'] = TRUE;
                 $db_error['message_code'] = '303';
-                return false;
+                return FALSE;
         }
 
         $uploaded_temp_file = $_FILES[$input_field]['name'];
@@ -248,6 +249,7 @@ function db_image_file_validations()
             wp_die( $message , "Security issue!");
         }
 
+        // File type verification & validation.
         if ( $_FILES[$input_field]['type'] != $file_type_jpeg && $_FILES[$input_field]['type'] != $file_type_png  )
         {
             wp_die( $message , "Security issue!");
@@ -297,9 +299,9 @@ function db_image_file_validations()
             wp_die( $message , "Sorry, your file is too large.");
         }
 
-        return true;    // Πέρασε επιτυχώς όλους του ελέγχους.
+        return TRUE;
     }
-    return false;   // Δεν πάτησε κάν ώστε να προσθέσει ένα αρχείο σε αυτό το πεδίο.
+    return FALSE;
 }
 
 
@@ -314,29 +316,29 @@ function db_status_validations()
 {
     global $db_error;
     
-    
     if ( ! isset( $_POST['db_status_meta_box_nonce'] ) )
     {
-        $db_error['have'] = true;
+        $db_error['have'] = TRUE;
         $db_error['message_code'] = 'Problem with status';
-        return false;
+        return FALSE;
     }
     
+    // Validate that the contents of the form request came from the current site and not somewhere else.
     if ( !wp_verify_nonce( $_POST['db_status_meta_box_nonce'], 'db_save_project_status' ) )
     {
-        $db_error['have'] = true;
+        $db_error['have'] = TRUE;
         $db_error['message_code'] = 'Problem with status';
-        return false;
+        return FALSE;
     }
     
     if ( ! isset( $_POST['db_project_state_field'] ) )
     {
-        $db_error['have'] = true;
+        $db_error['have'] = TRUE;
         $db_error['message_code'] = 'Problem with status';
-        return false;
+        return FALSE;
     }
     
-    return true;
+    return TRUE;
 }
 
 
@@ -351,29 +353,114 @@ function db_target_amount_validations()
 {
     global $db_error;
     
-    
     if ( ! isset( $_POST['db_target_amount_meta_box_nonce'] ) )
     {
-        $db_error['have'] = true;
+        $db_error['have'] = TRUE;
         $db_error['message_code'] = 'Problem with target amount';
-        return false;
+        return FALSE;
     }
 
     if ( !wp_verify_nonce( $_POST['db_target_amount_meta_box_nonce'] , 'db_save_target_amount' ) )
     {
-        $db_error['have'] = true;
+        $db_error['have'] = TRUE;
         $db_error['message_code'] = 'Problem with target amount';
-        return false;
+        return FALSE;
     }
 
     if ( ! isset( $_POST['db_project_target_amount_field'] ) )
     {
-        $db_error['have'] = true;
+        $db_error['have'] = TRUE;
         $db_error['message_code'] = 'Problem with target amount';
-        return false;
+        return FALSE;
     }
 
-    return true;
+    return TRUE;
+}
+
+
+
+
+
+/*
+ * Validations for start project date field.
+ */
+
+function db_start_project_date_validations()
+{
+    global $db_error;
+    
+    if ( ! isset( $_POST['db_start_date_meta_box_nonce'] ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '401';
+        return FALSE;
+    }
+
+    if ( !wp_verify_nonce( $_POST['db_start_date_meta_box_nonce'] , 'db_save_start_project_date' ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '401';
+        return FALSE;
+    }
+
+    if ( ! isset( $_POST['db_start_datepicker_field'] ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '401';
+        return FALSE;
+    }
+    
+    if ( ! validateDate( $_POST['db_start_datepicker_field'] ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '401';
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+
+
+
+
+/*
+ * Validations for end project date field.
+ */
+
+function db_end_project_date_validations()
+{
+    global $db_error;
+    
+    if ( ! isset( $_POST['db_end_date_meta_box_nonce'] ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '501';
+        return FALSE;
+    }
+
+    if ( !wp_verify_nonce( $_POST['db_end_date_meta_box_nonce'] , 'db_save_end_project_date' ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '501';
+        return FALSE;
+    }
+
+    if ( ! isset( $_POST['db_end_datepicker_field'] ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '501';
+        return FALSE;
+    }
+    
+    if ( ! validateDate( $_POST['db_end_datepicker_field'] ) )
+    {
+        $db_error['have'] = TRUE;
+        $db_error['message_code'] = '501';
+        return FALSE;
+    }
+
+    return TRUE;
 }
 
 
@@ -419,13 +506,16 @@ add_action( 'load-edit.php', 'db_load_trash_folder' );
 
 
 
+/*
+ * ......
+ */
+
 function db_untrash_donationboxes_post_type( $post_id )
 {
     global $db_error;
     global $untrashed_posts;
 
-    
-    // Αν ήμαστε στα donationboxes post _types
+
     if ( db_post_type_is_donationboxes($post_id) )
     {
         if ( current_user_can('project_creator') )
@@ -436,32 +526,32 @@ function db_untrash_donationboxes_post_type( $post_id )
             $message .= 'Trying to take an action where you do not have access to.<br>' ;
             $message .= 'Be very careful, because your activity may be misunderstood...<br>';
             $message .= 'Each of your activities are recorded.';                
+
             wp_die($message, 'Access denied.');
         }
         else if ( is_super_admin() )
         {
-//            echo '<script> alert("You are a super administrator!\n '. var_dump(get_post($post_id, ARRAY_A)).'"); </script>';
-//            echo '<br> -------------------------------------------------------------------- <br>';
-//            $temp = get_post($post_id, ARRAY_A);
-//            foreach ($temp as $value)
-//            {
-//                echo $value . '<br>';
-//            }
-            
-//            echo '<script> alert("LOOK this  '. wp_get_referer() .'"); </script>';
-            var_dump($untrashed_posts);
+            $message = '<h1>Access denied.</h1><br>';
+            $message .= 'Dear <b>';
+            $message .= get_user_ip() . ',<br>' . $_SERVER['HTTP_USER_AGENT'] . '</b> <br><br>' ;
+            $message .= 'Trying to take an action where you do not have access to.<br>' ;
+            $message .= 'Be very careful, because your activity may be misunderstood...<br>';
+            $message .= 'Each of your activities are recorded.';
 
-            
+            wp_die($message, 'Access denied.');
         }
 
-        wp_die('skata - un trash');
     }
-    // Αν δεν ήμαστε σε donationboxes post_type δε μας νοιάζει.
     
 }
 
 
 add_action('untrash_post' , 'db_untrash_donationboxes_post_type');
+
+
+
+
+
 
 
 
@@ -489,35 +579,14 @@ add_action('transition_post_status', 'wpse_handle_untrash', 10, 3 );
 
 
 
-
 /*
-http://localhost:8000/wp-admin/edit.php?
-
-s=&
-post_status=trash
-&post_type=donationboxes
-&_wpnonce=1cdd284fd6
-&_wp_http_referer=/wp-admin/edit.php?post_status=trash
-&post_type=donationboxes
-&action=untrash
-&m=0
-&paged=1
-&post[]=366
-&post[]=362
-&action2=-1
-
------------------------------------------------------------------
-
-http://localhost:8000/wp-admin/post.php?post=371&action=untrash&_wpnonce=7411961d75
-
-
+ * 
  */
 
 function db_delete_donationboxes_post_type( $post_id )
 {
 //    $trash_url = 'edit.php?post_status=trash&post_type=donationboxes&fail_remote_delete=461';
 
-    // Αν ήμαστε στα donationboxes post _types
     if ( db_post_type_is_donationboxes($post_id) )
     {
         if ( current_user_can('project_creator') )
@@ -532,19 +601,13 @@ function db_delete_donationboxes_post_type( $post_id )
         }
         else if ( is_super_admin() )
         {
-            echo '<script> alert("You are a super administrator!"); </script>';
             // Delete from WordPress Database.
-    //        db_delete_css_file($post_id);
-    //        db_delete_video_file($post_id);
-    //        db_delete_image_file($post_id);
+            db_delete_css_file($post_id);
+            db_delete_video_file($post_id);
+            db_delete_image_file($post_id);
         }
-    //    global $wp;
-    //    $current_url = home_url(add_query_arg(array(),$wp->request));
-    //    echo '<script> alert("Deleted all!"); </script>';
 
-        wp_die('Xesto - Delete!');
     }
-    // Αν δεν ήμαστε σε donationboxes post_type δε μας νοιάζει.
     
 }
 
