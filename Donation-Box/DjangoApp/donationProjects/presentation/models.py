@@ -26,10 +26,10 @@ class Donation_Project( models.Model ):
     start_date              = models.DateField()
     end_date                = models.DateField()
     last_updated_datetime   = models.DateTimeField( auto_now = True )
+    # last_server_modified    = models.DateField()
 
 
 
 
     def __str__(self):
         return self.title
-

@@ -9,6 +9,8 @@ $(document).ready(function()
 
     $('body').keypress(function (e)
     {
+        //alert( e.keyCode );
+
         var full_location = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
         var args = "/project/" ;
 
@@ -28,7 +30,9 @@ $(document).ready(function()
             full_location += args;
         }
 
+        //alert( full_location );
         $(location).attr( 'href', full_location );
+
 
     });
 
