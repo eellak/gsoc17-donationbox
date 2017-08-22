@@ -3,6 +3,20 @@
 This directory contains all the files that are required for the database. This is the central database of the system. It contains all information about the donation boxes and donations projects. The whole structure of the donation system/network is based on this database.
 The WordPress central page as well as the donation boxes communicate with her and update it.
 
+To install and configure the database, you have two ways.
+
+### Automatic installation.
+Just download the SQL script `create_database.sql` and Python script `database_config.py` at the same directory.
+Then run the Python script with root privileges and will take care everything for you.
+
+i.e. :
+<center>
+`sudo python3 database_config.py`
+</center>
+
+
+
+### Manual installation.
 To set up the database, just download the `create_database.sql` file and run the command:
 
 <center>
