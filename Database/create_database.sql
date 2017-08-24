@@ -177,5 +177,4 @@ COLLATE = utf8_bin;
 
 
 
-
-
+\! echo "[ \033[1m\033[32mOK\033[0m ] \033[1m\033[32mThe database installation has been successfully completed.\033[0m";
