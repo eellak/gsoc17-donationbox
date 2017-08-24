@@ -21,6 +21,10 @@
 	$end_date		= $_POST['end_date'];
 	$wordPress_last_modified = $_POST['last_modified'];
 
+	$db_server = "localhost";
+	$db_user = "dbuser";
+	$db_pass = "dbpass";
+	$db_name = "donationbox"
 
 	if ( isset( $username ) )
 	{
@@ -31,15 +35,24 @@
 			{
 				header("HTTP/1.1 460 Invalid user credentials");
 
-				$myfile = fopen("data.log", "a+") or die("Unable to open file!");
+				// Create connection
+				$conn = new mysqli($db_server, $db_user, $db_pass, $db_name);
+				// Check connection
+				if ($conn->connect_error) {
+				    die("Connection failed: " . $conn->connect_error);
+				}
 
-				$txt = "The donation project \"<b>" . $id ."</b>\" was deleted successfully from donation box database.\n";
-				fwrite($myfile, $txt);
+				// sql to delete a record
+				$sql = "DELETE FROM project WHERE ProjectID=$id";
+				//TODO: Check database to see if other rows in other tables need to be
+				//removed or updated in case of a project deletion
+				if ($conn->query($sql) === TRUE) {
+				    echo "Record deleted successfully";
+				} else {
+				    echo "Error deleting record: " . $conn->error;
+				}
 
-				$txt = "-------------------------------------------------------------------------------------------------\n";
-				fwrite($myfile, $txt);
-
-				fclose($myfile);
+				$conn->close();
 
 				echo "The donation project \"<b>" . $id ."</b>\" was deleted successfully from donation box database.";
 				exit;
@@ -53,17 +66,31 @@
 			}
 
 			else if ( isset($_POST['current_amount']) && $current_amount == '1' ) // Request the total amount that already collected for a donation project
-			{ // Here are some examples of donation projects with a specific id.
-				if ( $id == '195' )
+			{
+				//$conn = new mysqli(server, user, password, table);
+				$conn = new mysqli($db_server, $db_user, $db_pass, $db_name);
+				if ($conn->connect_error)
 				{
-					echo '1200';
+					die("Connection failed: " . $conn->connect_error);
 				}
-
-				if ( $id == '108' )
+				//setlocale(LC_MONETARY, 'el_GR');
+				$sql = "SELECT SUM(Ammount) FROM donations WHERE ProjectID=$id";
+				$result = $conn->query($sql);
+				if ($result->num_rows > 0)
 				{
-					echo '60';
+					while($row = $result->fetch_assoc())
+					{
+						$sum = $row['SUM(Ammount)'];
+						echo money_format('%.2n', $sum);
+					}
 				}
-
+				else
+				{
+					//TODO: Print an error message
+					echo 0;
+				}
+				//Closing the database connection
+				$conn->close();
 				exit;
 			}
 
@@ -72,6 +99,37 @@
 			{
 				echo 'I received the data for the donation project "<b>' . $title . '</b>".';
 
+				// Create connection
+				$conn = new mysqli($db_server, $db_user, $db_pass, $db_name);
+				// Check connection
+				if ($conn->connect_error) {
+				    die("Connection failed: " . $conn->connect_error);
+				}
+
+				$sql = "SELECT ProjectID FROM Project WHERE ProjectID=$id";
+
+				if ($conn->query($sql)->num_rows > 0) {
+				  //TODO: The rest of the fields need to be filled in.
+					//Check which fields are not integers, those require ''
+					//$sql = "INSERT INTO Project (ProjectID, Goal, Title, ...) VALUES ($id,'$target_amount','$title')";
+					if ($conn->query($sql) === TRUE) {
+					  echo "Record inserted successfully";
+					} else {
+					  echo "Error insertedd record: " . $conn->error;
+					}
+				} else {
+			    //TODO: The rest of the fields required in an update need to be filled in.
+					//Check which fields are not integers, those require ''
+					//$sql = "UPDATE Project SET Goal=$target_amount, Title='$title' ... WHERE ProjectID=$id";
+					if ($conn->query($sql) === TRUE) {
+					  echo "Record updated successfully";
+					} else {
+					  echo "Error updating record: " . $conn->error;
+					}
+				}
+
+				$conn->close();
+				/*
 				$myfile = fopen("data.log", "a+") or die("Unable to open file!");
 
 				$txt = $username . "\n";
@@ -121,6 +179,7 @@
 
 
 				fclose($myfile);
+				/**/
 			}
 		}
 		else // Client error 4xx
