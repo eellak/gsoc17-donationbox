@@ -56,3 +56,5 @@ or
 You will see the first donation project, if you press the **left** or **right** arrow keys on your keyboard you will go to the next or previous donation project.
 
 > Remember that: The projects you see in the Django web application **loaded from the local database**.
+
+Also, once a donation is given is responsible for displaying it to the user.
