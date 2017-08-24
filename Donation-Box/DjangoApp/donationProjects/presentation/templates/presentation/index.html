@@ -1,72 +1,49 @@
 {% extends "presentation/template.html" %}
 {% load static %}
 
-<!--/**-->
-<!--* The template for displaying donation projects as if they were in the Donation Box-->
-<!--*-->
-<!--* @package donationBox-->
-<!--* @license GPL 3.0-->
-<!--*-->
-<!--* Template Name: Portrait Mode -Preview- -->
-<!--*/-->
 
-<!--require_once('../../../../../wp-load.php');-->
 
-<!--$current_post_id = $_GET['db_preview_id'];-->
 
-<!--$project_status         = get_post_meta( $current_post_id, '_db_project_status', true) ? 'Activate' : 'Deactivate';-->
-<!--$project_current_amount = get_post_meta( $current_post_id, '_db_project_current_amount', true);-->
-<!--$project_target_amount  = get_post_meta( $current_post_id, '_db_project_target_amount', true);-->
-<!--$project_image          = get_post_meta( $current_post_id, '_db_project_image_file', true);-->
-<!--$project_video          = get_post_meta( $current_post_id, '_db_project_video_file', true);-->
-<!--$project_css            = get_post_meta( $current_post_id, '_db_project_stylesheet_file', true );-->
+{% block title_h1 %}
+    {{current_project.title}}
+{% endblock %}
 
-<!--$organizations          = get_the_terms( $current_post_id, 'organization' );-->
 
-<!--if ( count($project_image) > 0  &&  is_array($project_image) )-->
-<!--{-->
-    <!--$project_image = $project_image[0]['url'];-->
-<!--}-->
-<!--else-->
-<!--{-->
-    <!--$project_image = null;-->
-<!--}-->
 
-<!--if ( count($project_video) > 0  &&  is_array($project_video) )-->
-<!--{-->
-    <!--$project_video = $project_video[0]['url'];-->
-<!--}-->
-<!--else-->
-<!--{-->
-    <!--$project_video = null;-->
-<!--}-->
+
+{% block title_h2 %}
+    {{current_project.title}}
+{% endblock %}
+
+
+
+
+{% block text_content %}
+    {{current_project.text}}
+{% endblock %}
+
+
+
 
 {% block video %}
-    <!--if ( $project_video )-->
-    <!--{-->
-    <!--echo '<video id="projectvideo" poster="CF-Video-still.png" autoplay="autoplay" loop="loop" muted="" width="100%" height="150">';-->
-    <!--echo '<source src=" ' . $project_video . ' " type="video/mp4" />';-->
-    <!--echo '</video>';-->
-    <!--}-->
 
-    <!--<video id="projectvideo" poster="CF-Video-still.png" autoplay="autoplay" loop="loop" muted="" width="100%" height="150">-->
-        <!--<source src="{% static 'sampleVideo.mp4' %}" type="video/mp4" />-->
-    <!--</video>-->
+    {% if current_project.video_URL %}
+        <video id="projectvideo" poster="CF-Video-still.png" autoplay="autoplay" loop="loop" muted="" width="100%" height="150">
+            <source src="{{current_project.video_URL}}" type="video/mp4" />
+        </video>
+    {% elif current_project.image_URL %}
+         <img src="{{current_project.image_URL}}" alt="Project image" >
 
-    <!-- Python Testing.-->
-    <!--{% if all_projects %}-->
-        <!--<ul>-->
-        <!--{% for project in all_projects %}-->
-            <!--<li> {{ project.title }} - {{ project.id }}</li>-->
-        <!--{% endfor %}-->
-        <!--</ul>-->
-    <!--{% elif specific_project %}-->
-        <!--&gt; {{specific_project.title}} - {{specific_project.id}}-->
-    <!--{% else %}-->
-        <!--<p>No donation projects!</p>-->
+    {% endif %}
 
-    <!--{% endif %}-->
+{% endblock %}
 
+
+
+
+{% block progress_bar %}
+
+    <div id="probar" class="pro-bar bar-90 color-emerald" data-pro-bar-percent="{{total_percent}}" data-pro-bar-delay="100" > </div>
 
 {% endblock %}
 
@@ -75,9 +52,7 @@
 
 {% block total_amount %}
 
-    {% if current_project %}
-        {{ current_project.current_amount }}
-    {% endif %}
+    {{ total_current_amount }}
 
 {% endblock %}
 
@@ -85,7 +60,7 @@
 
 
 {% block days_left %}
-    31
+    {{days}}
 {% endblock %}
 
 
@@ -93,12 +68,8 @@
 
 {% block hidden_fields %}
 
-    <input type="hidden" id="next_donation_project_id" name="next_donation_project_id" value="{{next_project_id}}">
-    <input type="hidden" id="previous_donation_project_id" name="previous_donation_project_id" value="{{previous_project_id}}">
+    <input type="hidden" id="next_donation_project_id"      name="next_donation_project_id"     value="{{next_project_id}}">
+    <input type="hidden" id="previous_donation_project_id"  name="previous_donation_project_id" value="{{previous_project_id}}">
 
 {% endblock %}
-
-
-
-
 

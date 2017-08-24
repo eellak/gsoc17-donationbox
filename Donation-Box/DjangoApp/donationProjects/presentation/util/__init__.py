@@ -17,7 +17,7 @@ def get_first_donation_project():
     """
 
     try:
-        donation_project = Donation_Project.objects.get( id = 1 )
+        donation_project = Donation_Project.objects.all().first()
     except Donation_Project.DoesNotExist:
         raise Http404("Does not exist donation projects yet in the local database! :-) ")
 

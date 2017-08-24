@@ -121,7 +121,10 @@
                 <article id="post-86" class="entry post-86 page type-page status-publish hentry">
                     <div class="post-text">
 
-                        <h1 class="entry-title"> COOP BOX NETWORK </h1>
+                        <h1 class="entry-title">
+                        {% block title_h1 %}
+                        {% endblock %}
+                        </h1>
 
                         <div class="entry-content">
                             <p>
@@ -129,13 +132,15 @@
                                 {% endblock %}
                             </p>
 
-                            <h2 style="padding: 10px; text-align: center;"> ΒΑΛΕ ΚΕΡΜΑ ΚΑΙ ΕΝΙΣΧΥΣΕ ΤΟ COOPBOX NETWORK </h2>
+                            <h2 style="padding: 10px; text-align: center;">
+                                ΒΑΛΕ ΚΕΡΜΑ ΚΑΙ ΕΝΙΣΧΥΣΕ ΤΟ
+                                {% block title_h2 %}
+                                {% endblock %}
+                            </h2>
 
                             <p>
-                                Το κοινοτικό δίκτυο οικονομικής ενίσχυσης για την Kοινωνική Aλληλέγγυα Oικονομία (ΚΑΛΟ) είναι ένα έργο που έχει σχεδιαστεί από την ΚΟΙΝΣΕΠ commonslab με έδρα το Ηράκλειο Κρήτης και έχει σαν στόχο την εγκατάσταση 60 συσκευών co-op box σε χώρους συνεργατικών εγχειρημάτων σε όλη την Ελλάδα.
-                            </p>
-                            <p>
-                                Με τις δωρεές σας θα μας βοηθήσετε να κατασκευάσουμε άλλο ένα co-op box.
+                                {% block text_content %}
+                                {% endblock%}
                             </p>
 
                         </div> <!-- .entry-content -->
@@ -179,7 +184,8 @@
                 <div class="info">
                     <div class="info-title"> ΠΑΡΑΚΟΛΟΥΘΗΣΕ ΤΗΝ ΠΟΡΕΙΑ ΤΟΥ ΕΡΓΟΥ </div>
                     <div class="pro-bar-container color-nephritis">
-                        <div id="probar" class="pro-bar bar-90 color-emerald" data-pro-bar-percent="0" data-pro-bar-delay="100" > </div>
+                        {% block progress_bar %}
+                        {% endblock %}
                     </div>
                     <div id="percentvalue"> </div>
                     <!-- Progress Bar END -->
@@ -256,8 +262,6 @@
     {% endblock %}
     </body>
 </html>
-
-
 
 
 
