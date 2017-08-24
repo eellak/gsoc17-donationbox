@@ -25,6 +25,8 @@ The final donation box will consist of the following main parts :
 Essentially this is a page designed with emphasis and responsibility in presenting donation projects. Using the language Python and Django web application framework we've created the page that will be displayed the donation projects to the user from the donation box screen, and will be able to navigate between them.
 We chose the Python and Django web application framework, due to its flexibility and very good performance in conjunction with its minimum requirements and burdens on the system.
 
+<!-- [![Future](https://img.shields.io/badge/Feature-Future-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box) -->
+
 
 #### SQLite Database. [![coverage-100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
 It is the local database that will be stored all the required informations for each one of donation projects. For each donation project we will keep a subset of his information locally.
@@ -55,6 +57,7 @@ For the OpenVPN client, must be done specific settings that are necessary for pr
 
 
 #### [APIs daemons for Synchronization](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization). [![coverage-95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
-To synchronize local database data with the data from the remote database, it is necessary to running some processes in the background. They should be running on the background three processes continuously in donation box
+To synchronize local database data with the data from the remote database, it is necessary to running some processes in the background. They should be running on the background two processes continuously in donation box :
+* a daemon for the database synchronization : This background process will be responsible in order to attempt at regular intervals to communicate with the central database and to keep the local database up to date.
 
-εδώ πρέπει να αναφέρω πως θα πρέπει να υπάρχει και ένας daemon για να ανηχνεύει πότε γίνεται μια δωρεά.
+* a daemon for detecting a donation : This background process is responsible for detecting when a donation is made, when the user makes a donation - inserts a coin -. When this happens, it should record the amount deposited in the local database (*"temporary_Donation_Project" table*) and inform the user.
