@@ -131,7 +131,21 @@ This is the user who will have the privileges to send data on the server where t
 Furthermore, this user would be nice can be added it through a nice user interface.
 
 
-*For now, we have only one user (the same for both jobs) and his credentials are given in the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php).*
+For now, we have only one user (the same for both jobs) and his credentials are given in the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php). But it is not enough to give his credentials to this file. We need to create this user in the database and even more give to him full access.
+
+So, log in to the database as root user and create the user named `db_admin` with password `123456789` :
+
+
+`CREATE USER 'db_admin'@'localhost' IDENTIFIED BY '123456789';`
+
+`GRANT ALL PRIVILEGES ON donationbox_network.* TO 'db_admin'@'localhost';`
+
+`FLUSH PRIVILEGES;`
+
+`QUIT`
+
+If you have the corresponding credentials and the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) the [index.php](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) page will work properly.
+
 ____
 #### The users of donation boxes.
 These will be the users of the donation boxes. For each donation box there will also be the respective user.
