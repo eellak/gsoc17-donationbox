@@ -60,7 +60,11 @@
 
 
 {% block days_left %}
-    {{days}}
+    {% if days > 0 %}
+        {{days}}
+    {% else %}
+        -
+    {% endif %}
 {% endblock %}
 
 
@@ -70,6 +74,10 @@
 
     <input type="hidden" id="next_donation_project_id"      name="next_donation_project_id"     value="{{next_project_id}}">
     <input type="hidden" id="previous_donation_project_id"  name="previous_donation_project_id" value="{{previous_project_id}}">
+
+    {% if days < 0 %}
+        <script>alert("This donation project has expired!")</script>
+    {% endif %}
 
 {% endblock %}
 
