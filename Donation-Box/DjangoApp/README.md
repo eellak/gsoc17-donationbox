@@ -45,7 +45,7 @@ You must always be inside the root directory of the project, so :
 > * manage.py
 > * presentation
 
-(* If you have already initialized the databases, skip this step. * ) <br>
+( *If you have already initialized the databases, [skip](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp#how-to-run-the-django-app) this step.* ) <br>
 To initialize the databases, run :
 
 `python3 manage.py migrate`
@@ -90,6 +90,7 @@ now logged in Python interactive environment from which you can manage your appl
 `from presentation.models import Donation_Project`<br>
 `import datetime` <br> <br>
 Finally to insert data is enough a command like the following: <br>
+
 ```
 Donation_Project( id=227,
 title="Hacking Conference",
@@ -100,6 +101,4 @@ start_date = datetime.date(2017, 5, 1),
 end_date = datetime.date( 2017, 8, 31),
 last_modified_datetime = datetime.date( 2017, 8, 25) ).save()
 ```
-<br>
-To exit from the interaction environment, run :
-`exit()`
+> To exit from the interaction environment, run : `exit()`
