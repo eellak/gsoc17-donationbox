@@ -24,13 +24,31 @@ Each of them has a specific way of communicating.
 
 #### Τhe main WordPress site database client.
 The main WordPress site communicates indirectly with the database through the PHP page. Through *POST* requests in the [PHP script](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php), it sends and receives data from the database.
-____
-[![Future](https://img.shields.io/badge/Feature-Future-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database) <br>
-The PHP script is not fully functional. Temporarily only works for static data, for [the user](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php#L27) with username `db_admin` and password `123456789` and isn't connected to the database to [get](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php#L55-L68) or [insert/update](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php#L71-L124) data.
+
+
+##### Basic settings for proper operation of the PHP script.
+To work properly the PHP page you need to set some basic settings ( i.e. settings such as the name of database, the username and password of the database user etc. ). In our effort to make this optimal and as easy as possible for you, we created the [config.php](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) configuration file. So, you can give to this file all the basic settings that required from the PHP page to work properly. In this way we discourage you to see a lot of PHP code ( if you don't want it ) and we encourage you just change from some obvious fields their values.
+
+
+Returning to the side of the main WordPress site, you only need to define on the settings page of the [donation-box plugin](https://github.com/eellak/gsoc17-donationbox/tree/master/plugins), in which address it is located and publicly available this PHP file and the username and password of the user, which on the database side - *from the PHP page* - are acceptable to make changes to the database.<br>
+For example, the page may be available at : `http://donationbox.database.org/index.php` and the credentials of the user who have the privileges ( which is accepted from the PHP page ) :
+```
+username : db_admin
+password : 123456789
+```
+Beyond that, on the side of the WordPress site, no further adjustment is required for communication.
+
+Now go to the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) and set it to the corresponding fields for the user the credentials you provided on the WordPress page. <br><br>
+
 ____
 
-On the side of the main WordPress site, you only need to define on the settings page of the [donation-box plugin](https://github.com/eellak/gsoc17-donationbox/tree/master/plugins), in which address it is located and publicly available this PHP file.<br>
-For example: `http://donationbox.database.org/index.php`. Beyond that, on the side of the WordPress site, no further adjustment is required for communication. Only in a future version will need to can the PHP script more dynamic!
+###### About the user of the database. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
+Currently, the user which is having the privileges from the [PHP page](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) ( will be accepted ) is also [defined directly as the user of the database](https://github.com/eellak/gsoc17-donationbox/tree/master/Database#the-user-of-the-central-wordpress-site-).
+Personally, i don't find it so safe.
+
+Therefore, i suggest you to change that in the future these two different users, these two different roles to differentiate it. They are completely independent of each other.
+
+____
 
 
 #### Τhe client of donation boxes.
@@ -69,7 +87,7 @@ Finally restart the database daemon :
 
 To install and configure the database, you have two ways.
 ____
-### Automatic installation. [![Future](https://img.shields.io/badge/Feature-Future-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
+### Automatic installation. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
 Just download the SQL script `create_database.sql` and Python script `database_config.py` at the same directory.
 Then run the Python script with root privileges and will take care everything for you.
 
@@ -89,7 +107,13 @@ To set up the database, you need first of all to have a database server installe
 
  after that, just download the `create_database.sql` file and run the command:
 
-`mysql -u root -p < create_database.sql`
+```
+mysql -u root -p < create_database.sql
+
+[ OK ] The database installation has been successfully completed.
+```
+
+If you receive the above confirmation message and didn't unexpectedly interrupt the script with displaying you some Warning or Error, then everything went well.
 
 
 
@@ -102,10 +126,12 @@ We have two categories of users :
 * the user of the central WordPress site
 * the user(s) of donation boxes.
 ____
-#### The user of the central WordPress site. [![Future](https://img.shields.io/badge/Feature-Future-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
-This is the user who will have the permissions to send data to the database from the central WordPress site. **This user will be only one.** This user would be nice can be added it through a nice user interface.
+#### The user of the central WordPress site. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
+This is the user who will have the privileges to send data on the server where the database is installed ( [*that is accepted from the index.php page*](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) ) from the central WordPress site. **This user will be only one** And not the user of the database itself.
+Furthermore, this user would be nice can be added it through a nice user interface.
 
-*For now, this user and his credentials are given hardcoded in [the script file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php#L27) which is responsible for receiving the data from the WordPress site.*
+
+*For now, we have only one user (the same for both jobs) and his credentials are given in the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php).*
 ____
 #### The users of donation boxes.
 These will be the users of the donation boxes. For each donation box there will also be the respective user.
@@ -137,3 +163,8 @@ Now, you are ready to use the credentials of the above user to connect in from t
 
 
 These are all you need to do to have the database installed and configured properly, to work smoothly with the rest of the system.
+
+
+## Enrichment of the database. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
+
+As we can see [in the index.php file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php#L109), there are some data that is sent it to the machine where the database server is installed, but for now, this data is not being used, while received, are not stored in the database. I believe that this data should be included in the database, because it provides very useful information.
