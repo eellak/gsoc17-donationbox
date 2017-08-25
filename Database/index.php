@@ -21,7 +21,7 @@
 	$end_date		= $_POST['end_date'];
 	$wordPress_last_modified = $_POST['last_modified'];
 
-	$db_server = "localhost";
+	$db_server 	= "localhost";
 	$db_user	= "db_admin";
 	$db_pass	= "123456789";
 	$db_name	= "donationbox"
@@ -74,7 +74,7 @@
 			{ // Here are some examples of donation projects with a specific id.
 
 				//setlocale(LC_MONETARY, 'el_GR');
-				$sql = "SELECT SUM(Ammount) FROM donations WHERE ProjectID=$id";
+				$sql = "SELECT SUM(Ammount) FROM donation WHERE idproject=$id";
 				$result = $conn->query($sql);
 
 				if ($result->num_rows > 0)
@@ -94,7 +94,6 @@
 				$conn->close();
 				exit;
 			}
-
 
 			else // Receive data for Insert/Update
 			{
@@ -148,11 +147,13 @@
 		else // Client error 4xx
 		{
 			header("HTTP/1.1 455 Invalid user credentials");
+			$conn->close();
 			exit;
 		}
 
 	}
 	else
+		$conn->close();
 		echo 'You did not send any data';
 
 ?>
