@@ -24,7 +24,7 @@
 	$db_server 	= "localhost";
 	$db_user	= "db_admin";
 	$db_pass	= "123456789";
-	$db_name	= "donationbox"
+	$db_name	= "donationbox_network"
 
 
 	// Create database connection
