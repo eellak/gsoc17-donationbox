@@ -21,14 +21,17 @@
 	$end_date		= $_POST['end_date'];
 	$wordPress_last_modified = $_POST['last_modified'];
 
-	$db_server 	= "localhost";
-	$db_user	= "db_admin";
-	$db_pass	= "123456789";
-	$db_name	= "donationbox_network"
+	if( ! file_exists('config.php') )
+	{
+		echo 'No configuration file found!';
+		exit;
+	}
+
+	require_once('config.php');
 
 
 	// Create database connection
-	$conn = new mysqli($db_server, $db_user, $db_pass, $db_name);
+	$conn = new mysqli($CONFIG['dbhost'], $CONFIG['dbuser'], $CONFIG['dbpassword'], $CONFIG['dbname']);
 
 	// Check connection
 	if ($conn->connect_error)
@@ -39,7 +42,7 @@
 
 	if ( isset( $username ) )
 	{
-		if ( $username === $db_user && $password == $db_pass )
+		if ( $username === $CONFIG['dbuser'] && $password === $CONFIG['dbpassword'] )
 		{
 			// Receive data for delete a donation project
 			if ( isset($_POST['delete']) && $delete == '1' )
