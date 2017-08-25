@@ -23,7 +23,7 @@ As described in the central report for system operation, there are two possible 
 Each of them has a specific way of communicating.
 
 #### Τhe main WordPress site database client.
-The main WordPress site communicates indirectly with the database through the PHP page. Through *POST* requests in the [PHP script](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php), it sends and receives data from the database.
+The main WordPress site communicates indirectly with the database through the PHP page. Through *POST* requests in the [PHP script](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php#L3-L22), it sends and receives data from the database.
 
 
 ##### Basic settings for proper operation of the PHP script.
@@ -127,7 +127,7 @@ We have two categories of users :
 * the user(s) of donation boxes.
 ____
 #### The user of the central WordPress site. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
-This is the user who will have the privileges to send data on the server where the database is installed ( [*that is accepted from the index.php page*](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) ) from the central WordPress site. **This user will be only one** And not the user of the database itself.
+This is the user who will have the privileges to send data on the server where the database is installed ( [*that is accepted from the index.php page*](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) ) from the central WordPress site. **This user will be only one** and not [the user of the database itself](https://github.com/eellak/gsoc17-donationbox/tree/master/Database#about-the-user-of-the-database-).
 Furthermore, this user would be nice can be added it through a nice user interface.
 
 
