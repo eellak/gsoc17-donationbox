@@ -36,9 +36,9 @@ The following instructions are a brief guide to installing and configuring the O
 ## Installation of the OpenVPN and other individual useful packages.
 
 So let's start by installing the necessary packages. We will need three packages :
-* openvpn : The main package of OpenVPN software.
-* easy-rsa : Includes convenient scripts for creating keys.
-* dnsmasq : The software package who will run the nameserver debts for OpenVPN server clients.
+* **openvpn** : The main package of OpenVPN software.
+* **easy-rsa** : Includes convenient scripts for creating keys.
+* **dnsmasq** : The software package who will run the nameserver debts for OpenVPN server clients.
 
 To install the above packages on our Ubuntu Server, get root privileges and run the following command:
 
