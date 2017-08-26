@@ -14,6 +14,10 @@ A main concern is that this communication to is as secure as possible. That's wh
 > Note : An additional feature that the virtual private network gives us, is that when a machine participates in it, it has secure access to resources and services of a remote local network ( no matter where he is and regardless of whether he uses secure connection or not ). <br> <br>
 The Virtual Private Network always offers us a secure and encrypted direct access to the resources of a remote LAN.
 
+#### Important!
+###### For the above reasons, the OpenVPN server should be installed on the same machine that is also installed the central database of the donation-box network.
+
+
 | ![donationbox_network](https://raw.githubusercontent.com/eellak/gsoc17-donationbox/master/Virtual%20Private%20Network/donation-box_network.png) |
 |:--:|
 | The Donation-Box Network. |
