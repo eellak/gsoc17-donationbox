@@ -1,5 +1,7 @@
 # Donation-Box ~ Database
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![MariaDb](https://img.shields.io/badge/Database-MariaDB-red.svg)](https://mariadb.org/)
+[![PHP](https://img.shields.io/badge/PHP-v5.6-blue.svg)](https://secure.php.net/releases/5_6_0.php)
+[![python3](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/downloads/)
 [![coverage-90%](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
 
 
@@ -38,7 +40,7 @@ password : 123456789
 ```
 Beyond that, on the side of the WordPress site, no further adjustment is required for communication.
 
-Now go to the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) and set it to the corresponding fields for the user the credentials you provided on the WordPress page. <br><br>
+Now go to the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) and set it to the corresponding fields for the user the credentials you provided on the WordPress page. In this way, this user credentials will be accepted from the [ index.php page](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php).<br>
 
 ____
 
@@ -101,9 +103,15 @@ In a future version, its functionality could be upgraded offering even more auto
 ____
 
 ### Manual installation.
-To set up the database, you need first of all to have a database server installed on your system, to do this on GNU/Linux operating systems run the follow command ( Debian based distributions ) :
 
-`apt-get install mariadb-common mariadb-client mariadb-server`
+Before we install the database, Because the machine that will have the database we decided to have a [PHP page](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) where it will accept POST requests, we need to install a web server and some packages of the PHPlanguage. For web server, we will use the [Apache](https://httpd.apache.org/). Do not worry all this will be done with just one command. With root privileges run the follow command ( *Debian based GNU/Linux distributions* ) :
+
+`apt-get -y install apache2 php5 php5-common php5-cli php5-json php5-readline php5-gd php5-curl php5-mysql`
+
+
+To set up the database, you need first of all to have a database server installed on your system, to do this on GNU/Linux operating systems run the follow command( *Debian based GNU/Linux distributions* ) :
+
+`apt-get -y install mariadb-common mariadb-client mariadb-server`
 
  after that, just download the `create_database.sql` file and run the command:
 
