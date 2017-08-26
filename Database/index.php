@@ -6,6 +6,9 @@
 	$check			= $_POST['check'];
 	$current_amount		= $_POST['current_amount'];
 	$delete			= $_POST['delete'];
+	$insert_organization    = $_POST['insert_organization'];
+	$delete_organization    = $_POST['delete_organization'];
+
 
 	$id			= $_POST['id'];
 	$title			= $_POST['title'];
@@ -69,6 +72,72 @@
 			else if ( isset($_POST['check']) && $check == '1' ) // Check user credentials
 			{
 				echo '1'; // echo 'The user credentials are valid.';
+				$conn->close();
+				exit;
+			}
+
+			else if ( isset($_POST['insert_organization']) && $insert_organization == '1' ) // Insert/Update an organization
+			{
+				$sql = "SELECT idOrganization FROM Project WHERE idOrganization = $_POST['organization_id']";
+
+				if ($conn->query($sql)->num_rows > 0)
+				{
+					$sql = "INSERT INTO Organization (idProject, Title, Description)
+					VALUES ($_POST['organization_id'], '$_POST['organization_name']', '$_POST['organization_description']')";
+
+					//TODO: Decide what to do with the following data:
+					// Database: E-mail
+					// Database: PhoneNumber
+					// Database: VATNumber
+					// Database: LogoURL
+
+					if ($conn->query($sql) === TRUE)
+					{
+						echo "The organization \"$_POST['organization_name']\" has been successfully added to the database.";
+					}
+					else
+					{
+						echo "Error inserted record: " . $conn->error;
+					}
+				}
+				else
+				{
+					$sql = "UPDATE Organization
+					SET Title='$_POST['organization_name']', Description='$_POST['organization_description']'
+					WHERE idProject=$_POST['organization_id']";
+
+					//TODO: Decide what to do with the following data:
+					// Database: E-mail
+					// Database: PhoneNumber
+					// Database: VATNumber
+					// Database: LogoURL
+
+					if ($conn->query($sql) === TRUE)
+					{
+						echo "Updated the details of the \"$_POST['organization_name']\" organization.";
+					}
+					else
+					{
+						echo "Error updating record: " . $conn->error;
+					}
+				}
+				$conn->close();
+				exit;
+			}
+
+			else if ( isset($_POST['delete_organization']) && $delete_organization == '1' ) // Delete an organization
+			{
+				$sql = "DELETE FROM Organization WHERE idProject=$_POST['organization_id']";
+
+				if ($conn->query($sql) === TRUE)
+				{
+					echo "The \"$_POST['organization_name']\" organization was successfully deleted from the database.";
+				}
+				else
+				{
+					echo "Error deleting record: " . $conn->error;
+				}
+
 				$conn->close();
 				exit;
 			}
