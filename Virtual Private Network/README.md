@@ -54,4 +54,5 @@ Continue with [configurations](https://github.com/eellak/gsoc17-donationbox/blob
 ## Automate the process. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network)
 
 I think it would be nice to create a more user-friendly interface for all these process and configurations, through which, many of them configurations are will be made automatically and the user  will not deal so much with these.
-Also, the selection of the [OpenVPN Access Server](https://openvpn.net/index.php/access-server/overview.html) could be explored, which may facilitate the process.
+
+Also, could be explored the selection of the [OpenVPN Access Server](https://openvpn.net/index.php/access-server/overview.html), which can facilitate the process.
