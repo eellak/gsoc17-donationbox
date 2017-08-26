@@ -29,10 +29,11 @@ If we use a GNU/Linux operating system the installation of the OpenVPN client is
 Once the installation is over, we are almost ready to use the OpenVPN client.
 We are almost ready and not fully, because in order for the client program to work and connect us to the virtual private network it needs a configuration file and keys - certificates. These files are responsible to give us the administrator of the [OpenVPN server](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network). Therefore, we do not have to worry about that. <br>
 However, the following four files are needed:
-- client.crt
-- client.key
+
 - ca.crt
-- client.conf
+- client.**conf**
+- client.**crt**
+- client.**key**
 
 
 So we just need to transfer these four files to the `/etc/openvpn/` directory.
