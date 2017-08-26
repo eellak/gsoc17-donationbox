@@ -3,6 +3,7 @@
 [![SQLite3](https://img.shields.io/badge/Database-SQLite3-brightgreen.svg)](https://www.sqlite.org/)
 [![python3](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/downloads/)
 [![django1.11](https://img.shields.io/badge/Django-1.11.4-green.svg)](https://docs.djangoproject.com/en/1.11/releases/1.11.4/)
+[![djangoApp](https://img.shields.io/badge/DjangoApp-v1-orange.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation)
 [![coverage-100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp)
 
 This directory contains all its files of the [**Presentation** Django App](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation).
@@ -93,12 +94,12 @@ Finally to insert data is enough a command like the following: <br>
 
 ```
 Donation_Project( id=227,
-title="Hacking Conference",
-text="GSOC 2017",
+title="Google Summer of Code 2017",
+text="GSOC 2017 ~ Donation-Box.......",
 current_amount=0,
 target_amount=500,
 start_date = datetime.date(2017, 5, 1),
-end_date = datetime.date( 2017, 8, 31),
+end_date = datetime.date( 2017, 8, 29),
 last_modified_datetime = datetime.date( 2017, 8, 25) ).save()
 ```
 > To exit from the interaction environment, run : `exit()`
