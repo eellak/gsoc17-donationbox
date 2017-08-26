@@ -3,7 +3,7 @@
 [![SQLite3](https://img.shields.io/badge/Database-SQLite3-brightgreen.svg)](https://www.sqlite.org/)
 [![python3](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/downloads/)
 [![django1.11](https://img.shields.io/badge/Django-1.11.4-green.svg)](https://docs.djangoproject.com/en/1.11/releases/1.11.4/)
-[![djangoApp](https://img.shields.io/badge/DjangoApp-v1-orange.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation)
+[![HTML5](https://img.shields.io/badge/HTML-5-red.svg)](https://www.w3.org/TR/html5/) [![CSS3](https://img.shields.io/badge/CSS-3-blue.svg)](https://www.w3.org/Style/CSS/Overview.en.html) [![JavaScript](https://img.shields.io/badge/Java-Script-yellow.svg)](https://www.javascript.com/) [![djangoApp](https://img.shields.io/badge/DjangoApp-v1-orange.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation)
 [![coverage-100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp)
 
 This directory contains all its files of the [**Presentation** Django App](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation).
