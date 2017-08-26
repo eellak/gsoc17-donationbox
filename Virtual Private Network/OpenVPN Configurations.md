@@ -4,7 +4,7 @@
 [![openVPN](https://img.shields.io/badge/OpenVPN-v2.3.2-blue.svg)](https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23#OpenVPN2.3.2)
 [![coverage-100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network)
 
-If you have read the previous guide and install the OpenVPN and the other packages, it's time to make the necessary configurations for proper and smooth operation of the OpenVPN server, to create the Virtual Private Network.
+If you have read the [previous guide](https://github.com/eellak/gsoc17-donationbox/blob/master/Virtual%20Private%20Network/README.md) and install the OpenVPN and the other packages, it's time to make the necessary configurations for proper and smooth operation of the OpenVPN server, to create the Virtual Private Network.
 
 So, get root privileges and run the following commands:
 
@@ -199,9 +199,8 @@ service dnsmasq restart
 `iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE` <br>
 ###### You may need to set `eth1` or `enp5s0` or anything else. Consult the name of your network interface, from the `ifconfig` command.
 
-<br>
-Now restart your machine (`shutdown -r now`) and the OpenVPN server will should be start automatically.
+
+<br>Now restart your machine ( `shutdown -r now` ) and the OpenVPN server will should be start automatically.<br>
 
 
-<br>
 Now you are ready to continue with [creating users who can access to connect to your Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/blob/master/Virtual%20Private%20Network/Create%20Certificates%20and%20Private%20Keys%20for%20clients.md).
