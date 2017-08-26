@@ -3,7 +3,8 @@
 [![SQLite3](https://img.shields.io/badge/Database-SQLite3-brightgreen.svg)](https://www.sqlite.org/)
 [![python3](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/downloads/)
 [![django1.11](https://img.shields.io/badge/Django-1.11.4-green.svg)](https://docs.djangoproject.com/en/1.11/releases/1.11.4/)
-[![shell](https://img.shields.io/badge/other-Shell-orange.svg)](https://en.wikipedia.org/wiki/Shell_script)
+[![djangoApp](https://img.shields.io/badge/DjangoApp-v1-orange.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation)
+[![HTML5](https://img.shields.io/badge/HTML-5-red.svg)](https://www.w3.org/TR/html5/) [![CSS3](https://img.shields.io/badge/CSS-3-blue.svg)](https://www.w3.org/Style/CSS/Overview.en.html) [![JavaScript](https://img.shields.io/badge/Java-Script-yellow.svg)](https://www.javascript.com/) [![shell](https://img.shields.io/badge/other-Shell-orange.svg)](https://en.wikipedia.org/wiki/Shell_script)
 [![coverage-95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
 
 
@@ -17,7 +18,7 @@ Also the actual donation box is where the end user has both digital and real exp
 ## Of what it consists the actual donation box.
 The final donation box will consist of the following main parts :
 * [Python Django App](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp) : To view the donation projects to the end user.
-* SQLite Database : For storing local data.
+* [SQLite Database](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box#sqlite-database-) : For storing local data.
 * [OpenVPN Client](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/OpenVPN%20Client) : To synchronize the data safely.
 * [APIs daemons for Synchronization](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization) : To synchronize local data with the remote database.
 
