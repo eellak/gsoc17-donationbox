@@ -203,4 +203,4 @@ service dnsmasq restart
 <br>Now restart your machine ( `shutdown -r now` ) and the OpenVPN server will should be start automatically.<br>
 
 
-Now you are ready to continue with [creating users who can access to connect to your Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/blob/master/Virtual%20Private%20Network/Create%20Certificates%20and%20Private%20Keys%20for%20clients.md).
+You are ready to continue with [creating users who can access to connect to your Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/blob/master/Virtual%20Private%20Network/Create%20Certificates%20and%20Private%20Keys%20for%20clients.md).
