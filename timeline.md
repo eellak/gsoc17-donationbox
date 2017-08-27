@@ -1,6 +1,5 @@
 # Timeline.
 The detailed timeline is below.<br>
-_Last update: 19 - 05 - 2017_
 
 
 * May 5 - 19 [ Identifying, understanding and integration in the existing system. ]
@@ -24,7 +23,7 @@ _Last update: 19 - 05 - 2017_
 
 * July 25 [ Implementation of website ]
 * July 25 - 5 [ Implementation of administration page ]
-* ##### August 5 - 25 [ View data on the main page ]
+* August 5 - 25 [ View data on the main page ]
 * August 26 - 28 [Documentation for website ]
 
-* August 29 [ Finish ] 
+* ##### August 29 [ Finish ]
