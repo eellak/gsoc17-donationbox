@@ -42,6 +42,8 @@ Beyond that, on the side of the WordPress site, no further adjustment is require
 
 Now go to the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) and set it to the corresponding fields for the user the credentials you provided on the WordPress page. In this way, this user credentials will be accepted from the [ index.php page](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php).<br>
 
+
+
 ____
 
 ###### About the user of the database. [![Future](https://img.shields.io/badge/Future-Work-red.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Database)
@@ -152,7 +154,11 @@ So, log in to the database as root user and create the user named `db_admin` wit
 
 `QUIT`
 
-If you have the corresponding credentials and the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) the [index.php](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) page will work properly.
+Finally, move the [index.php](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) and [config.php](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php) to your current Apache2 [document root](https://httpd.apache.org/docs/2.4/mod/core.html#documentroot) directory. For example, in my case i moved them to the default Apache2 documentRoot directory on the Ubunyu GNU/Linux ( `/var/www/` ) :
+`mv index.php config.php /var/www/`
+
+If you have the corresponding credentials and in the [configuration file](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/config.php), the [index.php](https://github.com/eellak/gsoc17-donationbox/blob/master/Database/index.php) page will work properly. It remains only to try them from the WordPress page.
+
 
 ____
 #### The users of donation boxes.
