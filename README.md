@@ -16,7 +16,7 @@
 
 ## Description of the Donation-Box Project.
 The main purpose of the project is to modernize the so called donation boxes, to keep pace in the new digital era.
-This will achieve by implementing all the necessary infrastructure to create ultimately a decentralized (_from specific donations boxes_) network, where all donation boxes are interconnected and can be managed from a central node. Doing the **modern** donation box, actually.
+This will achieve by implementing all the necessary infrastructure to create ultimately a decentralized (_from specific donations boxes_) network, where all donation boxes are interconnected and can be managed from a central node. This work modernizes the concept of a traditional donation box.
 
 
 # What I have done.
@@ -30,7 +30,8 @@ To achieve this decentralized system, and we can manage the donation boxes ( *at
 
 * The [Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network) and who is installed on the server where the central database is also installed. All donation boxes will be connected to this network.
 
-[![Commits](https://img.shields.io/badge/Commits-200-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
+![lines of code](https://img.shields.io/badge/Lines%20of%20code-26108-green.svg)
+[![Commits](https://img.shields.io/badge/Commits-205-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
 
 
 # What’s left to be done.
@@ -86,6 +87,6 @@ See the detailed timeline [here](https://github.com/eellak/gsoc17-donationbox/bl
  * [Dimitris Koukoulakis](https://github.com/dkoukoul)
 
 #### Student :
-* Anastasios Lisgaras
+* [Anastasios Lisgaras](https://github.com/Tas-sos)
 
 #### Organization : [Open Technologies Alliance - GFOSS](https://summerofcode.withgoogle.com/organizations/4825634544025600/)
