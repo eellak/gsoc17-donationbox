@@ -6,7 +6,7 @@ Utility software to make installing and configuring the database more user frien
 We created this script to make your life and database installation easier.
 
 
-** Run this code script with administrative privileges! **
+** Run this code script with root privileges! **
 
 i.e.:
     sudo python3 database_config.py
@@ -30,7 +30,7 @@ __copyright__   = "GNU General Public License v3.0"
 
 
 
-def check_if_database_server_already_exists():
+def check_database_server():
     """
     Function that checks if already installed the MariaDB database.
     
@@ -57,7 +57,65 @@ def check_if_database_server_already_exists():
             sys.exit(1)
 
     except subprocess.CalledProcessError:
-        print(Fore.GREEN + "The database is installed." + Style.RESET_ALL)
+        print(Fore.GREEN + "The MariaDB database server is installed." + Style.RESET_ALL)
+
+
+
+
+def check_apache2_webserver():
+    """
+    Function that checks if already installed the Apache2 Web Server.
+
+    It checks if the Apache2 web server is installed, if it is not, then installing it.
+    :return: Installed (if it has internet) the Apache2 web server or notify the user that is already installed.
+    """""
+    try:
+        check = "dpkg -l | grep apache2 | awk '{  if ($1) exit 1 }'"
+        subprocess.check_call(check, shell=True)
+        print(Fore.RED + "The apache2 web server is not installed." + Style.RESET_ALL)
+        print("Installation effort...\n")
+
+        try:
+            install = "apt-get install apache2 -y"
+            subprocess.check_call(install, shell=True)
+        except subprocess.CalledProcessError:
+            print("Please take care the above message and run again the script with root privileges.")
+            print("Possible causes of failure:")
+            print("\t1. You did not run the script with root privileges.")
+            print("\t2. You do not have an internet connection.")
+            sys.exit(1)
+
+    except subprocess.CalledProcessError:
+        print(Fore.GREEN + "The Apache2 web server is installed." + Style.RESET_ALL)
+
+
+
+
+def check_PHP():
+    """
+    Function that checks if already installed the PHP.
+
+    It checks if the PHP is installed, if it is not, then installing it.
+    :return: Installed (if it has internet) the PHP or notify the user that is already installed.
+    """""
+    try:
+        check = "dpkg -l | grep php | awk '{  if ($1) exit 1 }'"
+        subprocess.check_call(check, shell=True)
+        print(Fore.RED + "The PHP is not installed." + Style.RESET_ALL)
+        print("Installation effort...\n")
+
+        try:
+            install = "apt-get -y install php5 php5-common php5-cli php5-json php5-readline php5-gd php5-curl php5-mysql"
+            subprocess.check_call(install, shell=True)
+        except subprocess.CalledProcessError:
+            print("Please take care the above message and run again the script with root privileges.")
+            print("Possible causes of failure:")
+            print("\t1. You did not run the script with root privileges.")
+            print("\t2. You do not have an internet connection.")
+            sys.exit(1)
+
+    except subprocess.CalledProcessError:
+        print(Fore.GREEN + "The PHP is installed." + Style.RESET_ALL)
 
 
 
@@ -72,7 +130,7 @@ def load_database():
     :return: Ready database or error message.
     """
 
-    password = getpass.getpass("Give the password of MariaDB root user : ")
+    password = getpass.getpass("\nGive the password of MariaDB root user : ")
 
     try:
         create_database = "mysql -u root -p"+password+" < create_database.sql"
@@ -95,5 +153,7 @@ def load_database():
 
 
 if __name__ == '__main__':
-    check_if_database_server_already_exists()
+    check_database_server()
+    check_apache2_webserver()
+    check_PHP()
     load_database()
