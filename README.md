@@ -19,7 +19,7 @@ The main purpose of the project is to modernize the so called donation boxes, to
 This will achieve by implementing all the necessary infrastructure to create ultimately a decentralized (_from specific donations boxes_) network, where all donation boxes are interconnected and can be managed from a central node. Doing the **modern** donation box, actually.
 
 
-# What i have done.
+# What I have done.
 To achieve this decentralized system, and we can manage the donation boxes ( *at least initially in part* ) remotely, we designed and implemented the following parts of the **DonationBox Network**:
 
 * [A plugin for the WordPress CMS](https://github.com/eellak/gsoc17-donationbox/tree/master/plugins). Which allows the user to import data which can be synchronized with the central database of the DonationBox Network.
@@ -30,8 +30,7 @@ To achieve this decentralized system, and we can manage the donation boxes ( *at
 
 * The [Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network) and who is installed on the server where the central database is also installed. All donation boxes will be connected to this network.
 
-
-Commits: [AppStream commits](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos).
+[![Commits](https://img.shields.io/badge/Commits-200-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
 
 
 # What’s left to be done.
@@ -80,13 +79,13 @@ See the detailed timeline [here](https://github.com/eellak/gsoc17-donationbox/bl
 
 
 
-#### **Mentors :**
+#### Mentors :
 
  * [Diomidis Spinellis](https://github.com/dspinellis)
 
  * [Dimitris Koukoulakis](https://github.com/dkoukoul)
 
-#### **Student :**
+#### Student :
 * Anastasios Lisgaras
 
-#### **Organization :** [Open Technologies Alliance - GFOSS](https://summerofcode.withgoogle.com/organizations/4825634544025600/)
+#### Organization : [Open Technologies Alliance - GFOSS](https://summerofcode.withgoogle.com/organizations/4825634544025600/)
