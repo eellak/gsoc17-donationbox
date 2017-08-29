@@ -4,9 +4,9 @@
  */
 /*
 Plugin Name: DonationBox
-Plugin URI: https://github.com/eellak/gsoc17-donationbox/
-Description: Πρόκειται για ένα αρχικό testing plugin..
-Version: 0.1
+Plugin URI: https://github.com/eellak/gsoc17-donationbox/tree/master/plugins
+Description: WordPress plugin for the Donation-Box Network.
+Version: 0.9.3
 Author: Tas-sos
 Author URI: https://github.com/Tas-sos
 License: GPLv2
@@ -70,19 +70,17 @@ register_activation_hook( __FILE__, 'db_plugin_activation');
 
 function db_plugin_activation()
 {
+    
     $capabilities = array(
         'read'                      => true,
         'edit_posts'                => true,
-        'edit_others_posts'         => true,
+        'edit_others_posts'         => false,
         'edit_private_posts'        => true,
         'edit_published_posts'      => true,
         'delete_posts'              => true,
-        'delete_others_posts'       => true,
+        'delete_others_posts'       => false,
         'delete_published_posts'    => false,
         'publish_posts'             => true
-//        'upload_files'              => true, // να μην μπορεί να ανεβάζει stylesheet files.
-//        'manage_categories'         => true, // να μην μπορεί να αλλάζει την κατηγορία των donation projects 
-
     );
     
     add_role('project_creator', 'Project Creator', $capabilities);
@@ -126,8 +124,7 @@ add_action('plugins_loaded', 'db_create_plugin_menu');
 
 
 
-// Add my custom endpoints to the REST WordPress API.
-
+//Add my custom endpoints to the REST WordPress API.
 /**
  * Grab latest post title by an author!
  *
@@ -180,6 +177,9 @@ function db_create_endpoint_REST_API( $request )
 
     // Add a custom status code
     $response->set_status( 201 );
+
+    // Add a custom header
+//    $response->header( 'Location', 'http://example.com/' );
     
     return $response ;
 }
@@ -200,7 +200,7 @@ function db_create_endpoint_REST_API( $request )
  * 
  */
 
-function db_custm_rest_route()
+function db_donationboxes_updated_rest_route()
 {
     register_rest_route( 
             'wp/v2/donationboxes',          /* Namespace - Route. */
@@ -222,12 +222,73 @@ function db_custm_rest_route()
                                         }
                                         )
                                 ),
+
                 )
     );
 }
 
-add_action( 'rest_api_init', 'db_custm_rest_route');
+add_action( 'rest_api_init', 'db_donationboxes_updated_rest_route');
 
+
+
+
+
+
+
+
+
+
+function db_view_donation_projects_rest($request)
+{
+
+    // Search args :
+    $args = array(
+                'post_type' => 'donationboxes'
+                );
+    
+    // Run query :
+    $posts = get_posts( $args );
+
+    if ( empty( $posts ) ) 
+    {
+        return new WP_Error( 'awesome_no_donation_projects', 'No donation projects', array( 'status' => 404 ) );
+    }
+    
+    $data = array();
+    
+    for ( $i = 0; $i < count($posts); $i++ )
+    {
+            $data[$i]['ID'] = $posts[$i]->ID;
+            $data[$i]['Title'] =  $posts[$i]->post_title ;
+    }
+    
+    if ( empty($data) )
+    {
+        $data = null;
+    }
+
+    $response = new WP_REST_Response( $data );
+
+    $response->set_status( 201 );
+
+    
+    return $response ;
+}
+
+
+function db_donationboxes_projects_rest_route()
+{
+    register_rest_route( 
+            'wp/v2/donationboxes',
+            '/projects',
+            array(
+                'methods' => 'GET',
+                'callback' => 'db_view_donation_projects_rest',
+                )
+    );
+}
+
+add_action( 'rest_api_init', 'db_donationboxes_projects_rest_route');
 
 
 
@@ -255,7 +316,6 @@ add_filter( 'bulk_post_updated_messages', 'my_bulk_post_updated_messages_filter'
 
 
 
-
 /**
  * Function - WordPress Filter where it adding a new timer for the WordPress cron
  * jobs.
@@ -271,7 +331,7 @@ function db_add_cron_interval( $schedules )
     if ( !isset( $schedules['30min'] ) )
     {
         $schedules['30min'] = array(
-            'interval' => 30 * 60 , // 30min * 60sec = 30 minutes.
+            'interval' => 30 * 60 , // 30min * 60sec
             'display'  => esc_html__( 'Once, every half hour.' ),
         );
     }
@@ -296,7 +356,7 @@ function db_creat_cron_job()
     
     if ( ! wp_next_scheduled ( 'db_update_local_db_event') )
     {
-		wp_schedule_event(time(), '30min', 'db_update_local_db_event');
+        wp_schedule_event(time(), '30min', 'db_update_local_db_event');
     }
     
 }
@@ -319,7 +379,10 @@ add_action('db_update_local_db_event', 'db_update_local_current_amount');
  * 
  * @param Array $actions : The WordPress Bulk actions that the user can do.
  * 
- * @return Array : If the user is the system administrator or not :
+ * @return Array : 
+ *              1) If the user is the system administrator :
+ *                  All the WordPress Bulk actions that the user can do.
+ *              2) If the user is not the system administrator :
  *                  Τhe WordPress Bulk actions that the user can do, except 
  *                  for restoring and permanent deletion!
  * 
@@ -328,8 +391,12 @@ add_action('db_update_local_db_event', 'db_update_local_current_amount');
 function db_remove_dropdown_list_bulk_actions($actions)
 {
     unset( $actions['untrash'] );   // Restore
-	unset( $actions['delete'] );    // Delete Permanently
-
+            
+    if ( ! current_user_can('administrator') ) // Only administrator can access to actions!
+    {
+        unset( $actions['delete'] );    // Delete Permanently
+    }
+    
     return $actions;
 }
 

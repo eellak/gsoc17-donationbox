@@ -2,6 +2,9 @@
 
 require_once( plugin_dir_path(__FILE__) . 'db-functions.php');
 
+wp_enqueue_style('db-css', plugins_url( '/css/db-style.css' , __FILE__ ) , 12 );
+
+
 
 /* Create new submenu to add new Donation project - with register post type */
 function db_register_new_post_type()
@@ -112,7 +115,7 @@ function db_add_custom_settings_submenu()
         'Donation Boxes Settings',          // Page title.
         'General Settings',                 // The side bar Menu title.
         'administrator',                    // Capability.
-        'db-settings-menu',                 // menu_slug.
+        'db-settings-menu',                 // menu_slug
         'db_settings_page'                  // Callback Function.
         );  
 
@@ -128,13 +131,13 @@ function db_settings_page()
 /* Add settings using WordPress Settings API. */
 function display_options()
 {
+    
     // For "General" submenu :
-
     add_settings_section(
         "general_section",                   /* The unique name of section. */
         "General Settings",                  /* The display name of section. */
         "display_header_options_content",    /* Callback Function. */
-        "db-settings-menu");                 /* Page to which section is attached. */
+        "db-settings-menu");
 
     
     add_settings_field(
@@ -175,6 +178,7 @@ function display_header_options_content()
 
 function display_database_form_element()
 {
+
     $database_URL = esc_url( get_option( 'database_url_field' ) ) ;
     ?>
         <input type="text" name="database_url_field" id="database_url_field" placeholder="https://..." value="<?php echo $database_URL ?>" required="required" aria-describedby="tagline-description" />
@@ -210,28 +214,28 @@ add_action("admin_init", "display_options");
 
 
 
-/* For custom submenu - View non-uploaded donation projects . */
-function db_add_view_nonuploaded_projects_submenu()
+/* For custom submenu - View non-synchronized donation projects . */
+function db_add_view_nonsynchronized_projects_submenu()
 {
     
     add_submenu_page(
         'edit.php?post_type=donationboxes',
-        'View non-uploaded Donation Projects',
-        'Non-uploaded Donation Projects',
+        'View non-synchronized Donation Projects',
+        'Non-synchronized Donation Projects',
         'administrator',
-        'db-non-uploaded-projects-menu',
-        'db_non_uploaded_projects_page'
+        'db-non-synchronized-projects-menu',
+        'db_non_synchronized_projects_page'
         );
 
 }
 
-function db_non_uploaded_projects_page()
+function db_non_synchronized_projects_page()
 {
-    require_once( plugin_dir_path(__FILE__) . 'db-submenu-view_non_uploaded-page.php' );
+    require_once( plugin_dir_path(__FILE__) . 'db-submenu-view_non_synchronized-page.php' );
 }
 
 
-add_action("admin_menu", "db_add_view_nonuploaded_projects_submenu");
+add_action("admin_menu", "db_add_view_nonsynchronized_projects_submenu");
 
 
 
@@ -266,9 +270,9 @@ function db_set_donation_projects_list_collumns( $columns )
     $newColumns["comments"] = '<span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span>';
     $newColumns["date"] = 'Date';
 
+    
     return $newColumns;
 }
-
 
 
 function db_donation_projects_custom_collum( $column , $post_id )
@@ -279,6 +283,7 @@ function db_donation_projects_custom_collum( $column , $post_id )
         case 'amount' :
             $current_amount_value = get_post_meta($post_id, '_db_project_current_amount', true);
             $target_amount_value  = get_post_meta($post_id, '_db_project_target_amount' , true);
+            $target_amount_value  = $target_amount_value == 0 ? 1 : $target_amount_value; // Fix the probleb of auto-draft posts.
             
             $percent = intval( ($current_amount_value/$target_amount_value) * 100 );
             $percent = $percent < 1 ? 1 : $percent; // To show something if it is less than 1%.
@@ -299,6 +304,7 @@ function db_donation_projects_custom_collum( $column , $post_id )
             $cssFile   = get_post_meta( $post_id , '_db_project_stylesheet_file', true );
             $imageFile = get_post_meta( $post_id , '_db_project_image_file', true );            
             $videoFile = get_post_meta( $post_id , '_db_project_video_file', true );
+
             
             if ( count($cssFile) > 0  &&  is_array($cssFile)  )
             {
@@ -330,6 +336,29 @@ function db_donation_projects_custom_collum( $column , $post_id )
             break;
     }
     
+}
+
+
+
+
+
+add_action('create_organization', 'db_create_new_organization', 10, 2);
+
+function db_create_new_organization($term_id, $taxonomy_term_id)
+{
+    db_insert_new_organization_to_donationBox_database($term_id);
+    
+}
+
+
+
+
+
+add_action('delete_organization', 'db_delete_organization', 10, 2);
+
+function db_delete_organization($term_id, $taxonomy_term_id)
+{
+    db_delete_organization_from_the_donationBox_database($term_id);
 }
 
 
@@ -378,6 +407,7 @@ function my_custom_taxonomy_rest_support()
     if ( isset( $wp_taxonomies[ $taxonomy_name ] ) ) 
     {
         $wp_taxonomies[ $taxonomy_name ]->show_in_rest = true;
+
         $wp_taxonomies[ $taxonomy_name ]->rest_base = $taxonomy_name;
         $wp_taxonomies[ $taxonomy_name ]->rest_controller_class = 'WP_REST_Terms_Controller';
     }

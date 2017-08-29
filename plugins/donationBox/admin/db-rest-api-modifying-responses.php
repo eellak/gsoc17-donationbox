@@ -9,6 +9,8 @@
  *                                      - project_target_amount
  *                                      - project_organizations
  *                                      - project_stylesheet_file
+ *                                      - project_start_date
+ *                                      - project_end_date
  * The user either via : 
  *  > For all donation projects :                   http://localhost:8000/wp-json/wp/v2/donationboxes
  *  > For specific range of last modified date :    http://localhost:8000/wp-json/wp/v2/donationboxes/updated/2017-06-18/18:38:33
@@ -17,6 +19,7 @@
  * He will receive all the informations about the donation project.
  * 
  */
+
 
 
 // Project status :
@@ -255,6 +258,7 @@ function db_add_rest_image_file()
 }
 
 add_action('rest_api_init' , 'db_add_rest_image_file' );
+
 
 
 

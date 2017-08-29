@@ -264,9 +264,121 @@ function db_send_data_to_donationBox_database( $donation_project_id )
         wp_schedule_single_event( $next_time, 'db_cron_hook_insert_update', array( $donation_project_id, TRUE, $next_time_string ) );
     }
     
+    
 }
 
 add_action( 'db_cron_hook_insert_update', 'db_send_data_to_donationBox_database', 10, 3 );
+
+
+
+
+
+/**
+ * This function called when data is saved a new organization in the
+ * WordpPress database.
+ * 
+ * Every successful insert/update or delete of a organization, the donation
+ * box database should be updated.
+ * 
+ * This function sending this data to the donation box database. 
+ * 
+ * Attention! : This function is uncompleted.
+ * It doesn't check and doesn't manage the receiving response from the database,
+ * as previous functions do that.
+ * 
+ */
+
+function db_insert_new_organization_to_donationBox_database( $organization_id )
+{
+
+    $new_organization_term = get_term($organization_id, 'organization');
+    $organization_name = $new_organization_term->name;
+    $organization_description = $new_organization_term->description;
+    
+    $body = array(
+    'username'  => get_option( 'db_username_field' ),
+    'password'  => get_option( 'db_password_field' ),
+    'insert_organization'       => 1,
+    'organization_id'           => $organization_id,
+    'organization_name'         => $organization_name,
+    'organization_description'  => $organization_description
+    );
+
+    $args = array(
+        'body' => $body,
+        'timeout' => '5',
+        'redirection' => '5',
+        'httpversion' => '1.0',
+        'blocking' => TRUE,
+        'headers' => array(),
+        'cookies' => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+
+    /**
+     * TODO: Check the response from the database and view the appropriate
+     * message in the WordPress notification area.
+     * Furthermore, for the failed requests, start a WordPress cron job
+     * (such as with donation projects).
+     */
+
+}
+
+
+
+
+
+/**
+ * This function called when a organization is deleted from the WordpPress database.
+ * 
+ * Every successful insert/update or delete of a organization, the donation
+ * box database should be updated.
+ * 
+ * This function sending this data to the donation box database. 
+ * 
+ * Attention! : This function is uncompleted.
+ * It doesn't check and doesn't manage the receiving response from the database,
+ * as previous functions do that.
+ * 
+ */
+
+function db_delete_organization_from_the_donationBox_database( $organization_id )
+{
+
+    $organization_term = get_term($organization_id, 'organization');
+    $organization_name = $organization_term->name;
+    $organization_description = $organization_term->description;
+    
+    $body = array(
+    'username'  => get_option( 'db_username_field' ),
+    'password'  => get_option( 'db_password_field' ),
+    'delete_organization'       => 1,
+    'organization_id'           => $organization_id,
+    'organization_name'         => $organization_name,
+    'organization_description'  => $organization_description
+    );
+
+    $args = array(
+        'body' => $body,
+        'timeout' => '5',
+        'redirection' => '5',
+        'httpversion' => '1.0',
+        'blocking' => TRUE,
+        'headers' => array(),
+        'cookies' => array()
+    );
+
+    $response = wp_remote_post( get_option( 'database_url_field '), $args );
+
+    /**
+     * TODO: Check the response from the database and view the appropriate
+     * message in the WordPress notification area.
+     * Furthermore, for the failed requests, start a WordPress cron job
+     * (such as with donation projects).
+     */
+
+}
 
 
 
@@ -287,6 +399,7 @@ add_action( 'db_cron_hook_insert_update', 'db_send_data_to_donationBox_database'
 
 function db_delete_data_from_donationBox_database( $donation_projects_ids )
 {
+    // Ξεχωρίζω ΑΝ τυχών έχει δώσει πάνω από ένα projects για μεταφορά στον κάδο ανακύκλωσης.
     $ids = explode(",", strval( $donation_projects_ids ) );
 
     $view = TRUE;
@@ -313,7 +426,8 @@ function db_delete_data_from_donationBox_database( $donation_projects_ids )
 
         if ( ! db_check_and_print_response_message($response , $view) )  // if we haven't send it to database... start a cron job
         {
-            $next_time = time() + ( 1 * 60 * 60); // Just one hour - http://php.net/manual/en/function.time.php
+
+            $next_time = time() + ( 120 ) ;
 
             $next_time_string = date('Y/m/d H:i:s' , $next_time) . ' ' . date_default_timezone_get();
 
@@ -439,6 +553,7 @@ function db_get_current_amount_from_db( $donation_projects_id )
 
 function db_update_local_current_amount()
 {
+//      SELECT ID FROM wordpress.wp_posts where post_type = 'donationboxes' and post_status = 'publish';
         global $wpdb;
         
         $querystr = "
