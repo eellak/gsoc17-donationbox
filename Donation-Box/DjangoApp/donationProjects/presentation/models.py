@@ -2,6 +2,7 @@ from pydoc import Doc
 
 from django.db import models
 
+# Create your models here.
 
 class Donation_Project( models.Model ):
     """
@@ -24,7 +25,6 @@ class Donation_Project( models.Model ):
 
     Attention! The fields :
         - "video_URL",
-        - "image_URL" and
         - "stylesheet_URL",
                             it may be NULL, but it must not be blank!
     That is, if it is null (empty), it means they have no value, and not how they may have a zero value ("").
@@ -35,8 +35,8 @@ class Donation_Project( models.Model ):
     text                    = models.TextField()
     current_amount          = models.PositiveIntegerField()
     target_amount           = models.PositiveIntegerField()
+    image_URL               = models.FilePathField( max_length = 200, recursive = True, path = '/home/donatonProject_files/images/', match = '(*.png$)|(*.jpg$)' )
     video_URL               = models.FilePathField( max_length = 200, recursive = True, null = True, path = '/home/donatonProject_files/videos/', match = '*.mp4$' )
-    image_URL               = models.FilePathField( max_length = 200, recursive = True, null = True, path = '/home/donatonProject_files/images/', match = '(*.png$)|(*.jpg$)' )
     stylesheet_URL          = models.FilePathField( max_length = 200, recursive = True, null = True, path = '/home/donatonProject_files/css/',    match = '*.css$' )
     start_date              = models.DateField()
     end_date                = models.DateField()
