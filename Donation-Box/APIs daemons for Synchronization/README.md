@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![python3](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/downloads/)
-[![coverage-50%](https://img.shields.io/badge/coverage-50%25-yellowgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
+[![coverage-50%](https://img.shields.io/badge/coverage-50%25-green.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization)
 
 This directory it contains the APIs that have been implemented to achieve communication between the local database and the remote database.
 
