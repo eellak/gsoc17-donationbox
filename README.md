@@ -30,14 +30,15 @@ To achieve this decentralized system, and we can manage the donation boxes ( *at
 
 * The [Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network) and who is installed on the server where the central database is also installed. All donation boxes will be connected to this network.
 
-![lines of code](https://img.shields.io/badge/Lines%20of%20code-26108-green.svg)
-[![Commits](https://img.shields.io/badge/Commits-205-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
+![lines of code](https://img.shields.io/badge/Lines%20of%20code-26049-green.svg)
+[![Commits](https://img.shields.io/badge/Commits-210-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
 
 
 # What’s left to be done.
-The main parts and basic functionalities that the system has to perform have been implemented. What has not been fully decided, is the central database. Perhaps it should be enriched with further information which will increase the capability and flexibility of the  DonationBox network.
+It should be to updated the [central database](https://github.com/eellak/gsoc17-donationbox/tree/master/Database) of the system, according to the [DonationBox-Network standards](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box), to be enriched with further information which will increase the capability and flexibility of the DonationBox-Network.
+After that, the responsible [API daemon](https://github.com/eellak/gsoc17-donationbox/blob/master/Donation-Box/APIs%20daemons%20for%20Synchronization/Databases/MariaDB.py) for communicating with the central database should be upgraded.
 
-However, in all the above parts of the system, which are explained in detail, you will notice my suggestions for ![Future](https://img.shields.io/badge/Future-Work-red.svg).
+Furthermore, in all the above parts of the system (which are explained in detail), you will notice my suggestions for ![Future](https://img.shields.io/badge/Future-Work-red.svg).
 
 
 
