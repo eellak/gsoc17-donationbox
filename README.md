@@ -30,8 +30,8 @@ To achieve this decentralized system, and we can manage the donation boxes ( *at
 
 * The [Virtual Private Network](https://github.com/eellak/gsoc17-donationbox/tree/master/Virtual%20Private%20Network) and who is installed on the server where the central database is also installed. All donation boxes will be connected to this network.
 
-![lines of code](https://img.shields.io/badge/Lines%20of%20code-26049-green.svg)
-[![Commits](https://img.shields.io/badge/Commits-210-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
+![lines of code](https://img.shields.io/badge/Lines%20of%20code-26264-green.svg)
+[![Commits](https://img.shields.io/badge/Commits-214-blue.svg)](https://github.com/eellak/gsoc17-donationbox/commits?author=Tas-sos)
 
 
 # What’s left to be done.
