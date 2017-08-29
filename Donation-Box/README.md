@@ -5,7 +5,7 @@
 [![django1.11](https://img.shields.io/badge/Django-1.11.4-green.svg)](https://docs.djangoproject.com/en/1.11/releases/1.11.4/)
 [![djangoApp](https://img.shields.io/badge/DjangoApp-v1-orange.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/DjangoApp/donationProjects/presentation)
 [![HTML5](https://img.shields.io/badge/HTML-5-red.svg)](https://www.w3.org/TR/html5/) [![CSS3](https://img.shields.io/badge/CSS-3-blue.svg)](https://www.w3.org/Style/CSS/Overview.en.html) [![JavaScript](https://img.shields.io/badge/Java-Script-yellow.svg)](https://www.javascript.com/) [![shell](https://img.shields.io/badge/other-Shell-orange.svg)](https://en.wikipedia.org/wiki/Shell_script)
-[![coverage-95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
+[![coverage-70%](https://img.shields.io/badge/coverage-70%25-green.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
 
 
 This directory it contains all the necessary to work the real donation box.<br>
@@ -51,14 +51,12 @@ This table is **read-only** from Django App ( presentation ). The application re
 * **temporary_Donation_Project** table : This table contains temporary information until the [daemon API process](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization) can be synchronize the local database with the remote central database. Specifically, whenever done a donation in the donation box the details of this donation ( such as the amount of money, for which donation project was done and the timing of the donation) stored in this table of the local database. <br>
 [A daemon API process](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization) is responsible when synchronization with the remote database is possible, to get all the data from this table, send them to the remote database and finally to delete them from this table.
 
-#### [OpenVPN Client](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/OpenVPN%20Client). [![coverage-100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
+#### [OpenVPN Client](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/OpenVPN%20Client).  [![coverage-95%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
 To have a high level of security, we decided that the communication of the modernized system of donation boxes to be done through an encrypted and fully secure virtual private network ( VPN ). This network will be created on the server where the remote database is located and each donation box will be given a specific access account to that network. For this reason, it should be constantly ( since its inception ) the donation box connected to this network.
 If the box is not connected to virtual private network it will not be able to communicate with the remote database and hence he will not be able to update his local database.
 For the OpenVPN client, must be done specific settings that are necessary for proper functioning.
 
 
-#### [APIs daemons for Synchronization](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization). [![coverage-95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
-To synchronize local database data with the data from the remote database, it is necessary to running some processes in the background. They should be running on the background two processes continuously in donation box :
+#### [APIs daemons for Synchronization](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box/APIs%20daemons%20for%20Synchronization). [![coverage-50%](https://img.shields.io/badge/coverage-50%25-yellowgreen.svg)](https://github.com/eellak/gsoc17-donationbox/tree/master/Donation-Box)
+To synchronize local database data with the data from the remote database, it is necessary to running some processes in the background.
 * a daemon for the database synchronization : This background process will be responsible in order to attempt at regular intervals to communicate with the central database and to keep the local database up to date.
-
-* a daemon for detecting a donation : This background process is responsible for detecting when a donation is made, when the user makes a donation - inserts a coin -. When this happens, it should record the amount deposited in the local database (*"temporary_Donation_Project" table*) and inform the user.
