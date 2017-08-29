@@ -280,7 +280,7 @@ if __name__ == '__main__':
     db = MariaDB()
 
     # mysql -u tassos -h donationboxes.database -p
-    # db = MariaDB(MariaDB.get_hostname_of_remote_database(), 'tassos', '1234567890', 'artaWayOutPool' )
+    # db = MariaDB(MariaDB.get_hostname_of_remote_database(), 'tassos', '1234567890', 'donationbox_network' )
 
     # db.get_database_version()
     # print ( db.get_last_modified_datetime() )
